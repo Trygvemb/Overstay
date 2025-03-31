@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overstay.API", "src\Overstay.API\Overstay.API.csproj", "{B3F52EB6-DECB-4104-9680-667D1315E31F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overstay.Application", "src\Overstay.Application\Overstay.Application.csproj", "{D75EABCF-C977-4868-9337-E1669F08C1F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overstay.Domain", "src\Overstay.Domain\Overstay.Domain.csproj", "{32D3487D-975C-42C8-91A3-DFF509C93E09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overstay.Infrastructure", "src\Overstay.Infrastructure\Overstay.Infrastructure.csproj", "{9D488129-1C22-4B45-9D0B-29607A1ED459}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overstay.UnitTest", "test\Overstay.UnitTest\Overstay.UnitTest.csproj", "{4EE8DF2A-D29F-4E79-BE80-238206FE2D0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overstay.IntegrationTest", "test\Overstay.IntegrationTest\Overstay.IntegrationTest.csproj", "{C6E92562-E3B8-447C-A7F7-A3D37F875CE9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D0E1534A-E6E9-4275-B917-A7F06D24DB7C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C0E6B96A-AB54-43DB-AA6B-C285FD1D6DBE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3F52EB6-DECB-4104-9680-667D1315E31F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F52EB6-DECB-4104-9680-667D1315E31F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F52EB6-DECB-4104-9680-667D1315E31F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F52EB6-DECB-4104-9680-667D1315E31F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D75EABCF-C977-4868-9337-E1669F08C1F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75EABCF-C977-4868-9337-E1669F08C1F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75EABCF-C977-4868-9337-E1669F08C1F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D75EABCF-C977-4868-9337-E1669F08C1F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32D3487D-975C-42C8-91A3-DFF509C93E09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32D3487D-975C-42C8-91A3-DFF509C93E09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32D3487D-975C-42C8-91A3-DFF509C93E09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32D3487D-975C-42C8-91A3-DFF509C93E09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D488129-1C22-4B45-9D0B-29607A1ED459}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D488129-1C22-4B45-9D0B-29607A1ED459}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D488129-1C22-4B45-9D0B-29607A1ED459}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D488129-1C22-4B45-9D0B-29607A1ED459}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EE8DF2A-D29F-4E79-BE80-238206FE2D0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EE8DF2A-D29F-4E79-BE80-238206FE2D0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EE8DF2A-D29F-4E79-BE80-238206FE2D0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EE8DF2A-D29F-4E79-BE80-238206FE2D0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6E92562-E3B8-447C-A7F7-A3D37F875CE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6E92562-E3B8-447C-A7F7-A3D37F875CE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6E92562-E3B8-447C-A7F7-A3D37F875CE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6E92562-E3B8-447C-A7F7-A3D37F875CE9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B3F52EB6-DECB-4104-9680-667D1315E31F} = {D0E1534A-E6E9-4275-B917-A7F06D24DB7C}
+		{D75EABCF-C977-4868-9337-E1669F08C1F8} = {D0E1534A-E6E9-4275-B917-A7F06D24DB7C}
+		{32D3487D-975C-42C8-91A3-DFF509C93E09} = {D0E1534A-E6E9-4275-B917-A7F06D24DB7C}
+		{9D488129-1C22-4B45-9D0B-29607A1ED459} = {D0E1534A-E6E9-4275-B917-A7F06D24DB7C}
+		{C6E92562-E3B8-447C-A7F7-A3D37F875CE9} = {C0E6B96A-AB54-43DB-AA6B-C285FD1D6DBE}
+		{4EE8DF2A-D29F-4E79-BE80-238206FE2D0B} = {C0E6B96A-AB54-43DB-AA6B-C285FD1D6DBE}
+	EndGlobalSection
+EndGlobal
