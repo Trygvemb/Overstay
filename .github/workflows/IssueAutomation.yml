@@ -1,0 +1,25 @@
+name: Issue Closed when merged
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    types: [closed]
+
+jobs:
+  close-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Close linked issue
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        issue-number: ${{ github.event.pull_request.body | fromJson | contains('issue #') | split(' ') | last }}
+        body: |
+          - [ ] ✅ Done: PR #${{ github.event.pull_request.number }} merged into main
