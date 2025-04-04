@@ -6,18 +6,24 @@ namespace Overstay.Domain.Entities.Users;
 
 public class User : Entity
 {
+    #region Fields, ForeignKeys, Navigation Properties
+
     public PersonName PersonName { get; }
     public Email Email { get; }
     public Password Password { get; }
     public UserName UserName { get; }
     public DateTime? DateOfBirth { get; set; }
 
-    /// Navigation properties
-    public Country Nationality { get; set; }
     public Guid CountryId { get; set; }
-    public Notification Notification { get; set; }
     public Guid NotificationId { get; set; }
-    public IList<Visa>? Visas { get; set; }
+
+    public virtual Country Country { get; set; }
+    public virtual Notification Notification { get; set; }
+    public virtual ICollection<Visa>? Visas { get; set; } = new HashSet<Visa>();
+
+    #endregion
+
+    protected User() { }
 
     public User(
         PersonName personName,
