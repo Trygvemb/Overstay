@@ -2,6 +2,10 @@ using Overstay.Domain.Entities.Users;
 
 namespace Overstay.Domain.Entities.Countries;
 
+/// <summary>
+/// Represents a country entity that includes information about its name,
+/// ISO code, and the associated users.
+/// </summary>
 public class Country : Entity
 {
     #region Fields, ForeignKeys, Navigation Properties

@@ -5,6 +5,12 @@ namespace Overstay.Infrastructure.Data.Seeds;
 
 public static class VisaTypeSeed
 {
+    /// <summary>
+    /// Seeds the initial set of visa types into the database.
+    /// </summary>
+    /// <param name="modelBuilder">
+    /// The <see cref="ModelBuilder"/> used to configure the entity framework model and seed data.
+    /// </param>
     public static void SeedVisaTypes(ModelBuilder modelBuilder)
     {
         modelBuilder

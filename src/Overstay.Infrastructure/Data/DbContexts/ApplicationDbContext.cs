@@ -61,6 +61,10 @@ public class ApplicationDbContext : DbContext
         }
     }
 
+    /// <summary>
+    /// Seeds initial data into the database based on the configuration settings provided in SeedConfigurations.
+    /// </summary>
+    /// <param name="modelBuilder">The ModelBuilder instance used to configure entity mappings and seed data.</param>
     private void SeedData(ModelBuilder modelBuilder)
     {
         if (_seedConfigurations.SeedCountries && !Countries.Any())
