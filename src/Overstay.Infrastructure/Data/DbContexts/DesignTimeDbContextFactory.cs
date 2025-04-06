@@ -33,6 +33,6 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<Applicatio
         configuration.GetSection("SeedData").Bind(seedConfigurations);
         var seedOptions = Options.Create(seedConfigurations);
 
-        return new ApplicationDbContext(optionsBuilder.Options, null!);
+        return new ApplicationDbContext(optionsBuilder.Options, seedOptions);
     }
 }
