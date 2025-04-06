@@ -15,13 +15,12 @@ public static class DiExtension
     {
         var dbOptions = DatabaseOptions.Load(configuration);
 
-        // Register the DbContext with MySQL
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
                 dbOptions.ConnectionString,
                 mysqlOptions =>
                 {
-                    mysqlOptions.MigrationsAssembly("Overstay.Infrastructure/Data");
+                    mysqlOptions.MigrationsAssembly("Overstay.Infrastructure");
                     mysqlOptions.EnableRetryOnFailure();
                     mysqlOptions.CommandTimeout(60);
                 }
