@@ -2,6 +2,10 @@ using Overstay.Domain.Entities.Users;
 
 namespace Overstay.Domain.Entities.Notifications;
 
+/// <summary>
+/// Represents notification preferences and settings for a user.
+/// Provides options for enabling or disabling email, SMS, and push notifications.
+/// </summary>
 public class Notification : Entity
 {
     #region Fields, ForeignKeys, Navigation Properties

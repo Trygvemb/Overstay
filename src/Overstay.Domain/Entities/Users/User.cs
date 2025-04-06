@@ -4,6 +4,9 @@ using Overstay.Domain.Entities.Visas;
 
 namespace Overstay.Domain.Entities.Users;
 
+/// <summary>
+/// Represents a user entity with personal and account-related information.
+/// </summary>
 public class User : Entity
 {
     #region Fields, ForeignKeys, Navigation Properties
