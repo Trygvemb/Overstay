@@ -3,6 +3,11 @@ using Overstay.Domain.Entities.Users;
 
 namespace Overstay.Domain.Entities.Visas;
 
+/// <summary>
+/// Represents a visa entity within the domain.
+/// A Visa is associated with a user and a specific visa type, and contains details about
+/// the arrival date and expiration date of the visa.
+/// </summary>
 public class Visa : Entity
 {
     #region Fields, ForeignKeys, Navigation Properties

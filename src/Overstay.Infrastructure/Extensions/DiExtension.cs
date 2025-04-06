@@ -8,6 +8,13 @@ namespace Overstay.Infrastructure.Extensions;
 
 public static class DiExtension
 {
+    /// <summary>
+    /// Adds the infrastructure layer services to the service collection, including database context
+    /// configuration for the application.
+    /// </summary>
+    /// <param name="services">The service collection to which the infrastructure layer services are added.</param>
+    /// <param name="configuration">The application configuration used to load database options.</param>
+    /// <returns>The updated service collection with the infrastructure layer services registered.</returns>
     public static IServiceCollection AddInfrastructureLayer(
         this IServiceCollection services,
         IConfiguration configuration

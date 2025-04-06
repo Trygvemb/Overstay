@@ -5,6 +5,12 @@ namespace Overstay.Infrastructure.Data.Seeds;
 
 public static class CountrySeed
 {
+    /// <summary>
+    /// Seeds the database with predefined country data.
+    /// </summary>
+    /// <param name="modelBuilder">
+    /// An instance of <see cref="ModelBuilder"/> used to configure and build the database schema.
+    /// </param>
     public static void SeedCountries(ModelBuilder modelBuilder)
     {
         modelBuilder
