@@ -31,9 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  http: ^1.2.0        # standard HTTP-klient
-  flutter_dotenv: ^5.1.0 # miljøvariabler til base-URL + tokens
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
@@ -63,10 +60,6 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/plane.png
-    - assets/images/visamap.png
-    - assets/images/passport.png
-    - assets/images/travelers.png
-    
     
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -83,33 +76,22 @@ flutter:
   fonts:
      - family: Outfit
        fonts:
-          - asset: assets/fonts/Outfit-Black.ttf
-          - asset: assets/fonts/Outfit-Bold.ttf
-          - asset: assets/fonts/Outfit-ExtraBold.ttf
-          - asset: assets/fonts/Outfit-ExtraLight.ttf
-          - asset: assets/fonts/Outfit-Light.ttf
-          - asset: assets/fonts/Outfit-Medium.ttf
           - asset: assets/fonts/Outfit-Regular.ttf
-          - asset: assets/fonts/Outfit-SemiBold.ttf
-          - asset: assets/fonts/Outfit-Thin.ttf
+          - asset: assets/fonts/Outfit-Medium.ttf
+            weight: 500
+          - asset: assets/fonts/Outfit-Bold.ttf
+            weight: 700
+          - asset: assets/fonts/Outfit-Italic.ttf
+            style: italic
 
-     - family: Roboto
+  fonts:
+     - family: roboto
        fonts:
-          - asset: assets/fonts/Roboto-Black.ttf
-          - asset: assets/fonts/Roboto-BlackItalic.ttf
-          - asset: assets/fonts/Roboto-Bold.ttf
-          - asset: assets/fonts/Roboto-BoldItalic.ttf
-          - asset: assets/fonts/Roboto-ExtraBold.ttf
-          - asset: assets/fonts/Roboto-ExtraBoldItalic.ttf
-          - asset: assets/fonts/Roboto-ExtraLight.ttf
-          - asset: assets/fonts/Roboto-ExtraLightItalic.ttf
-          - asset: assets/fonts/Roboto-Italic.ttf
-          - asset: assets/fonts/Roboto-Light.ttf
-          - asset: assets/fonts/Roboto-LightItalic.ttf
-          - asset: assets/fonts/Roboto-Medium.ttf
-          - asset: assets/fonts/Roboto-MediumItalic.ttf
           - asset: assets/fonts/Roboto-Regular.ttf
-          - asset: assets/fonts/Roboto-SemiBold.ttf
-          - asset: assets/fonts/Roboto-SemiBoldItalic.ttf
-          - asset: assets/fonts/Roboto-Thin.ttf
-          - asset: assets/fonts/Roboto-ThinItalic.ttf
+          - asset: assets/fonts/Roboto-Medium.ttf
+            weight: 500
+          - asset: assets/fonts/Roboto-Bold.ttf
+            weight: 700
+          - asset: assets/fonts/Roboto-Italic.ttf
+            style: italic
+  
