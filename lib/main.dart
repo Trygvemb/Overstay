@@ -1,6 +1,6 @@
 // Dette er den primære indgangspunkt for Flutter-app.
 import 'package:flutter/material.dart';
-import 'package:overstay_frontend/views/pages/landing_page.dart';
+import 'package:overstay_frontend/views/public/landing_page.dart';
 
 void main() {
   runApp(const MyApp());
