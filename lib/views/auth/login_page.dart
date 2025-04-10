@@ -29,7 +29,7 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(height: 20),
                   Center(
                     child: Image.asset(
-                      'assets/images/visa_map.png', // Sørg for at tilføje billedet i assets
+                      'assets/images/visamap.png', // Sørg for at tilføje billedet i assets
                       height: 200,
                     ),
                   ),
