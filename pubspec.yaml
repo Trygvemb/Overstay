@@ -76,22 +76,35 @@ flutter:
   fonts:
      - family: Outfit
        fonts:
+          - asset: assets/fonts/Outfit-Black.tff
+          - assets: assets/fonts/Outfit-Bold.tff
+          - assets: assets/fonts/Outfit-ExtraBold.tff
+          - assets: assets/fonts/Outfit-ExtraLight.tff
+          - assets: assets/fonts/Outfit-Light.tff
+          - assets: assets/fonts/Outfit-Medium.tff
           - asset: assets/fonts/Outfit-Regular.ttf
-          - asset: assets/fonts/Outfit-Medium.ttf
-            weight: 500
-          - asset: assets/fonts/Outfit-Bold.ttf
-            weight: 700
-          - asset: assets/fonts/Outfit-Italic.ttf
-            style: italic
+          - assets: assets/fonts/Outfit-SemiBold.tff
+          - assets: assets/fonts/Outfit-Thin.tff
 
   fonts:
-     - family: roboto
+     - family: Roboto
        fonts:
-          - asset: assets/fonts/Roboto-Regular.ttf
-          - asset: assets/fonts/Roboto-Medium.ttf
-            weight: 500
-          - asset: assets/fonts/Roboto-Bold.ttf
-            weight: 700
-          - asset: assets/fonts/Roboto-Italic.ttf
-            style: italic
-  
+          - asset: assets/fonts/Roboto_Black.ttf
+          - asset: assets/fonts/Roboto_BlackItalic.ttf
+          - asset: assets/fonts/Roboto_Bold.ttf
+          - asset: assets/fonts/Roboto_BoldItalic.ttf
+          - asset: assets/fonts/Roboto_ExtraBold.ttf
+          - asset: assets/fonts/Roboto_ExtraBoldItalic.ttf
+          - asset: assets/fonts/Roboto_ExtraLight.ttf
+          - asset: assets/fonts/Roboto_ExtraLightItalic.ttf
+          - asset: assets/fonts/Roboto_Italic.ttf
+          - asset: assets/fonts/Roboto_Light.ttf
+          - asset: assets/fonts/Roboto_LightItalic.ttf
+          - asset: assets/fonts/Roboto_Medium.ttf
+          - asset: assets/fonts/Roboto_MediumItalic.ttf
+          - asset: assets/fonts/Roboto_Regular.ttf
+          - asset: assets/fonts/Roboto_SemiBold.ttf
+          - asset: assets/fonts/Roboto_SemiBoldItalic.ttf
+          - asset: assets/fonts/Roboto_Thin.ttf
+          - asset: assets/fonts/Roboto_ThinItalic.ttf
+          - asset: assets/fonts/Roboto_
