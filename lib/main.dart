@@ -1,5 +1,6 @@
 // Dette er den primære indgangspunkt for Flutter-app.
 import 'package:flutter/material.dart';
+import 'package:overstay_frontend/config/app_theme.dart';
 import 'package:overstay_frontend/views/public/landing_page.dart';
 
 void main() {
@@ -13,10 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Overstay',
-      theme: ThemeData(
-        // Her kan du fx definere colorScheme, fonts m.m.
-        primarySwatch: Colors.teal,
-      ),
+      theme: AppTheme.lightTheme,
       home: const LandingPage(), // Start med LandingPage
     );
   }
