@@ -28,7 +28,12 @@ class LandingPage extends StatelessWidget {
             Row(
               children: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AboutPage()),
+                    );
+                  },
                   child: const Text(
                     'Home',
                     style: TextStyle(color: Colors.white),

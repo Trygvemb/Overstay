@@ -6,9 +6,7 @@ class WhyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Why us page'),
-      ),
+      appBar: AppBar(title: const Text('Why us page')),
       body: const Center(
         child: Text(
           'This is the about us page. Here you can find information on why you should use our app.',
@@ -18,3 +16,4 @@ class WhyPage extends StatelessWidget {
       ),
     );
   }
+}
