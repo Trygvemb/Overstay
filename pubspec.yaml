@@ -76,35 +76,33 @@ flutter:
   fonts:
      - family: Outfit
        fonts:
-          - asset: assets/fonts/Outfit-Black.tff
-          - assets: assets/fonts/Outfit-Bold.tff
-          - assets: assets/fonts/Outfit-ExtraBold.tff
-          - assets: assets/fonts/Outfit-ExtraLight.tff
-          - assets: assets/fonts/Outfit-Light.tff
-          - assets: assets/fonts/Outfit-Medium.tff
+          - asset: assets/fonts/Outfit-Black.ttf
+          - asset: assets/fonts/Outfit-Bold.ttf
+          - asset: assets/fonts/Outfit-ExtraBold.ttf
+          - asset: assets/fonts/Outfit-ExtraLight.ttf
+          - asset: assets/fonts/Outfit-Light.ttf
+          - asset: assets/fonts/Outfit-Medium.ttf
           - asset: assets/fonts/Outfit-Regular.ttf
-          - assets: assets/fonts/Outfit-SemiBold.tff
-          - assets: assets/fonts/Outfit-Thin.tff
+          - asset: assets/fonts/Outfit-SemiBold.ttf
+          - asset: assets/fonts/Outfit-Thin.ttf
 
-  fonts:
      - family: Roboto
        fonts:
-          - asset: assets/fonts/Roboto_Black.ttf
-          - asset: assets/fonts/Roboto_BlackItalic.ttf
-          - asset: assets/fonts/Roboto_Bold.ttf
-          - asset: assets/fonts/Roboto_BoldItalic.ttf
-          - asset: assets/fonts/Roboto_ExtraBold.ttf
-          - asset: assets/fonts/Roboto_ExtraBoldItalic.ttf
-          - asset: assets/fonts/Roboto_ExtraLight.ttf
-          - asset: assets/fonts/Roboto_ExtraLightItalic.ttf
-          - asset: assets/fonts/Roboto_Italic.ttf
-          - asset: assets/fonts/Roboto_Light.ttf
-          - asset: assets/fonts/Roboto_LightItalic.ttf
-          - asset: assets/fonts/Roboto_Medium.ttf
-          - asset: assets/fonts/Roboto_MediumItalic.ttf
-          - asset: assets/fonts/Roboto_Regular.ttf
-          - asset: assets/fonts/Roboto_SemiBold.ttf
-          - asset: assets/fonts/Roboto_SemiBoldItalic.ttf
-          - asset: assets/fonts/Roboto_Thin.ttf
-          - asset: assets/fonts/Roboto_ThinItalic.ttf
-          - asset: assets/fonts/Roboto_
+          - asset: assets/fonts/Roboto-Black.ttf
+          - asset: assets/fonts/Roboto-BlackItalic.ttf
+          - asset: assets/fonts/Roboto-Bold.ttf
+          - asset: assets/fonts/Roboto-BoldItalic.ttf
+          - asset: assets/fonts/Roboto-ExtraBold.ttf
+          - asset: assets/fonts/Roboto-ExtraBoldItalic.ttf
+          - asset: assets/fonts/Roboto-ExtraLight.ttf
+          - asset: assets/fonts/Roboto-ExtraLightItalic.ttf
+          - asset: assets/fonts/Roboto-Italic.ttf
+          - asset: assets/fonts/Roboto-Light.ttf
+          - asset: assets/fonts/Roboto-LightItalic.ttf
+          - asset: assets/fonts/Roboto-Medium.ttf
+          - asset: assets/fonts/Roboto-MediumItalic.ttf
+          - asset: assets/fonts/Roboto-Regular.ttf
+          - asset: assets/fonts/Roboto-SemiBold.ttf
+          - asset: assets/fonts/Roboto-SemiBoldItalic.ttf
+          - asset: assets/fonts/Roboto-Thin.ttf
+          - asset: assets/fonts/Roboto-ThinItalic.ttf

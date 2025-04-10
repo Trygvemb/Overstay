@@ -1,6 +1,8 @@
 // lib/views/pages/landing_page.dart
 import 'package:flutter/material.dart';
-import 'package:overstay_frontend/views/widget_tree.dart'; // VIGTIGT: importer widget_tree
+import 'package:overstay_frontend/views/auth/login_page.dart';
+import 'package:overstay_frontend/views/public/about_page.dart';
+import 'package:overstay_frontend/views/public/why_page.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -40,7 +42,12 @@ class LandingPage extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const WhyPage()),
+                    );
+                  },
                   child: const Text(
                     'Why',
                     style: TextStyle(color: Colors.white),
@@ -54,7 +61,7 @@ class LandingPage extends StatelessWidget {
                 // Naviger til widget_tree, som har bundnavigation
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const WidgetTree()),
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -94,7 +101,7 @@ class LandingPage extends StatelessWidget {
                   // Samme navigering
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const WidgetTree()),
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

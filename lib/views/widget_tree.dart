@@ -1,7 +1,7 @@
 // lib/views/widget_tree.dart
 import 'package:flutter/material.dart';
 import 'package:overstay_frontend/data/notifiers.dart';
-import 'package:overstay_frontend/views/pages/home_page.dart';
+import 'package:overstay_frontend/views/app/home_page.dart';
 
 class WidgetTree extends StatelessWidget {
   const WidgetTree({super.key});
