@@ -1,4 +1,6 @@
+// lib/views/pages/landing_page.dart
 import 'package:flutter/material.dart';
+import 'package:overstay_frontend/views/widget_tree.dart'; // VIGTIGT: importer widget_tree
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -11,7 +13,7 @@ class LandingPage extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Left side: App title
+            // Venstre: "Overstay"
             const Text(
               'Overstay',
               style: TextStyle(
@@ -20,7 +22,7 @@ class LandingPage extends StatelessWidget {
                 fontSize: 24,
               ),
             ),
-            // Center: Navigation bar
+            // Midten: 3 textbuttons
             Row(
               children: [
                 TextButton(
@@ -46,9 +48,15 @@ class LandingPage extends StatelessWidget {
                 ),
               ],
             ),
-            // Right side: Sign-up button
+            // Højre: Sign-up knap
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                // Naviger til widget_tree, som har bundnavigation
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const WidgetTree()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,
                 padding: const EdgeInsets.symmetric(
@@ -63,12 +71,6 @@ class LandingPage extends StatelessWidget {
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () {},
-            child: const Text('Sign-up', style: TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -88,7 +90,13 @@ class LandingPage extends StatelessWidget {
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Samme navigering
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const WidgetTree()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
                   padding: const EdgeInsets.symmetric(
