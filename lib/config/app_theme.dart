@@ -21,19 +21,17 @@ class AppTheme {
       tertiary: AppColors.color3,
     ),
     textTheme: const TextTheme(
-      headline1: TextStyle(
-        displayLarge: TextStyle(
+      displayLarge: TextStyle(
         fontFamily: 'Outfit',
         fontSize: 32,
         fontWeight: FontWeight.bold,
       ),
-      bodyText1: TextStyle(
+      bodyLarge: TextStyle(
+        // Corrected from bodyText1
         fontFamily: 'Roboto',
         fontSize: 16,
       ),
     ),
-      )
-    )
   );
 
   static const LinearGradient gradient = LinearGradient(

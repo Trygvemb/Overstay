@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:overstay/views/pages/home_page.dart';
-import 'package:overstay/views/pages/landing_page.dart';
-import 'package:overstay/views/pages/login_page.dart';
+import 'package:overstay_frontend/views/pages/landing_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +12,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Overstay',
-      theme: ThemeData()
-    )
+      theme: ThemeData(),
+      home: const LandingPage(), // Set LandingPage as the initial page
+    );
   }
 }
