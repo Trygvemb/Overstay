@@ -1,16 +1,15 @@
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Overstay.Application;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplicationLayer(this IServiceCollection services)
     {
-        Log.Logger = new LoggerConfiguration()
-            .WriteTo.Console()
-            .Enrich.FromLogContext()
-            .MinimumLevel.Debug()
-            .CreateLogger();
+        services.AddMediatR(cfg => cfg
+            .RegisterServicesFromAssembly(Assembly
+                .GetExecutingAssembly()));
         
         return services;
     }
