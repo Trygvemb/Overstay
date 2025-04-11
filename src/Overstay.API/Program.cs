@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Overstay.Application;
 using Overstay.Infrastructure;
 using Overstay.Infrastructure.Data.DbContexts;
 using Overstay.Infrastructure.Data.Identities;
@@ -5,12 +7,24 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
+builder.Services
+    .AddOpenApi()
+    .AddControllers();
 
-builder.Services.AddInfrastructureLayer(builder.Configuration);
-builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+builder.Services
+    .AddInfrastructureLayer(builder.Configuration)
+    .AddApplicationLayer();
+
+builder.Services
+    .AddAuthorization()
+    .AddIdentityApiEndpoints<ApplicationUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Logging
+    .ClearProviders()
+    .AddConsole()
+    .AddDebug()
+    .SetMinimumLevel(LogLevel.Information);
 
 var app = builder.Build();
 
@@ -30,8 +44,11 @@ builder
     )
     .AddEnvironmentVariables();
 
-app.UseHttpsRedirection();
+app.UseHttpsRedirection()
+    .UseAuthentication()
+    .UseAuthorization();
 
+app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 
 app.Run();

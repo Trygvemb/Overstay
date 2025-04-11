@@ -1,1 +1,2 @@
-global using Serilog;
+global using Overstay.Domain.Entities;
+global using MediatR;
