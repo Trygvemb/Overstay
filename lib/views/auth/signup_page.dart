@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:overstay_frontend/views/auth/login_page.dart';
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
+
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -66,20 +77,24 @@ class SignupPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
+
+                  // Indtastningsfelter Fornavn og Efternavn
                   Row(
-                    children: const [
+                    children: [
                       Expanded(
                         child: TextField(
-                          decoration: InputDecoration(
+                          controller: firstNameController,
+                          decoration: const InputDecoration(
                             labelText: 'First name',
                             border: OutlineInputBorder(),
                           ),
                         ),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: TextField(
-                          decoration: InputDecoration(
+                          controller: lastNameController,
+                          decoration: const InputDecoration(
                             labelText: 'Last Name',
                             border: OutlineInputBorder(),
                           ),
@@ -88,24 +103,34 @@ class SignupPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  const TextField(
-                    decoration: InputDecoration(
+
+                  // Indtastningsfelt for email og password
+                  TextField(
+                    controller: emailController,
+                    decoration: const InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const TextField(
+
+                  TextField(
+                    controller: passwordController,
+                    // Secure the password input
+                    // by using obscureText
+                    // and setting it to true
+                    // to hide the password
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Password',
                       border: OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 20),
+
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: createAccount,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
                         padding: const EdgeInsets.symmetric(
@@ -120,9 +145,16 @@ class SignupPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
+
                   Center(
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        // Naviger til login siden
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginPage()),
+                        );
+                      },
                       child: const Text(
                         'Already have an account? Login',
                         style: TextStyle(color: Colors.lightGreen),
@@ -136,5 +168,27 @@ class SignupPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void createAccount() async {
+    final firstName = firstNameController.text.trim();
+    final lastName = lastNameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+
+    //1 validate input (er felterne tomme? er email gyldig? osv.)
+    if (firstName.isEmpty ||
+        lastName.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty) {
+      // Vis en fejlmeddelelse
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+    //2 send data til backend eller mock data
+    //3 håndter svaret fra backend
+    //4 hvis succes, naviger til login siden
   }
 }
