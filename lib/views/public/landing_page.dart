@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:overstay_frontend/views/auth/signup_page.dart';
 import 'package:overstay_frontend/views/public/about_page.dart';
 import 'package:overstay_frontend/views/public/why_page.dart';
+import 'package:overstay_frontend/views/app/widget_tree.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});

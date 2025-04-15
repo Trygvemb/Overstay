@@ -61,6 +61,8 @@ flutter:
   assets:
     - assets/images/plane.png
     - assets/images/visamap.png
+    - assets/images/passport.png
+    - assets/images/travelers.png
     
     
 
