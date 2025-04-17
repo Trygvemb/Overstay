@@ -1,35 +1,45 @@
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Text.Json.Serialization;
+using Overstay.API.Commons;
 using Overstay.Application;
+using Overstay.Application.Commons.JsonConverters;
 using Overstay.Infrastructure;
-using Overstay.Infrastructure.Data.DbContexts;
-using Overstay.Infrastructure.Data.Identities;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddOpenApi()
-    .AddControllers();
+builder
+    .Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.Converters.Add(new ResultJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new ResultJsonConverterFactory());
+    });
 
-builder.Services
-    .AddInfrastructureLayer(builder.Configuration)
-    .AddApplicationLayer();
+builder.Services.AddOpenApi(
+    "v1",
+    options =>
+    {
+        options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    }
+);
 
-builder.Services
-    .AddAuthorization()
-    .AddIdentityApiEndpoints<ApplicationUser>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddInfrastructureLayer(builder.Configuration).AddApplicationLayer();
 
-builder.Logging
-    .ClearProviders()
+builder
+    .Logging.ClearProviders()
     .AddConsole()
     .AddDebug()
-    .SetMinimumLevel(LogLevel.Information);
+    .SetMinimumLevel(LogLevel.Information)
+    .AddFilter("Microsoft.AspNetCore.Authorization", LogLevel.Debug);
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    // Initialize database with seed data
+    //await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
+
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
@@ -44,11 +54,8 @@ builder
     )
     .AddEnvironmentVariables();
 
-app.UseHttpsRedirection()
-    .UseAuthentication()
-    .UseAuthorization();
+app.UseHttpsRedirection().UseAuthentication().UseAuthorization();
 
 app.MapControllers();
-app.MapIdentityApi<ApplicationUser>();
 
 app.Run();
