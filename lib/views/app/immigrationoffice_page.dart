@@ -53,7 +53,7 @@ class ImmigrationofficePage extends StatelessWidget {
           flex: 1,
           child: Center(
             child: Image.asset(
-              'assets/images/immigration.png', // Indsæt relevant billede
+              'assets/images/visamap.png', // Indsæt relevant billede
               width: 250,
             ),
           ),
