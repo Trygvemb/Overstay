@@ -208,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (success) {
-      // ved success naviger til private app
+      // ved success naviger til private app-sider
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const WidgetTree()),
