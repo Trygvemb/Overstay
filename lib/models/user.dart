@@ -2,6 +2,11 @@
 // id, firstName, lastName, email
 // denne model skal dog være tilsvarende den der er i MockUSer??.cs!! vigtigt!!
 
+import 'package:flutter/material.dart';
+import 'pckage:overstay_frontend/models/visa.dart';
+import 'package:overstay_frontend/models/notification_settings.dart';
+import 'package:overstay_frontend/models/country.dart';
+
 class User {
   final String id;
   final String firstName;
