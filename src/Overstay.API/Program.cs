@@ -3,6 +3,7 @@ using Overstay.API.Commons;
 using Overstay.Application;
 using Overstay.Application.Commons.JsonConverters;
 using Overstay.Infrastructure;
+using Overstay.Infrastructure.Data;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,10 +22,19 @@ builder.Services.AddOpenApi(
     options =>
     {
         options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+        options.AddDocumentTransformer(new OpenApiServerTransformer(builder.Configuration));
     }
 );
 
 builder.Services.AddInfrastructureLayer(builder.Configuration).AddApplicationLayer();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
 
 builder
     .Logging.ClearProviders()
@@ -32,17 +42,6 @@ builder
     .AddDebug()
     .SetMinimumLevel(LogLevel.Information)
     .AddFilter("Microsoft.AspNetCore.Authorization", LogLevel.Debug);
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    // Initialize database with seed data
-    //await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
-
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-}
 
 builder
     .Configuration.SetBasePath(builder.Environment.ContentRootPath)
@@ -54,8 +53,24 @@ builder
     )
     .AddEnvironmentVariables();
 
-app.UseHttpsRedirection().UseAuthentication().UseAuthorization();
+var app = builder.Build();
 
+app.MapOpenApi();
+app.MapScalarApiReference();
+
+if (app.Environment.IsDevelopment())
+{
+    // Initialize a database with seed data
+    await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
+}
+else
+{
+    app.UseHttpsRedirection();
+}
+
+app.UseRouting();
+app.UseCors();
+app.UseAuthentication().UseAuthorization();
 app.MapControllers();
 
 app.Run();
