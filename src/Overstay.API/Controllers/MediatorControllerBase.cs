@@ -6,7 +6,7 @@ namespace Overstay.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = RoleTypeConstants.User)]
+[Authorize]
 public class MediatorControllerBase(ISender mediator) : ControllerBase
 {
     protected ISender Mediator { get; } = mediator;
