@@ -22,7 +22,7 @@ builder.Services.AddOpenApi(
     options =>
     {
         options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
-        options.AddDocumentTransformer(new OpenApiServerTransformer(builder.Configuration));
+        options.AddDocumentTransformer(new OpenApiServerTransformer(builder.Configuration, builder.Environment));
     }
 );
 
