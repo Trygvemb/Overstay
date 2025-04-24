@@ -1,51 +1,48 @@
-# Rider-specific
-.idea/
-*.iml
-/.idea/**/workspace.xml
-/.idea/**/tasks.xml
-/.idea/**/shelf/
-
-# Build artifacts
-bin/
-obj/
-out/
-
-# Rider cache files
-/_ReSharper.Caches/
-*.sln.DotSettings.user
-
-# Dependencies
-/packages/
-*.nuget
-
-# User-specific files
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
-*.DS_Store
-
-# Logs
+# Miscellaneous
+*.class
 *.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
 
-# Coverage results
-coverage/
-*.coverage
-*.coveragexml
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
 
-# Publish artifacts
-*.publish/
-*.publish.settings
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
 
-# Temporary files
-*.tmp
-*.temp
-*.cache
-*.pidb
-*.ide
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
 
-# VS Code settings (if you switch editors)
-.vscode/
+# Symbolication related
+app.*.symbols
 
-# Docker (if using containerization)
-docker-compose.override.yml
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Environment variables
+.env
