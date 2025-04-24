@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:overstay_frontend/views/auth/login_page.dart';
+import 'package:overstay_frontend/models/create_user_request.dart';
+import 'package:overstay_frontend/services/user_api_service.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -9,10 +11,14 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  // Tekstcontrollere til at håndtere tekstfelter
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  // tilføjer nu api-service instans
+  final UserApiService _api = UserApiService();
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +136,7 @@ class _SignupPageState extends State<SignupPage> {
 
                   Center(
                     child: ElevatedButton(
-                      onPressed: createAccount,
+                      onPressed: _createAccount,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
                         padding: const EdgeInsets.symmetric(
@@ -170,25 +176,48 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  void createAccount() async {
+  // kald til API
+  Future<void> _createAccount() async {
     final firstName = firstNameController.text.trim();
     final lastName = lastNameController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text;
 
     //1 validate input (er felterne tomme? er email gyldig? osv.)
-    if (firstName.isEmpty ||
-        lastName.isEmpty ||
-        email.isEmpty ||
-        password.isEmpty) {
+    if ([firstName, lastName, email, password].any((e) => e.isEmpty)) {
+      // Hvis et af felterne er tomt
       // Vis en fejlmeddelelse
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields')),
       );
       return;
     }
-    //2 send data til backend eller mock data
-    //3 håndter svaret fra backend
-    //4 hvis succes, naviger til login siden
+    try {
+      //2 send data til backend eller mock data
+      final request = CreateUserRequest(
+        userName: '$firstName $lastName',
+        email: email,
+        password: password,
+      );
+
+      //3 håndter svaret fra backend
+      final response = await _api.createUser(request);
+
+      //4 Kontroller om svaret er succesfuldt
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Account ${response.userName} created successfully'),
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+      );
+    } catch (e) {
+      // Håndter fejl fra API vises i UserInterface
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
+    }
   }
 }
