@@ -1,0 +1,67 @@
+services:
+  # Database service (re-using from the existing docker-compose.yml)
+  mssql:
+    image: vibs2006/sql_server_fts:latest
+    container_name: mssql_server
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Password123!"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    restart: unless-stopped
+    networks:
+      - overstay-network
+
+  # Backend API service
+  backend:
+    build:
+      context: ./Overstay-api
+      dockerfile: Dockerfile
+    container_name: overstay_api
+    ports:
+      - "5050:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=mssql_server;Database=Overstay;User Id=sa;Password=Password123!;TrustServerCertificate=True;
+      - ASPNETCORE_URLS=http://+:80
+      - SCALAR_API_BASE_URL=http://backend:80
+      - OpenAPI__ServerUrl=http://localhost:5050 
+    depends_on:
+      - mssql
+    networks:
+      - overstay-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Frontend Flutter service
+  frontend:
+    build:
+      context: ./Overstay-frontend
+      dockerfile: Dockerfile
+    container_name: overstay_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - overstay-network
+    environment:
+          - API_URL=http://backend:80/api # This ensures the frontend can access backend using Docker's internal networking
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+networks:
+  overstay-network:
+    driver: bridge
+
+volumes:
+  mssql_data:
