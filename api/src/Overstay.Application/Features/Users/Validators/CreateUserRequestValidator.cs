@@ -1,10 +1,9 @@
 using FluentValidation;
 using Overstay.Application.Features.Users.Commands;
-using Overstay.Application.Features.Users.Requests;
 
 namespace Overstay.Application.Features.Users.Validators;
 
-internal class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
+public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
     public CreateUserCommandValidator()
     {
