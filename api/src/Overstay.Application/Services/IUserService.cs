@@ -1,4 +1,5 @@
 using Overstay.Application.Commons.Results;
+using Overstay.Application.Features.Authentications;
 using Overstay.Application.Features.Users.Requests;
 using Overstay.Application.Responses;
 
@@ -33,4 +34,13 @@ public interface IUserService
     public Task<Result<UserWithRolesResponse>> AddRoleAsync(Guid userId, string roleName);
     public Task<Result> RemoveRoleAsync(Guid userId, string roleName);
     public Task<Result<List<string>>> GetUserRolesAsync(Guid userId);
+    
+    // OAuth
+    Task<Result<string>> GetExternalLoginUrlAsync(ExternalLoginRequest request);
+    Task<Result<TokenResponse>> HandleExternalLoginCallbackAsync(
+        ExternalLoginInfo info, 
+        string returnUrl = null
+    );
+    Task<Result<ApplicationUser>> GetOrCreateExternalUserAsync(ExternalLoginInfo info);
+
 }

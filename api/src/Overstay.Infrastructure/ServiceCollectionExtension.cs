@@ -93,6 +93,23 @@ public static class ServiceCollectionExtension
                         return Task.CompletedTask;
                     },
                 };
+            })
+            .AddGoogle(options =>
+            {
+                var googleAuthSection = configuration.GetSection("Authentication:Google");
+                options.ClientId = googleAuthSection["ClientId"] ?? throw new InvalidOperationException("Google Client Id is missing");
+                options.ClientSecret = googleAuthSection["ClientSecret"] ?? throw new InvalidOperationException("Google Client Secret is missing");
+                options.CallbackPath = "/signin-google";
+                options.SaveTokens = true;
+            })
+            // Add Facebook authentication
+            .AddFacebook(options =>
+            {
+                var facebookAuthSection = configuration.GetSection("Authentication:Facebook");
+                options.ClientId = facebookAuthSection["ClientId"] ?? throw new InvalidOperationException("Facebook Client Id is missing");
+                options.ClientSecret = facebookAuthSection["ClientSecret"] ?? throw new InvalidOperationException("Facebook Client Secret is missing");
+                options.CallbackPath = "/signin-facebook";
+                options.SaveTokens = true;
             });
 
         services
