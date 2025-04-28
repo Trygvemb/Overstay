@@ -21,7 +21,4 @@
     />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Features\Authentications\Requests\" />
-  </ItemGroup>
 </Project>

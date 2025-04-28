@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Overstay.Application.Commons.Constants;
 using Overstay.Application.Commons.Errors;
 using Overstay.Application.Commons.Results;
@@ -17,7 +19,8 @@ public class UserService(
     SignInManager<ApplicationUser> signInManager,
     ITokenService tokenService,
     ILogger<UserService> logger,
-    IMapper mapper
+    IMapper mapper,
+    IConfiguration configuration
 ) : IUserService
 {
     public async Task<Result<TokenResponse>> SignInAsync(SignInUserRequest request)
@@ -448,6 +451,203 @@ public class UserService(
                 userId
             );
             return Result.Failure<List<string>>(UserErrors.GetRolesFailed);
+        }
+    }
+
+    public Result<string> ConfigureExternalAuthenticationProperties(
+        string provider, 
+        string returnUrl)
+    {
+        try {
+            var supportedProviders = new[] { "Google", "Facebook" };
+            
+            if (!supportedProviders.Contains(provider)) {
+                return Result.Failure<string>(new Error("UnsupportedProvider", $"Provider '{provider}' is not supported. Supported providers are: {string.Join(", ", supportedProviders)}"));
+            }
+            
+            return string.IsNullOrEmpty(provider) ? Result.Failure<string>(new Error("InvalidProvider", "Provider name cannot be empty")) : Result.Success(provider);
+        }
+        catch (Exception ex) {
+            logger.LogError(ex, "Error configuring external authentication for provider {Provider}", provider);
+            return Result.Failure<string>(Error.ServerError);
+        }
+    }
+
+   public async Task<Result<ExternalAuthResponse>> ProcessExternalLoginCallbackAsync(
+    string returnUrl, 
+    string remoteError)
+    {
+        if (!string.IsNullOrEmpty(remoteError))
+        {
+            logger.LogWarning("Error from external provider: {Error}", remoteError);
+            return Result.Success(new ExternalAuthResponse
+            {
+                Succeeded = false,
+                Error = $"Error from external provider: {remoteError}"
+            });
+        }
+
+        try
+        {
+            // Get login info provided by the external provider
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                logger.LogWarning("Error loading external login information");
+                return Result.Success(new ExternalAuthResponse
+                {
+                    Succeeded = false,
+                    Error = "Error loading external login information"
+                });
+            }
+
+            // Try to sign in with external login info
+            var result = await signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider,
+                info.ProviderKey,
+                isPersistent: false,
+                bypassTwoFactor: true);
+            
+            // If successful login
+            if (result.Succeeded)
+            {
+                // Find the user
+                var user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                if (user == null)
+                {
+                    return Result.Success(new ExternalAuthResponse
+                    {
+                        Succeeded = false,
+                        Error = "User not found after successful external login"
+                    });
+                }
+                
+                // Get user roles for token generation
+                var roles = await userManager.GetRolesAsync(user);
+                
+                // Create UserWithRolesResponse for token generation
+                var userWithRoles = new UserWithRolesResponse
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Roles = roles.ToList()
+                };
+                
+                // Generate JWT token
+                var tokenResponse = await tokenService.GenerateJwtToken(userWithRoles);
+                
+                return Result.Success(new ExternalAuthResponse
+                {
+                    Succeeded = true,
+                    Token = tokenResponse
+                });
+            }
+
+            // User doesn't exist, create a new one
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            
+            if (string.IsNullOrEmpty(email))
+            {
+                logger.LogWarning("Cannot create user: Email not provided by external provider");
+                return Result.Success(new ExternalAuthResponse
+                {
+                    Succeeded = false,
+                    Error = "Email not provided by external login provider"
+                });
+            }
+
+            var existingUser = await userManager.FindByEmailAsync(email);
+            
+            if (existingUser == null)
+            {
+                // Create a new user
+                var name = info.Principal.FindFirstValue(ClaimTypes.Name) ?? email;
+                var country = info.Principal.FindFirstValue(ClaimTypes.Country);
+                var countryId = Guid.Empty;
+                
+                if (!string.IsNullOrEmpty(country))
+                {
+                    var domainCountry = await context.Countries.FirstOrDefaultAsync(c => c.Name == country);
+                    countryId = domainCountry?.Id ?? Guid.Empty;
+                }
+
+                var newUser = new ApplicationUser
+                {
+                    UserName = name,
+                    Email = email,
+                    EmailConfirmed = true,
+                    DomainUser = new User(countryId)
+                };
+
+                var createResult = await userManager.CreateAsync(newUser);
+                
+                if (!createResult.Succeeded)
+                {
+                    logger.LogError("Error creating user from external provider: {Errors}", 
+                        string.Join(", ", createResult.Errors.Select(e => e.Description)));
+                        
+                    return Result.Success(new ExternalAuthResponse
+                    {
+                        Succeeded = false,
+                        Error = "Failed to create user"
+                    });
+                }
+
+                // Add user to default role
+                await userManager.AddToRoleAsync(newUser, RoleTypeConstants.User);
+                
+                // Set the working user to the newly created one
+                existingUser = newUser;
+            }
+
+            // Add this external login to the user if not already added
+            var userLogins = await userManager.GetLoginsAsync(existingUser);
+            if (!userLogins.Any(l => l.LoginProvider == info.LoginProvider && l.ProviderKey == info.ProviderKey))
+            {
+                var addLoginResult = await userManager.AddLoginAsync(existingUser, info);
+                
+                if (!addLoginResult.Succeeded)
+                {
+                    logger.LogError("Error linking external login to user: {Errors}", 
+                        string.Join(", ", addLoginResult.Errors.Select(e => e.Description)));
+                        
+                    return Result.Success(new ExternalAuthResponse
+                    {
+                        Succeeded = false,
+                        Error = "Failed to link external login"
+                    });
+                }
+            }
+
+            // Sign in the user
+            await signInManager.SignInAsync(existingUser, isPersistent: false);
+            
+            // Get user roles for token generation
+            var userRoles = await userManager.GetRolesAsync(existingUser);
+            
+            // Create UserWithRolesResponse for token generation
+            var userResponse = new UserWithRolesResponse
+            {
+                Id = existingUser.Id,
+                UserName = existingUser.UserName,
+                Email = existingUser.Email,
+                Roles = userRoles.ToList()
+            };
+            
+            // Generate JWT token
+            var token = await tokenService.GenerateJwtToken(userResponse);
+            
+            return Result.Success(new ExternalAuthResponse
+            {
+                Succeeded = true,
+                Token = token
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error processing external login callback");
+            return Result.Failure<ExternalAuthResponse>(Error.ServerError);
         }
     }
 }
