@@ -1,6 +1,9 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,12 +49,45 @@ public static class ServiceCollectionExtension
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+        
+        // Add session support for tracking OAuth state
+        services.AddDistributedMemoryCache();
+        services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(20);
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true; // Important for GDPR
+            options.Cookie.SameSite = SameSiteMode.Lax; // Must match the cookie policy
+            options.Cookie.SecurePolicy = CookieSecurePolicy.None; // For development
+        });
+
+
+        // Configure cookie policy
+        services.Configure<CookiePolicyOptions>(options =>
+        {
+            options.CheckConsentNeeded = context => false;
+            options.MinimumSameSitePolicy = SameSiteMode.Lax;
+            options.Secure = CookieSecurePolicy.None;
+
+            // Add this debugging
+            options.OnAppendCookie = cookieContext => 
+            {
+                Console.WriteLine($"Cookie appended: {cookieContext.CookieName}");
+            };
+            options.OnDeleteCookie = cookieContext => 
+            {
+                Console.WriteLine($"Cookie deleted: {cookieContext.CookieName}");
+            };
+
+        });
+
 
         services
             .AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
             })
             .AddJwtBearer(options =>
             {
@@ -66,7 +102,7 @@ public static class ServiceCollectionExtension
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(
                             configuration["JwtSettings:SecretKey"]
-                                ?? throw new InvalidOperationException()
+                            ?? throw new InvalidOperationException()
                         )
                     ),
                 };
@@ -97,18 +133,18 @@ public static class ServiceCollectionExtension
             .AddGoogle(options =>
             {
                 var googleAuthSection = configuration.GetSection("Authentication:Google");
-                options.ClientId = googleAuthSection["ClientId"] ?? throw new InvalidOperationException("Google Client Id is missing");
-                options.ClientSecret = googleAuthSection["ClientSecret"] ?? throw new InvalidOperationException("Google Client Secret is missing");
-                options.CallbackPath = "/signin-google";
-                options.SaveTokens = true;
-            })
-            // Add Facebook authentication
-            .AddFacebook(options =>
-            {
-                var facebookAuthSection = configuration.GetSection("Authentication:Facebook");
-                options.ClientId = facebookAuthSection["ClientId"] ?? throw new InvalidOperationException("Facebook Client Id is missing");
-                options.ClientSecret = facebookAuthSection["ClientSecret"] ?? throw new InvalidOperationException("Facebook Client Secret is missing");
-                options.CallbackPath = "/signin-facebook";
+                options.ClientId = googleAuthSection["ClientId"] ??
+                                   throw new InvalidOperationException("Google Client Id is missing");
+                options.ClientSecret = googleAuthSection["ClientSecret"] ??
+                                       throw new InvalidOperationException("Google Client Secret is missing");
+                options.CallbackPath = "/api/Auth/external-login-callback";
+
+                // These settings are critical for cookies to work properly
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.None; // For dev
+                options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+                options.CorrelationCookie.HttpOnly = true;
+                options.CorrelationCookie.IsEssential = true;
+    
                 options.SaveTokens = true;
             });
 

@@ -35,7 +35,7 @@ public interface IUserService
     public Task<Result<List<string>>> GetUserRolesAsync(Guid userId);
     
     // OAuth
-    Result<string> ConfigureExternalAuthenticationProperties(
+    Task<Result<string>> ValidateExternalAuthProvider(
         string provider, 
         string returnUrl);
     Task<Result<ExternalAuthResponse>> ProcessExternalLoginCallbackAsync(

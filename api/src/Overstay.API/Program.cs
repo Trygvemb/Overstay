@@ -34,12 +34,25 @@ builder.Services.AddOpenApi(
 
 builder.Services.AddInfrastructureLayer(builder.Configuration).AddApplicationLayer();
 
+// Configure CORS correctly
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        policy
+            .WithOrigins("http://localhost:5093") // Your domain
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials(); // Essential for cookies to work
     });
+});
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 builder
@@ -66,6 +79,8 @@ app.MapScalarApiReference();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
+
     // Initialize a database with seed data
     await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
 }
@@ -75,8 +90,12 @@ else
 }
 
 app.UseRouting();
+app.UseSession();
+app.UseCookiePolicy();
 app.UseCors();
-app.UseAuthentication().UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
