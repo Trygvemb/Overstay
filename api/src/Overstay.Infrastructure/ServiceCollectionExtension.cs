@@ -1,9 +1,7 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,48 +44,19 @@ public static class ServiceCollectionExtension
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireLowercase = true;
                 options.User.RequireUniqueEmail = true;
+
+                options.SignIn.RequireConfirmedAccount = false;
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-        
-        // Add session support for tracking OAuth state
-        services.AddDistributedMemoryCache();
-        services.AddSession(options =>
-        {
-            options.IdleTimeout = TimeSpan.FromMinutes(20);
-            options.Cookie.HttpOnly = true;
-            options.Cookie.IsEssential = true; // Important for GDPR
-            options.Cookie.SameSite = SameSiteMode.Lax; // Must match the cookie policy
-            options.Cookie.SecurePolicy = CookieSecurePolicy.None; // For development
-        });
-
-
-        // Configure cookie policy
-        services.Configure<CookiePolicyOptions>(options =>
-        {
-            options.CheckConsentNeeded = context => false;
-            options.MinimumSameSitePolicy = SameSiteMode.Lax;
-            options.Secure = CookieSecurePolicy.None;
-
-            // Add this debugging
-            options.OnAppendCookie = cookieContext => 
-            {
-                Console.WriteLine($"Cookie appended: {cookieContext.CookieName}");
-            };
-            options.OnDeleteCookie = cookieContext => 
-            {
-                Console.WriteLine($"Cookie deleted: {cookieContext.CookieName}");
-            };
-
-        });
-
 
         services
             .AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+                options.DefaultSignInScheme =
+                    IdentityConstants.ExternalScheme; // CRITICAL: This is required for OAuth flows
             })
             .AddJwtBearer(options =>
             {
@@ -106,7 +75,7 @@ public static class ServiceCollectionExtension
                         )
                     ),
                 };
-
+        
                 options.Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
@@ -132,20 +101,19 @@ public static class ServiceCollectionExtension
             })
             .AddGoogle(options =>
             {
-                var googleAuthSection = configuration.GetSection("Authentication:Google");
-                options.ClientId = googleAuthSection["ClientId"] ??
-                                   throw new InvalidOperationException("Google Client Id is missing");
-                options.ClientSecret = googleAuthSection["ClientSecret"] ??
-                                       throw new InvalidOperationException("Google Client Secret is missing");
-                options.CallbackPath = "/api/Auth/external-login-callback";
-
-                // These settings are critical for cookies to work properly
-                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.None; // For dev
-                options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-                options.CorrelationCookie.HttpOnly = true;
-                options.CorrelationCookie.IsEssential = true;
-    
-                options.SaveTokens = true;
+                options.ClientId = configuration["Authentication:Google:ClientId"];
+                options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+                options.CallbackPath = "/signin-google";
+                options.SaveTokens = true;  // Important for GetExternalLoginInfoAsync to work
+                options.Events.OnCreatingTicket = ctx =>
+                {
+                    var identity = (ClaimsIdentity)ctx.Principal.Identity;
+                    var email = ctx.User.GetProperty("email").GetString();
+                    var name = ctx.User.GetProperty("name").GetString();
+                    identity.AddClaim(new Claim(ClaimTypes.Email, email));
+                    identity.AddClaim(new Claim(ClaimTypes.Name, name));
+                    return Task.CompletedTask;
+                };
             });
 
         services

@@ -1,10 +1,6 @@
-using System.Reflection;
-using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
-using FluentValidation;
 using Overstay.API.Commons;
 using Overstay.Application;
-using Overstay.Application.Commons.Behaviors;
 using Overstay.Application.Commons.JsonConverters;
 using Overstay.Infrastructure;
 using Overstay.Infrastructure.Data;
@@ -40,19 +36,21 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
     {
         policy
-            .WithOrigins("http://localhost:5093") // Your domain
+            .WithOrigins(
+                "https://localhost:7139"
+            )
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials(); // Essential for cookies to work
     });
 });
 
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
+builder.Services.ConfigureExternalCookie(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(20);
     options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Lax; // Lax is needed for OAuth redirects
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
 });
 
 builder
@@ -60,7 +58,10 @@ builder
     .AddConsole()
     .AddDebug()
     .SetMinimumLevel(LogLevel.Information)
-    .AddFilter("Microsoft.AspNetCore.Authorization", LogLevel.Debug);
+    .AddFilter("Microsoft.AspNetCore.Authorization", LogLevel.Debug)
+    .AddFilter("Microsoft.AspNetCore.Authentication", LogLevel.Debug)
+    .AddFilter("Microsoft.AspNetCore.Authentication.Google", LogLevel.Debug)
+    .AddFilter("Microsoft.AspNetCore.Authentication.Cookies", LogLevel.Debug);
 
 builder
     .Configuration.SetBasePath(builder.Environment.ContentRootPath)
@@ -84,18 +85,16 @@ if (app.Environment.IsDevelopment())
     // Initialize a database with seed data
     await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
 }
-else
-{
-    app.UseHttpsRedirection();
-}
+
+app.UseHttpsRedirection();
 
 app.UseRouting();
-app.UseSession();
-app.UseCookiePolicy();
 app.UseCors();
+
 app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthorization(); 
 
 app.MapControllers();
 
 app.Run();
+

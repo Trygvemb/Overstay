@@ -3,7 +3,7 @@ using Overstay.Application.Services;
 
 namespace Overstay.Application.Features.Users.Commands;
 
-public sealed record ExternalLoginCommand(string Provider, string? ReturnUrl = null) : IRequest<Result<string>>;
+public sealed record ExternalLoginCommand(string Provider, string ReturnUrl) : IRequest<Result<string>>;
 
 public class ExternalLoginCommandHandler(IUserService userService)
     : IRequestHandler<ExternalLoginCommand, Result<string>>
@@ -12,6 +12,6 @@ public class ExternalLoginCommandHandler(IUserService userService)
     {
         return await userService.ValidateExternalAuthProvider(
             request.Provider,
-            request.ReturnUrl!);
+            request.ReturnUrl);
     }
 }

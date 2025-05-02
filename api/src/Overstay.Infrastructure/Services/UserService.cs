@@ -460,20 +460,42 @@ public class UserService(
     {
         try
         {
-            var authSection = configuration.GetSection("Authentication");
-            var supportedProviders = authSection.GetChildren()
+            if (returnUrl != "/")
+            {
+                if (!returnUrl.StartsWith($"/"))
+                {
+                    return Task.FromResult(Result.Failure<string>(
+                        new Error(ErrorTypeConstants.Unauthorized, "Return URL must start with /")));
+                }
+            
+                if (!Uri.TryCreate("http://dummy.com" + returnUrl, UriKind.Absolute, out _))
+                {
+                    return Task.FromResult(Result.Failure<string>(
+                        new Error(ErrorTypeConstants.Unauthorized, "Invalid return URL path")));
+                }
+            }
+            
+            if (string.IsNullOrEmpty(provider))
+            {
+                return Task.FromResult(Result.Failure<string>(
+                    new Error(ErrorTypeConstants.Unauthorized, "Provider name cannot be empty")));
+            }
+            
+            var supportedProviders = configuration.GetSection("Authentication")
+                .GetChildren()
                 .Select(x => x.Key)
                 .ToList();
-    
-            if (string.IsNullOrEmpty(provider)) {
-                return Task.FromResult(Result.Failure<string>(new Error(ErrorTypeConstants.Unauthorized, "Provider name cannot be empty")));
+
+            var validatedProvider = supportedProviders
+                .FirstOrDefault(p => p.Equals(provider, StringComparison.OrdinalIgnoreCase));
+                
+            if (validatedProvider == null)
+            {
+                return Task.FromResult(Result.Failure<string>(
+                    new Error(ErrorTypeConstants.Unauthorized,
+                        $"Provider '{provider}' is not supported. Supported providers are: {string.Join(", ", supportedProviders)}")));
             }
-    
-            if (!supportedProviders.Any(p => p.Equals(provider, StringComparison.OrdinalIgnoreCase))) {
-                return Task.FromResult(Result.Failure<string>(new Error(ErrorTypeConstants.Unauthorized, 
-                    $"Provider '{provider}' is not supported. Supported providers are: {string.Join(", ", supportedProviders)}")));
-            }
-    
+
             return Task.FromResult(Result.Success(provider));
         }
         catch (Exception ex) {
@@ -484,19 +506,10 @@ public class UserService(
 
 
    public async Task<Result<ExternalAuthResponse>> ProcessExternalLoginCallbackAsync(
-    string returnUrl, 
-    string remoteError)
+    string returnUrl)
    {
-        if (!string.IsNullOrEmpty(remoteError))
-        {
-            logger.LogWarning("Error from external provider: {Error}", remoteError);
-            return Result.Failure<ExternalAuthResponse>(new Error(ErrorTypeConstants.Unauthorized,
-                $"Error from external provider: {remoteError}"));
-        }
-
         try
         {
-            // Get login info provided by the external provider
             var info = await signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
@@ -512,10 +525,8 @@ public class UserService(
                 isPersistent: false,
                 bypassTwoFactor: true);
             
-            // If successful login
             if (result.Succeeded)
             {
-                // Find the user
                 var user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
                 if (user == null)
                 {
@@ -523,10 +534,8 @@ public class UserService(
                         "User not found after successful external login"));
                 }
                 
-                // Get user roles for token generation
                 var roles = await userManager.GetRolesAsync(user);
                 
-                // Create UserWithRolesResponse for token generation
                 var userWithRoles = new UserWithRolesResponse
                 {
                     Id = user.Id,
@@ -535,7 +544,6 @@ public class UserService(
                     Roles = roles.ToList()
                 };
                 
-                // Generate JWT token
                 var tokenResponse = await tokenService.GenerateJwtToken(userWithRoles);
                 
                 return Result.Success(new ExternalAuthResponse
@@ -559,9 +567,9 @@ public class UserService(
             
             if (existingUser == null)
             {
-                // Create a new user
                 var name = info.Principal.FindFirstValue(ClaimTypes.Name) ?? email;
                 var country = info.Principal.FindFirstValue(ClaimTypes.Country);
+                //TODO: add logic for country
                 var countryId = Guid.Empty;
                 
                 if (!string.IsNullOrEmpty(country))
@@ -588,15 +596,13 @@ public class UserService(
                     return Result.Failure<ExternalAuthResponse>(new Error(ErrorTypeConstants.Unauthorized,
                         "Failed to create user"));
                 }
-
-                // Add user to default role
+                
                 await userManager.AddToRoleAsync(newUser, RoleTypeConstants.User);
                 
-                // Set the working user to the newly created one
                 existingUser = newUser;
             }
 
-            // Add this external login to the user if not already added
+            // Add external login to the user if not already added
             var userLogins = await userManager.GetLoginsAsync(existingUser);
             if (!userLogins.Any(l => l.LoginProvider == info.LoginProvider && l.ProviderKey == info.ProviderKey))
             {
@@ -611,11 +617,9 @@ public class UserService(
                         "Failed to link external login"));
                 }
             }
-
-            // Sign in the user
+            
             await signInManager.SignInAsync(existingUser, isPersistent: false);
             
-            // Get user roles for token generation
             var userRoles = await userManager.GetRolesAsync(existingUser);
             
             // Create UserWithRolesResponse for token generation
@@ -627,7 +631,6 @@ public class UserService(
                 Roles = userRoles.ToList()
             };
             
-            // Generate JWT token
             var token = await tokenService.GenerateJwtToken(userResponse);
             
             return Result.Success(new ExternalAuthResponse

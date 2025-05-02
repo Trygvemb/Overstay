@@ -39,8 +39,7 @@ public interface IUserService
         string provider, 
         string returnUrl);
     Task<Result<ExternalAuthResponse>> ProcessExternalLoginCallbackAsync(
-        string returnUrl, 
-        string remoteError);
+        string returnUrl);
 
 
 }
