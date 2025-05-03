@@ -17,7 +17,7 @@ services:
   # Backend API service
   backend:
     build:
-      context: ./Overstay-api
+      context: ./api
       dockerfile: Dockerfile
     container_name: overstay_api
     ports:
@@ -41,7 +41,7 @@ services:
   # Frontend Flutter service
   frontend:
     build:
-      context: ./Overstay-frontend
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: overstay_frontend
     ports:
