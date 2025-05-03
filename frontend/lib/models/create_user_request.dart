@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class CreateUserRequest {
   final String userName;
   final String email;
@@ -13,10 +11,11 @@ class CreateUserRequest {
     this.countryId,
   });
 
-  Map<String, dynamic> toJson() => {
-    'userName': userName,
-    'email': email,
-    'password': password,
-    'countryId': countryId,
-  };
+  Map<String, dynamic> toJson() {
+    final map = {'userName': userName, 'email': email, 'password': password};
+    if (countryId != null && countryId!.isNotEmpty) {
+      map['countryId'] = countryId!;
+    }
+    return map;
+  }
 }

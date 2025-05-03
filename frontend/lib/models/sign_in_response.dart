@@ -1,0 +1,23 @@
+// lib/models/sign_in_response.dart
+class SignInResponse {
+  final String token; // JWT
+  final List<String> claims; // fx ['Admin', 'User']
+  final String userName;
+  final String email;
+
+  SignInResponse({
+    required this.token,
+    required this.claims,
+    required this.userName,
+    required this.email,
+  });
+
+  factory SignInResponse.fromJson(Map<String, dynamic> json) {
+    return SignInResponse(
+      token: json['token'] as String,
+      claims: List<String>.from(json['claims'] ?? <String>[]),
+      userName: json['userName'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+    );
+  }
+}

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:overstay_frontend/views/auth/login_page.dart';
+import 'package:overstay_frontend/views/app/widget_tree.dart';
 import 'package:overstay_frontend/models/create_user_request.dart';
 import 'package:overstay_frontend/services/user_api_service.dart';
+import 'package:overstay_frontend/services/api_exception.dart';
+import 'dart:developer';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -12,10 +15,17 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   // Tekstcontrollere til at håndtere tekstfelter
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  String? selectedCountryId; // gem GUID her
+
+  final List<Map<String, String>> countries = [
+    // ←  GUID + navn
+    {'id': 'd6cf4d61-5f80-48aa-9cb6-ec7604024106', 'name': 'Denmark'},
+    {'id': 'b242b2a4-2d23-49bf-8198-802865cf6be0', 'name': 'Sweden'},
+    // ...
+  ];
 
   // tilføjer nu api-service instans
   final UserApiService _api = UserApiService();
@@ -70,104 +80,110 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
               padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Create account',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Create account',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 24),
 
-                  // Indtastningsfelter Fornavn og Efternavn
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: firstNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'First name',
-                            border: OutlineInputBorder(),
+                    // Username input field
+                    TextField(
+                      controller: userNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Username',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Email input field
+                    TextField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Password input field
+                    TextField(
+                      controller: passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Password',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Country dropdown
+                    DropdownButtonFormField<String>(
+                      value: selectedCountryId,
+                      items:
+                          countries.map((c) {
+                            return DropdownMenuItem(
+                              value: c['id'],
+                              child: Text(c['name']!),
+                            );
+                          }).toList(),
+                      onChanged:
+                          (String? id) =>
+                              setState(() => selectedCountryId = id),
+                      decoration: const InputDecoration(
+                        labelText: 'Country',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    // Create account button
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _createAccount,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.teal,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 15,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          controller: lastNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Last Name',
-                            border: OutlineInputBorder(),
-                          ),
+                        child: const Text(
+                          'Create account',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Indtastningsfelt for email og password
-                  TextField(
-                    controller: emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  TextField(
-                    controller: passwordController,
-                    // Secure the password input
-                    // by using obscureText
-                    // and setting it to true
-                    // to hide the password
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: _createAccount,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 15,
+                    // Login navigation button
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginPage(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Already have an account? Login',
+                          style: TextStyle(color: Colors.lightGreen),
                         ),
                       ),
-                      child: const Text(
-                        'Create account',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        // Naviger til login siden
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginPage()),
-                        );
-                      },
-                      child: const Text(
-                        'Already have an account? Login',
-                        style: TextStyle(color: Colors.lightGreen),
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -178,13 +194,17 @@ class _SignupPageState extends State<SignupPage> {
 
   // kald til API
   Future<void> _createAccount() async {
-    final firstName = firstNameController.text.trim();
-    final lastName = lastNameController.text.trim();
+    final userName = userNameController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text;
 
     //1 validate input (er felterne tomme? er email gyldig? osv.)
-    if ([firstName, lastName, email, password].any((e) => e.isEmpty)) {
+    if ([
+      userName,
+      email,
+      password,
+      selectedCountryId,
+    ].any((e) => e == null || (e as String).isEmpty)) {
       // Hvis et af felterne er tomt
       // Vis en fejlmeddelelse
       ScaffoldMessenger.of(context).showSnackBar(
@@ -195,29 +215,39 @@ class _SignupPageState extends State<SignupPage> {
     try {
       //2 send data til backend eller mock data
       final request = CreateUserRequest(
-        userName: '$firstName $lastName',
+        userName: userName,
         email: email,
         password: password,
+        countryId: selectedCountryId,
       );
 
-      //3 håndter svaret fra backend
-      final response = await _api.createUser(request);
+      // 3  – kald API’et (kaster ApiException hvis der er fejl)
+      await _api.createUser(request);
+      log('User created: $userName}');
 
-      //4 Kontroller om svaret er succesfuldt
+      if (!mounted) return;
+
+      // 4  – vis succes-meddelelse
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Account ${response.userName} created successfully'),
-        ),
+        SnackBar(content: Text('Account created – you can now log in')),
       );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LoginPage()),
       );
-    } catch (e) {
-      // Håndter fejl fra API vises i UserInterface
-      ScaffoldMessenger.of(
+
+      // 5 – hop til LandingPage og ryd Sign-up af historikken
+      Navigator.pushAndRemoveUntil(
         context,
-      ).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
+        MaterialPageRoute(builder: (_) => const WidgetTree()),
+        (_) => false, // fjerner alle gamle ruter
+      );
+    } on ApiException catch (e) {
+      final msg =
+          e.statusCode == 409
+              ? 'User already exists'
+              : 'Signup failed: (${e.statusCode}): ${e.message}';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     }
   }
 }
