@@ -1,7 +1,7 @@
 // opret/ret/slet visa typer
 // -GET/visa-types, POST og -DELETE/visa-types{id}
 
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 
 class ManageVisaTypesPage extends StatefulWidget {
   const ManageVisaTypesPage({super.key});
@@ -26,4 +26,4 @@ class _ManageVisaTypesPageState extends State<ManageVisaTypesPage> {
       builder: (ctx, snap) { … }
     );
   }
-}
+}*/
