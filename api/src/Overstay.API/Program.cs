@@ -30,14 +30,15 @@ builder.Services.AddOpenApi(
 
 builder.Services.AddInfrastructureLayer(builder.Configuration).AddApplicationLayer();
 
-// Configure CORS correctly
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
         policy
             .WithOrigins(
-                "https://localhost:7139"
+                "https://localhost:7139",
+                "http://localhost:8080",  // Docker frontend URL
+                "http://localhost:5050"   // Docker API URL
             )
             .AllowAnyMethod()
             .AllowAnyHeader()

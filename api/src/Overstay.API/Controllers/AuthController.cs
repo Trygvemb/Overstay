@@ -8,6 +8,8 @@ using Overstay.Infrastructure.Data.Identities;
 
 namespace Overstay.API.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class AuthController(ISender mediator, SignInManager<ApplicationUser> signInManager) 
     : MediatorControllerBase(mediator)
 {
