@@ -10,12 +10,12 @@ import '../services/api_exception.dart';
 import 'api_service.dart';
 
 class UserApiService {
-  final String _baseUrl =
-      dotenv.env['API_BASE_URL']!; // fx http://localhost:5050
+  final String baseUrl;
+  UserApiService(this.baseUrl);
 
   // ---------- SIGN-UP ----------
   Future<void> createUser(CreateUserRequest req) async {
-    final uri = Uri.parse('$_baseUrl/api/User');
+    final uri = Uri.parse('$baseUrl/api/User');
     final res = await http.post(
       uri,
       headers: {'Content-Type': 'application/json'},
@@ -30,7 +30,7 @@ class UserApiService {
   // ---------- SIGN-IN ----------
   Future<SignInResponse> signIn(SignInUserRequest req) async {
     // <-- ændret returtype
-    final uri = Uri.parse('$_baseUrl/api/User/sign-in');
+    final uri = Uri.parse('$baseUrl/api/User/sign-in');
 
     final res = await http.post(
       uri,
@@ -51,7 +51,7 @@ class UserApiService {
 
   // ---------- GET USERS ----------
   Future<List<UserResponse>> getUsers() async {
-    final uri = Uri.parse('$_baseUrl/api/User');
+    final uri = Uri.parse('$baseUrl/api/User');
     final res = await http.get(
       uri,
       headers: {'Content-Type': 'application/json'},

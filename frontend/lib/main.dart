@@ -1,15 +1,27 @@
-// Dette er den primære indgangspunkt for Flutter-app.
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:overstay_frontend/config/app_theme.dart';
-import 'package:overstay_frontend/views/public/landing_page.dart';
+
+import 'config/app_theme.dart';
+import 'services/providers.dart'; // <-- for apiBaseUrlProvider
+import 'views/public/landing_page.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Sikrer at Flutter er klar til at køre
-  await dotenv
-      .load(); // Indlæser miljøvariabler fra .env filen som finde i roden
-  runApp(const ProviderScope(child: MyApp()));
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Læs base‑url fra --dart-define (flutter run --dart-define=API_BASE_URL=...)
+  const apiBaseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://localhost:5050', // fallback til lokal udvikling
+  );
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        apiBaseUrlProvider.overrideWithValue(apiBaseUrl), // <- det vigtige!
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +32,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Overstay',
       theme: AppTheme.lightTheme,
-      home: const LandingPage(), // Start med LandingPage
+      home: const LandingPage(), // behøver ingen apiBaseUrl‑param
     );
   }
 }
