@@ -8,6 +8,14 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(443, listenOptions =>
+    {
+        listenOptions.UseHttps("/https/dev.crt", "/https/dev.key");
+    });
+});
+
 builder
     .Services.AddControllers()
     .AddJsonOptions(options =>

@@ -21,13 +21,13 @@ services:
       dockerfile: Dockerfile
     container_name: overstay_api
     ports:
-      - "5050:80"
+      - "5050:443" # Map HTTPS port
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=mssql_server;Database=Overstay;User Id=sa;Password=Password123!;TrustServerCertificate=True;
-      - ASPNETCORE_URLS=http://+:80
-      - SCALAR_API_BASE_URL=http://backend:80
-      - OpenAPI__ServerUrl=http://localhost:5050 
+      - ASPNETCORE_URLS=https://+:443
+      - SCALAR_API_BASE_URL=https://backend:443
+      - OpenAPI__ServerUrl=https://localhost:5050
     depends_on:
       - mssql
     networks:

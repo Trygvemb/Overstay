@@ -1,5 +1,9 @@
 # Local development
-*/appsettings.Development.json
+appsettings.Development.json
+
+# Development certificates
+api/dev.crt
+api/dev.key
 
 # Rider-specific
 .idea/
@@ -51,7 +55,9 @@ coverage/
 .vscode/
 
 # Docker (if using containerization)
-docker-compose.override.yml# Miscellaneous
+docker-compose.override.yml
+
+# Miscellaneous Flutter-related
 *.class
 *.log
 *.pyc
@@ -71,11 +77,6 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
@@ -83,8 +84,28 @@ migrate_working_dir/
 .flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
+
+# Flutter ephemeral symlinks
+frontend/linux/flutter/ephemeral/.plugin_symlinks/
+frontend/windows/flutter/ephemeral/.plugin_symlinks/
+
+# Android local properties
+frontend/android/local.properties
 .pub/
+
+# Build directories - more comprehensive
 /build/
+**/build/
+frontend/build/
+**/Debug/
+**/Release/
+**/Profile/
+
+# Specifically exclude the large macOS framework files
+**/FlutterMacOS.framework/
+**/FlutterMacOS.framework/Versions/A/FlutterMacOS
+**/overstay_frontend.app/
+**/overstay_frontend.app/Contents/Frameworks/
 
 # Symbolication related
 app.*.symbols
