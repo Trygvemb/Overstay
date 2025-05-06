@@ -16,13 +16,21 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
+  // controller til at håndtere tekstfelter
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _api = UserApiService();
+  late final UserApiService _api;
   final _storage =
       const FlutterSecureStorage(); // krypteret i både IOS og Android
 
   bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // henter instansen én gang via Riverpod
+    _api = ref.read(userApiServiceProvider);
+  }
 
   @override
   void dispose() {
@@ -141,13 +149,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     _loading
                         ? const CircularProgressIndicator()
                         : ElevatedButton(
-                          onPressed:
-                              () => Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const WidgetTree(),
-                                ),
-                              ),
+                          onPressed: () => _login(context),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1A759F),
                             padding: const EdgeInsets.symmetric(
@@ -244,7 +246,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       await _storage.write(key: 'jwt', value: response.token);
 
       final isAdmin = response.claims.contains('Admin');
-      ref.read(authStateProvider).setAuth(response.token, isAdmin);
+
+      ref
+          .read(authStateProvider)
+          .setAuth(
+            token: response.token,
+            admin: response.claims.contains('Admin'),
+            userName: response.userName,
+            email: response.email,
+          );
       // Naviger til WidgetTree
       if (!mounted) return;
       Navigator.pushReplacement(
