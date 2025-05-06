@@ -16,8 +16,7 @@ public sealed class OpenApiServerTransformer(IConfiguration configuration, IWebH
     {
         // Fetch the server URL from the configuration or default to localhost:5050
         var serverUrl = environment.IsDevelopment()
-            ? configuration["OpenAPI__ServerUrl"] ?? "https://localhost:7139"
-            //? configuration["OpenAPI__ServerUrl"] ?? "http://localhost:5093"
+            ? configuration["OpenAPI__ServerUrl"] ?? "http://localhost:5093"
             : configuration["OpenAPI__ServerUrl"] ?? "http://localhost:5050"; document.Servers.Clear(); // Clear any existing servers
         document.Servers.Add(new OpenApiServer { Url = serverUrl });
         return Task.CompletedTask;

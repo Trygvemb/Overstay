@@ -24,5 +24,4 @@
         <NoWarn>$(NoWarn);1591</NoWarn>  <!-- Suppress warning about missing XML comments -->
     </PropertyGroup>
 
-
 </Project>

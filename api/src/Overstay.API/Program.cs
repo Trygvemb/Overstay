@@ -8,14 +8,6 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(443, listenOptions =>
-    {
-        listenOptions.UseHttps("/https/dev.crt", "/https/dev.key");
-    });
-});
-
 builder
     .Services.AddControllers()
     .AddJsonOptions(options =>
@@ -45,6 +37,7 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins(
                 "https://localhost:7139",
+                "http://localhost:5093",
                 "http://localhost:8080",  // Docker frontend URL
                 "http://localhost:5050"   // Docker API URL
             )
@@ -94,8 +87,11 @@ if (app.Environment.IsDevelopment())
     // Initialize a database with seed data
     await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
 }
+else
+{
+    app.UseHttpsRedirection();
+}
 
-app.UseHttpsRedirection();
 
 app.UseRouting();
 app.UseCors();

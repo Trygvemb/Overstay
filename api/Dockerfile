@@ -1,11 +1,6 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
-
-# Copy SSL certificate and key
-COPY dev.crt /https/dev.crt
-COPY dev.key /https/dev.key
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
