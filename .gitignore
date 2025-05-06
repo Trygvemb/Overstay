@@ -119,5 +119,3 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Environment variables
-.env
