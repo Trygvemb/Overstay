@@ -23,6 +23,7 @@ services:
     ports:
       - "5050:80"
     environment:
+      - DOTNET_RUNNING_IN_CONTAINER=true
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=mssql_server;Database=Overstay;User Id=sa;Password=Password123!;TrustServerCertificate=True;
       - ASPNETCORE_URLS=http://+:80
@@ -33,7 +34,7 @@ services:
     networks:
       - overstay-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:80/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/health"]
       interval: 10s
       timeout: 5s
       retries: 3

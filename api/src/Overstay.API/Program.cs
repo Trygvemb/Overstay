@@ -85,7 +85,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 
     // Initialize a database with seed data
-    await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
+    //await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
 }
 else
 {

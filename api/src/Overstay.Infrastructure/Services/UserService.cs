@@ -496,7 +496,7 @@ public class UserService(
                         $"Provider '{provider}' is not supported. Supported providers are: {string.Join(", ", supportedProviders)}")));
             }
 
-            return Task.FromResult(Result.Success(provider));
+            return Task.FromResult(Result.Success(validatedProvider));
         }
         catch (Exception ex) {
             logger.LogError(ex, "Error validating external authentication provider {Provider}", provider);
