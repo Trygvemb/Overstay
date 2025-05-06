@@ -1,5 +1,6 @@
 # Local development
 appsettings.Development.json
+api/src/Overstay.API/appsettings.Development.json
 
 # Development certificates
 api/dev.crt
