@@ -49,7 +49,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? Ok(result.Value)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpPost("sign-out")]
@@ -65,7 +65,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? Ok(result)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpPut("{id:Guid}")]
@@ -85,7 +85,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? NoContent()
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpDelete("{id:guid}")]
@@ -101,7 +101,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? NoContent()
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpGet]
@@ -117,7 +117,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? Ok(result.Value)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -133,7 +133,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? Ok(result.Value)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpGet("by-email/{email}")]
@@ -149,7 +149,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? Ok(result.Value)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpGet("by-username/{username}")]
@@ -168,6 +168,6 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? Ok(result.Value)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 }

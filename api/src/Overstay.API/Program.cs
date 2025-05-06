@@ -1,10 +1,6 @@
-using System.Reflection;
-using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
-using FluentValidation;
 using Overstay.API.Commons;
 using Overstay.Application;
-using Overstay.Application.Commons.Behaviors;
 using Overstay.Application.Commons.JsonConverters;
 using Overstay.Infrastructure;
 using Overstay.Infrastructure.Data;
@@ -38,8 +34,25 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        policy
+            .WithOrigins(
+                "https://localhost:7139",
+                "http://localhost:5093",
+                "http://localhost:8080",  // Docker frontend URL
+                "http://localhost:5050"   // Docker API URL
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials(); // Essential for cookies to work
     });
+});
+
+builder.Services.ConfigureExternalCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Lax; // Lax is needed for OAuth redirects
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
 });
 
 builder
@@ -47,7 +60,10 @@ builder
     .AddConsole()
     .AddDebug()
     .SetMinimumLevel(LogLevel.Information)
-    .AddFilter("Microsoft.AspNetCore.Authorization", LogLevel.Debug);
+    .AddFilter("Microsoft.AspNetCore.Authorization", LogLevel.Debug)
+    .AddFilter("Microsoft.AspNetCore.Authentication", LogLevel.Debug)
+    .AddFilter("Microsoft.AspNetCore.Authentication.Google", LogLevel.Debug)
+    .AddFilter("Microsoft.AspNetCore.Authentication.Cookies", LogLevel.Debug);
 
 builder
     .Configuration.SetBasePath(builder.Environment.ContentRootPath)
@@ -66,17 +82,24 @@ app.MapScalarApiReference();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
+
     // Initialize a database with seed data
-    await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
+    //await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
 }
 else
 {
     app.UseHttpsRedirection();
 }
 
+
 app.UseRouting();
 app.UseCors();
-app.UseAuthentication().UseAuthorization();
+
+app.UseAuthentication();
+app.UseAuthorization(); 
+
 app.MapControllers();
 
 app.Run();
+

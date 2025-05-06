@@ -5,7 +5,6 @@ docker-compose up -d
 
 # Wait a moment for services to fully start
 echo "Starting services, please wait..."
-sleep 10
 
 # Open browser tabs
 if [[ "$OSTYPE" == "darwin"* ]]; then

@@ -33,4 +33,13 @@ public interface IUserService
     public Task<Result<UserWithRolesResponse>> AddRoleAsync(Guid userId, string roleName);
     public Task<Result> RemoveRoleAsync(Guid userId, string roleName);
     public Task<Result<List<string>>> GetUserRolesAsync(Guid userId);
+    
+    // OAuth
+    Task<Result<string>> ValidateExternalAuthProvider(
+        string provider, 
+        string returnUrl);
+    Task<Result<ExternalAuthResponse>> ProcessExternalLoginCallbackAsync(
+        string returnUrl);
+
+
 }

@@ -14,11 +14,19 @@ public sealed class OpenApiServerTransformer(IConfiguration configuration, IWebH
         CancellationToken cancellationToken
     )
     {
-        // Fetch the server URL from the configuration or default to localhost:5050
-        var serverUrl = environment.IsDevelopment()
-            ? configuration["OpenAPI__ServerUrl"] ?? "http://localhost:5093"
-            : configuration["OpenAPI__ServerUrl"] ?? "http://localhost:5050"; document.Servers.Clear(); // Clear any existing servers
+        // Check if running in Docker
+        var isRunningInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+
+        // Determine the server URL
+        var serverUrl = isRunningInDocker
+            ? "http://localhost:5050"
+            : environment.IsDevelopment()
+                ? configuration["OpenAPI__ServerUrl"] ?? "http://localhost:5093"
+                : configuration["OpenAPI__ServerUrl"] ?? "http://localhost:5050";
+
+        document.Servers.Clear(); // Clear any existing servers
         document.Servers.Add(new OpenApiServer { Url = serverUrl });
+
         return Task.CompletedTask;
     }
 }

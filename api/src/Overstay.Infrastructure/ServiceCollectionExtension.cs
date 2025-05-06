@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -43,6 +44,8 @@ public static class ServiceCollectionExtension
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireLowercase = true;
                 options.User.RequireUniqueEmail = true;
+
+                options.SignIn.RequireConfirmedAccount = false;
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
@@ -52,6 +55,8 @@ public static class ServiceCollectionExtension
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme =
+                    IdentityConstants.ExternalScheme; // CRITICAL: This is required for OAuth flows
             })
             .AddJwtBearer(options =>
             {
@@ -66,11 +71,11 @@ public static class ServiceCollectionExtension
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(
                             configuration["JwtSettings:SecretKey"]
-                                ?? throw new InvalidOperationException()
+                            ?? throw new InvalidOperationException()
                         )
                     ),
                 };
-
+        
                 options.Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
@@ -92,6 +97,22 @@ public static class ServiceCollectionExtension
                         );
                         return Task.CompletedTask;
                     },
+                };
+            })
+            .AddGoogle(options =>
+            {
+                options.ClientId = configuration["Authentication:Google:ClientId"];
+                options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+                options.CallbackPath = "/signin-google";
+                options.SaveTokens = true;  // Important for GetExternalLoginInfoAsync to work
+                options.Events.OnCreatingTicket = ctx =>
+                {
+                    var identity = (ClaimsIdentity)ctx.Principal.Identity;
+                    var email = ctx.User.GetProperty("email").GetString();
+                    var name = ctx.User.GetProperty("name").GetString();
+                    identity.AddClaim(new Claim(ClaimTypes.Email, email));
+                    identity.AddClaim(new Claim(ClaimTypes.Name, name));
+                    return Task.CompletedTask;
                 };
             });
 
