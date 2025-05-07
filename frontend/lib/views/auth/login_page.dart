@@ -123,11 +123,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               const SizedBox(height: 24),
 
               //email input
-              const Text('Email', style: TextStyle(color: Colors.white)),
+              const Text('Username', style: TextStyle(color: Colors.white)),
               const SizedBox(height: 8),
               _buildTextField(
                 controller: _emailController,
-                hintText: 'Enter your email',
+                hintText: 'Enter your username',
                 isPassword: false,
               ),
 
@@ -223,11 +223,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   // --------------Login logic----------------
   Future<void> _login(BuildContext context) async {
-    final userName = _emailController.text.trim();
-    final email = _emailController.text.trim();
+    final typedIdentifier = _emailController.text.trim();
     final password = _passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
+    if (typedIdentifier.isEmpty || password.isEmpty) {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields')),
@@ -240,22 +239,31 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     try {
       // Call the API to sign in
       final response = await _api.signIn(
-        SignInUserRequest(userName: userName, password: password),
+        SignInUserRequest(userName: typedIdentifier, password: password),
       );
 
       // gem token i secure storage
       await _storage.write(key: 'jwt', value: response.token);
-
-      final isAdmin = response.claims.contains('Admin');
 
       ref
           .read(authStateProvider)
           .setAuth(
             token: response.token,
             admin: response.claims.contains('Admin'),
-            userName: response.userName ?? '',
-            email: response.email ?? '',
+            userName:
+                (response.userName != null && response.userName!.isNotEmpty)
+                    ? response.userName!
+                    : typedIdentifier, // bruger inputtet som fallback
+            email:
+                (response.email != null && response.email!.isNotEmpty)
+                    ? response.email!
+                    : (typedIdentifier.contains(
+                          '@',
+                        ) // kun hvis det ligner en mail
+                        ? typedIdentifier
+                        : ''),
           );
+
       // Naviger til WidgetTree
       if (!mounted) return;
       Navigator.pushReplacement(
@@ -273,7 +281,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
 
     // ===== Dummy-login =====
-    if (email == 'test@mail.com' && password == '1234') {
+    if (typedIdentifier == 'test@mail.com' && password == '1234') {
       await _storage.write(key: 'jwt', value: 'dummy-token');
       if (mounted) {
         Navigator.pushReplacement(

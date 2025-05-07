@@ -267,8 +267,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
           .setAuth(
             token: signInRes.token,
             admin: signInRes.claims.contains('Admin'),
-            userName: signInRes.userName ?? '',
-            email: signInRes.email ?? '',
+            userName:
+                (signInRes.userName != null && signInRes.userName!.isNotEmpty)
+                    ? signInRes.userName!
+                    : userName, // bruger det tastede brugernavn
+            email:
+                (signInRes.email != null && signInRes.email!.isNotEmpty)
+                    ? signInRes.email!
+                    : email, // bruger den tastede mail
           );
 
       // 5 – vis succes‑melding og gå til appen
