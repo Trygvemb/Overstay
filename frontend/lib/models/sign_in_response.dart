@@ -2,14 +2,16 @@
 class SignInResponse {
   final String token; // JWT
   final List<String> claims; // fx ['Admin', 'User']
-  final String userName;
-  final String email;
+  final String? userName;
+  final String? email;
+  final String? id; // bruger‑id (UUID)
 
   SignInResponse({
     required this.token,
-    required this.claims,
-    required this.userName,
-    required this.email,
+    this.claims = const [],
+    this.userName,
+    this.email,
+    this.id,
   });
 
   factory SignInResponse.fromJson(Map<String, dynamic> json) {

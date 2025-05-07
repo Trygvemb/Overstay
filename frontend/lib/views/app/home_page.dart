@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:overstay_frontend/services/providers.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Hent data fra auth‑state
+    final auth = ref.watch(authStateProvider);
+    final userName = auth.userName?.trim();
+    final mail = auth.email?.trim();
+    final greet = userName?.isNotEmpty == true ? userName! : (mail ?? 'User');
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
       child: Row(
@@ -17,8 +24,9 @@ class HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Welcome, User',
+                //*** Dynamisk velkomstbesked ***
+                Text(
+                  'Welcome, $greet',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),

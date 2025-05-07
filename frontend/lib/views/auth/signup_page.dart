@@ -1,34 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:overstay_frontend/services/user_api_service.dart';
+import 'package:overstay_frontend/models/create_user_request.dart';
+import 'package:overstay_frontend/models/create_user_response.dart';
+import 'package:overstay_frontend/models/sign_in_user_request.dart';
+import 'package:overstay_frontend/services/api_exception.dart';
+import 'package:overstay_frontend/services/providers.dart';
+import 'package:overstay_frontend/views/app/home_page.dart';
 import 'package:overstay_frontend/views/auth/login_page.dart';
 import 'package:overstay_frontend/views/app/widget_tree.dart';
-import 'package:overstay_frontend/models/create_user_request.dart';
-import 'package:overstay_frontend/services/user_api_service.dart';
-import 'package:overstay_frontend/services/api_exception.dart';
 import 'dart:developer';
 
-class SignupPage extends StatefulWidget {
+class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  ConsumerState<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
-  // Tekstcontrollere til at håndtere tekstfelter
+class _SignupPageState extends ConsumerState<SignupPage> {
+  // Controller til at håndtere tekstfelter
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  String? selectedCountryId; // gem GUID her
+  String? selectedCountryId; // valgt land
+  final storage =
+      const FlutterSecureStorage(); // krypteret i både IOS og Android
 
+  //api (hentes via provider)
+  late final UserApiService _api;
+
+  @override
+  void initState() {
+    super.initState();
+    // henter instansen én gang via Riverpod
+    _api = ref.read(userApiServiceProvider);
+  }
+
+  // mock data til lande
   final List<Map<String, String>> countries = [
     // ←  GUID + navn
     {'id': 'd6cf4d61-5f80-48aa-9cb6-ec7604024106', 'name': 'Denmark'},
     {'id': 'b242b2a4-2d23-49bf-8198-802865cf6be0', 'name': 'Sweden'},
+    {'id': 'a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6', 'name': 'Norway'},
+    {'id': '7f8e9d0c-b1a2-3b4c-5d6e-7f8g9h0i1j2k', 'name': 'Finland'},
     // ...
   ];
 
-  // tilføjer nu api-service instans
-  final UserApiService _api = UserApiService();
+  @override
+  void dispose() {
+    userNameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,8 +238,9 @@ class _SignupPageState extends State<SignupPage> {
       );
       return;
     }
+
     try {
-      //2 send data til backend eller mock data
+      //1 – opret en CreateUserRequest/bruger
       final request = CreateUserRequest(
         userName: userName,
         email: email,
@@ -221,33 +248,59 @@ class _SignupPageState extends State<SignupPage> {
         countryId: selectedCountryId,
       );
 
-      // 3  – kald API’et (kaster ApiException hvis der er fejl)
+      // 2  – kald API’et - vi forventer 201 (kaster ApiException hvis der er fejl)
+      print('createUser() start');
       await _api.createUser(request);
       log('User created: $userName}');
+      print('createUser ok');
 
+      // 3  – log straks ind med de samme credentials
+      print('signIn() start');
+      final signInRes = await _api.signIn(
+        SignInUserRequest(userName: userName, password: password),
+      );
+      print('signIn ok - Token: ${signInRes.token}');
+
+      // 4  – gem auth‑state
+      ref
+          .read(authStateProvider)
+          .setAuth(
+            token: signInRes.token,
+            admin: signInRes.claims.contains('Admin'),
+            userName:
+                (signInRes.userName != null && signInRes.userName!.isNotEmpty)
+                    ? signInRes.userName!
+                    : userName, // bruger det tastede brugernavn
+            email:
+                (signInRes.email != null && signInRes.email!.isNotEmpty)
+                    ? signInRes.email!
+                    : email, // bruger den tastede mail
+          );
+
+      // 5 – vis succes‑melding og gå til appen
       if (!mounted) return;
-
-      // 4  – vis succes-meddelelse
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Account created – you can now log in')),
+        const SnackBar(content: Text('Account created – welcome!')),
       );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-      );
-
-      // 5 – hop til LandingPage og ryd Sign-up af historikken
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const WidgetTree()),
-        (_) => false, // fjerner alle gamle ruter
+        (_) => false,
       );
+
+      // ---- fejlhåndtering ----
     } on ApiException catch (e) {
       final msg =
           e.statusCode == 409
               ? 'User already exists'
               : 'Signup failed: (${e.statusCode}): ${e.message}';
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    } catch (e) {
+      // Håndter eventuelle andre fejl
+      debugPrint('Unexpected error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred, try again')),
+      );
     }
   }
 }

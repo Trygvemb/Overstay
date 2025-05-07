@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/user_response.dart';
-import '../../services/user_api_service.dart';
 import '../../services/providers.dart';
 
 /// Provider som henter brugere én gang
@@ -31,8 +30,8 @@ class ManageUsersPage extends ConsumerWidget {
                 final u = list[i];
                 return ListTile(
                   leading: const Icon(Icons.person_outline),
-                  title: Text(u.userName ?? ''),
-                  subtitle: Text(u.email ?? ''),
+                  title: Text(u.userName),
+                  subtitle: Text(u.email),
                 );
               },
             ),
