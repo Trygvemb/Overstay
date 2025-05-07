@@ -4,15 +4,13 @@ using Shouldly;
 namespace Overstay.UnitTest.Domain.Entities;
 
 public class VisaTests
-{
-    private readonly VisaType _tesVisaType = new VisaType("test name", "test description", true);
-    
+{    
     [Fact]
     public void IsExpired_ShouldReturnTrue_WhenExpired()
     {
         var arrivalDateTime = DateTime.UtcNow;
         var expiredDateTime = arrivalDateTime - TimeSpan.FromHours(1);
-        var visa = new Visa(arrivalDateTime, expiredDateTime, _tesVisaType);
+        var visa = new Visa(arrivalDateTime, expiredDateTime);
         
         visa.IsExpired().ShouldBe(true);
     }
@@ -22,7 +20,7 @@ public class VisaTests
     {
         var arrivalDateTime = DateTime.UtcNow;
         var expiredDateTime = arrivalDateTime + TimeSpan.FromHours(1);
-        var visa = new Visa(arrivalDateTime, expiredDateTime, _tesVisaType);
+        var visa = new Visa(arrivalDateTime, expiredDateTime);
         
         visa.IsExpired().ShouldBe(false);
     }
@@ -32,7 +30,7 @@ public class VisaTests
     {
         var arrivalDateTime = DateTime.UtcNow;
         var expiredDateTime = arrivalDateTime + TimeSpan.FromHours(1);
-        var visa = new Visa(arrivalDateTime, expiredDateTime, _tesVisaType);
+        var visa = new Visa(arrivalDateTime, expiredDateTime);
 
         var arrivalThailandTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(arrivalDateTime, "Asia/Bangkok");
         var expireThailandTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(expiredDateTime, "Asia/Bangkok");

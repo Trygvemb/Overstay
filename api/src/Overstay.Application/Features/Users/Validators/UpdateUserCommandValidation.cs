@@ -9,15 +9,17 @@ public class UpdateUserCommandValidation : AbstractValidator<UpdateUserCommand>
     {
         RuleFor(user => user.Id).NotEmpty();
 
-        // RuleFor(user => user.Item.Password).Empty()
-        //     .MinimumLength(8)
-        //     .Matches("[A-Z]")
-        //     .WithMessage("Password must contain at least one uppercase letter.")
-        //     .Matches("[a-z]")
-        //     .WithMessage("Password must contain at least one lowercase letter.")
-        //     .Matches("[0-9]")
-        //     .WithMessage("Password must contain at least one digit.")
-        //     .Matches("[^a-zA-Z0-9]")
-        //     .WithMessage("Password must contain at least one non-alphanumeric character.");
+        RuleFor(user => user.Item.Password)
+            .NotEmpty()
+            .When(user => !string.IsNullOrEmpty(user.Item.Password))
+            .MinimumLength(8)
+            .Matches("[A-Z]")
+            .WithMessage("Password must contain at least one uppercase letter.")
+            .Matches("[a-z]")
+            .WithMessage("Password must contain at least one lowercase letter.")
+            .Matches("[0-9]")
+            .WithMessage("Password must contain at least one digit.")
+            .Matches("[^a-zA-Z0-9]")
+            .WithMessage("Password must contain at least one non-alphanumeric character.");
     }
 }

@@ -24,9 +24,10 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
             return Unauthorized();
 
         var result = await Mediator.Send(new GetAllVisasQuery(userId.Value), cancellationToken);
+        
         return result.IsSuccess
             ? Ok(result.Value)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -45,7 +46,7 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
         var result = await Mediator.Send(new GetVisaQuery(id, userId.Value), cancellationToken);
         return result.IsSuccess
             ? Ok(result.Value)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpPost]
@@ -73,7 +74,7 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetById), new { id = visaId }, visaId)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpPut("{id:guid}")]
@@ -92,7 +93,7 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? NoContent()
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpDelete("{id:guid}")]
@@ -107,6 +108,6 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
 
         return result.IsSuccess
             ? NoContent()
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 }

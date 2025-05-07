@@ -5,7 +5,6 @@ using Overstay.Application.Features.VisaTypes.Commands;
 using Overstay.Application.Features.VisaTypes.Queries;
 using Overstay.Application.Features.VisaTypes.Requests;
 using Overstay.Application.Responses;
-using Overstay.Domain.Entities;
 
 namespace Overstay.API.Controllers;
 
@@ -16,12 +15,13 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
     [ProducesResponseType(typeof(List<VisaTypeResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(new GetVisaTypesQuery(), cancellationToken);
+        
         return result.IsSuccess
             ? Ok(result.Value)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -30,12 +30,13 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(new GetVisaTypeQuery(id), cancellationToken);
+        
         return result.IsSuccess
             ? Ok(result.Value)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpPost]
@@ -44,15 +45,16 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Create(
+    public async Task<IActionResult> Create(
         CreateVisaTypeCommand command,
         CancellationToken cancellationToken
     )
     {
         var result = await Mediator.Send(command, cancellationToken);
+        
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetById), new { id = result.Value }, result.Value)
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 
     [HttpPut("{id:guid}")]
@@ -62,16 +64,17 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Update(
+    public async Task<IActionResult> Update(
         Guid id,
         UpdateVisaTypeRequest request,
         CancellationToken cancellationToken
     )
     {
         var result = await Mediator.Send(new UpdateVisaTypeCommand(id, request), cancellationToken);
+
         return result.IsSuccess
             ? NoContent()
-            : StatusCode(GetStatusCode(result.Error.Code), result);
+            : HandleFailedResult(result);
     }
 
     [HttpDelete("{id:guid}")]
@@ -80,11 +83,12 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(new DeleteVisaTypeCommand(id), cancellationToken);
+        
         return result.IsSuccess
             ? NoContent()
-            : StatusCode(GetStatusCode(result.Error.Code), result.Error);
+            : HandleFailedResult(result);
     }
 }

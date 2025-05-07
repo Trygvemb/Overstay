@@ -60,7 +60,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
     {
         try
         {
-            logger.LogInformation("Creating new visa type");
+            logger.LogInformation("Creating new visa");
             await context.Visas.AddAsync(visa, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
 
