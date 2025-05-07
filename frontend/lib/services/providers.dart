@@ -20,7 +20,7 @@ final authStateProvider = ChangeNotifierProvider<AuthState>(
 );
 
 /// API‑service til visa
-final VisaApiServiceProvider = Provider<VisaApiService>((ref) {
+final visaApiServiceProvider = Provider<VisaApiService>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
   return VisaApiService(baseUrl);
 });

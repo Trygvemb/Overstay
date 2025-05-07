@@ -1,32 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:overstay_frontend/models/create_visa_request.dart';
+import 'package:overstay_frontend/models/visa_type_response.dart';
 import 'package:overstay_frontend/views/app/widget_tree.dart';
+import 'package:overstay_frontend/services/providers.dart';
+import 'package:overstay_frontend/services/visa_api_service.dart';
 
-class VisaPage extends StatefulWidget {
+class VisaPage extends ConsumerStatefulWidget {
   const VisaPage({super.key});
 
   @override
-  State<VisaPage> createState() => _VisaPageState();
+  ConsumerState<VisaPage> createState() => _VisaPageState();
 }
 
-class _VisaPageState extends State<VisaPage> {
-  // Liste til dropdown-menu mockdata
-  final List<String> countries = ['Denmark', 'Sweden', 'Norway', 'Germany'];
-
-  final List<String> visaTypes = ['Tourist Visa', 'Student Visa', 'Work Visa'];
-
-  // ValueNotifiers / variable til at gemme brugerens valg
-  String? selectedCountry;
-  String? selectedVisaType;
+class _VisaPageState extends ConsumerState<VisaPage> {
+  List<VisaTypeResponse> visaTypes = [];
+  VisaTypeResponse? selectedVisaType;
 
   // Tekstcontrollere til at håndtere tekstfelter
   final TextEditingController arrivalDateController = TextEditingController();
   final TextEditingController expiryDateController = TextEditingController();
+
+  String? currentVisaId;
 
   @override
   void initState() {
     super.initState();
     // Initialiserer expiryDate feltet med en placeholder
     expiryDateController.text = "dd/mm/yyyy";
+    _loadVisaTypes();
+  }
+
+  Future<void> _loadVisaTypes() async {
+    final api = ref.read(visaApiServiceProvider);
+    try {
+      visaTypes = await api.getVisaTypes();
+      if (mounted) setState(() {});
+    } catch (e) {
+      // Håndter fejl her, f.eks. vis en fejlmeddelelse
+      debugPrint('Failed loading visa types $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not load visa types')),
+      );
+    }
   }
 
   @override
@@ -77,7 +93,7 @@ class _VisaPageState extends State<VisaPage> {
           const SizedBox(height: 20),
 
           // "Choose Country" + dropdown
-          const Text(
+          /*const Text(
             'Choose Country',
             style: TextStyle(fontSize: 16, color: Colors.black),
           ),
@@ -97,7 +113,7 @@ class _VisaPageState extends State<VisaPage> {
               setState(() => selectedCountry = newValue);
             },
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 16),*/
 
           // "Check visatype" + dropdown
           const Text(
@@ -105,20 +121,19 @@ class _VisaPageState extends State<VisaPage> {
             style: TextStyle(fontSize: 16, color: Colors.black),
           ),
           const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
+          DropdownButtonFormField<VisaTypeResponse>(
             decoration: _whiteInputDecoration,
             value: selectedVisaType,
             hint: const Text('Select a visa type'),
             items:
-                visaTypes.map((String visaType) {
-                  return DropdownMenuItem<String>(
+                visaTypes.map((visaType) {
+                  return DropdownMenuItem(
                     value: visaType,
-                    child: Text(visaType),
+                    child: Text(visaType.name ?? '(no name)'),
                   );
                 }).toList(),
-            onChanged: (String? newValue) {
-              setState(() => selectedVisaType = newValue);
-            },
+            onChanged:
+                (newValue) => setState(() => selectedVisaType = newValue),
           ),
           const SizedBox(height: 16),
 
@@ -130,7 +145,20 @@ class _VisaPageState extends State<VisaPage> {
           const SizedBox(height: 8),
           TextField(
             controller: arrivalDateController,
-            decoration: _whiteInputDecoration.copyWith(hintText: 'dd/mm/yyyy'),
+            readOnly: true,
+            decoration: _whiteInputDecoration.copyWith(hintText: 'yyyy-mm-dd'),
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+              );
+              if (picked != null) {
+                arrivalDateController.text =
+                    picked.toIso8601String().split('T').first; // yyyy-mm-dd
+              }
+            },
           ),
           const SizedBox(height: 16),
 
@@ -187,31 +215,60 @@ class _VisaPageState extends State<VisaPage> {
   }
 
   // Metode til at gemme visa data
-  void _saveVisa() {
-    final country = selectedCountry ?? '';
-    final visaType = selectedVisaType ?? '';
-    final arrivalDate = arrivalDateController.text.trim();
-    final expiry = expiryDateController.text.trim();
+  Future<void> _saveVisa() async {
+    if (selectedVisaType == null || arrivalDateController.text.isEmpty) {
+      _show('Select visa type and arrival date');
+      return;
+    }
+    final arrival = DateTime.tryParse(arrivalDateController.text);
+    if (arrival == null) {
+      _show('Invalid date format (yyyy-mm-dd)');
+      return;
+    }
 
-    // TODO: Kald backend for at gemme data
-    debugPrint(
-      'Saving: country=$country, visaType=$visaType, arrival=$arrivalDate, expiry=$expiry',
-    );
+    final api = ref.read(visaApiServiceProvider);
+    try {
+      final response = await api.createVisa(
+        CreateVisaRequest(
+          arrivalDate: arrival,
+          visaTypeId: selectedVisaType!.id,
+        ),
+      );
+
+      currentVisaId = response.id;
+      expiryDateController.text =
+          response.expireDate.toIso8601String().split('T').first; // yyyy-mm-dd
+      _show('Visa saved!');
+      debugPrint('Visa saved with ID: ${response.id}');
+    } on Exception catch (e) {
+      debugPrint('Failed to save visa: $e');
+      _show('Failed to save visa: $e');
+    }
   }
 
   // Metode til at slette data
   void _deleteVisa() {
-    // TODO: Kald backend for at slette data
+    setState(() {
+      selectedVisaType = null;
+      arrivalDateController.clear();
+      expiryDateController.clear();
+      currentVisaId = null;
+    });
+    _show('Visa fields deleted!');
     debugPrint('Deleting visa data');
   }
-}
 
-// "white box" stil
-final InputDecoration _whiteInputDecoration = InputDecoration(
-  filled: true,
-  fillColor: Colors.white,
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8),
-    borderSide: BorderSide.none,
-  ),
-);
+  // "white box" stil
+  final InputDecoration _whiteInputDecoration = InputDecoration(
+    filled: true,
+    fillColor: Colors.white,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide.none,
+    ),
+  );
+
+  //---------Snackbar-helper----------------
+  void _show(String msg) =>
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+}
