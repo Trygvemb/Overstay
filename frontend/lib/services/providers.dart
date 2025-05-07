@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_state.dart';
 import 'user_api_service.dart';
+import 'visa_api_service.dart';
 
 /// Holder base‑URL (sættes som override i main.dart)
 final apiBaseUrlProvider = Provider<String>((_) {
@@ -17,3 +18,9 @@ final userApiServiceProvider = Provider<UserApiService>((ref) {
 final authStateProvider = ChangeNotifierProvider<AuthState>(
   (ref) => AuthState(),
 );
+
+/// API‑service til visa
+final VisaApiServiceProvider = Provider<VisaApiService>((ref) {
+  final baseUrl = ref.watch(apiBaseUrlProvider);
+  return VisaApiService(baseUrl);
+});
