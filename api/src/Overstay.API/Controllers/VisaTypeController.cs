@@ -5,7 +5,6 @@ using Overstay.Application.Features.VisaTypes.Commands;
 using Overstay.Application.Features.VisaTypes.Queries;
 using Overstay.Application.Features.VisaTypes.Requests;
 using Overstay.Application.Responses;
-using Overstay.Domain.Entities;
 
 namespace Overstay.API.Controllers;
 
