@@ -223,6 +223,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   // --------------Login logic----------------
   Future<void> _login(BuildContext context) async {
+    final userName = _emailController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
@@ -239,7 +240,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     try {
       // Call the API to sign in
       final response = await _api.signIn(
-        SignInUserRequest(userName: email, password: password),
+        SignInUserRequest(userName: userName, password: password),
       );
 
       // gem token i secure storage
@@ -252,8 +253,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           .setAuth(
             token: response.token,
             admin: response.claims.contains('Admin'),
-            userName: response.userName,
-            email: response.email,
+            userName: response.userName ?? '',
+            email: response.email ?? '',
           );
       // Naviger til WidgetTree
       if (!mounted) return;

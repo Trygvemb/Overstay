@@ -238,8 +238,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       );
       return;
     }
+
     try {
-      //2 send data til backend eller mock data
+      //1 – opret en CreateUserRequest/bruger
       final request = CreateUserRequest(
         userName: userName,
         email: email,
@@ -247,26 +248,30 @@ class _SignupPageState extends ConsumerState<SignupPage> {
         countryId: selectedCountryId,
       );
 
-      // 3  – kald API’et - vi forventer 201 (kaster ApiException hvis der er fejl)
+      // 2  – kald API’et - vi forventer 201 (kaster ApiException hvis der er fejl)
+      print('createUser() start');
       await _api.createUser(request);
       log('User created: $userName}');
+      print('createUser ok');
 
-      // 4  – log straks ind med de samme credentials
+      // 3  – log straks ind med de samme credentials
+      print('signIn() start');
       final signInRes = await _api.signIn(
-        SignInUserRequest(userName: email, password: password),
+        SignInUserRequest(userName: userName, password: password),
       );
+      print('signIn ok - Token: ${signInRes.token}');
 
-      // 5  – gem auth‑state
+      // 4  – gem auth‑state
       ref
           .read(authStateProvider)
           .setAuth(
             token: signInRes.token,
             admin: signInRes.claims.contains('Admin'),
-            userName: signInRes.userName,
-            email: signInRes.email,
+            userName: signInRes.userName ?? '',
+            email: signInRes.email ?? '',
           );
 
-      // 6 – vis succes‑melding og gå til appen
+      // 5 – vis succes‑melding og gå til appen
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Account created – welcome!')),
@@ -276,12 +281,20 @@ class _SignupPageState extends ConsumerState<SignupPage> {
         MaterialPageRoute(builder: (_) => const WidgetTree()),
         (_) => false,
       );
+
+      // ---- fejlhåndtering ----
     } on ApiException catch (e) {
       final msg =
           e.statusCode == 409
               ? 'User already exists'
               : 'Signup failed: (${e.statusCode}): ${e.message}';
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    } catch (e) {
+      // Håndter eventuelle andre fejl
+      debugPrint('Unexpected error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred, try again')),
+      );
     }
   }
 }
