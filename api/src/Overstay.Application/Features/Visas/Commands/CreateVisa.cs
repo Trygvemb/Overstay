@@ -11,8 +11,7 @@ public class CreateVisaCommandHandler(IVisaService visaService)
 {
     public async Task<Result> Handle(CreateVisaCommand request, CancellationToken cancellationToken)
     {
-        var visa = request.Item.Adapt<Visa>();
-        visa.UserId = request.UserId;
+        var visa = request.Adapt<Visa>();
 
         return await visaService.CreateAsync(visa, cancellationToken);
     }

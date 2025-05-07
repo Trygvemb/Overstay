@@ -101,8 +101,8 @@ public static class ServiceCollectionExtension
             })
             .AddGoogle(options =>
             {
-                options.ClientId = configuration["Authentication:Google:ClientId"];
-                options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+                options.ClientId = configuration["Authentication:Google:ClientId"]!;
+                options.ClientSecret = configuration["Authentication:Google:ClientSecret"]!;
                 options.CallbackPath = "/signin-google";
                 options.SaveTokens = true;  // Important for GetExternalLoginInfoAsync to work
                 options.Events.OnCreatingTicket = ctx =>

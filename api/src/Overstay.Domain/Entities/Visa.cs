@@ -20,9 +20,8 @@ public class Visa : Entity
 
     protected Visa() { }
 
-    public Visa(DateTime? arrivalDate, DateTime? expireDate, VisaType type)
+    public Visa(DateTime? arrivalDate, DateTime? expireDate)
     {
-        VisaType = type ?? throw new ArgumentNullException(nameof(type), "VisaType is required.");
         ArrivalDate = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(
             arrivalDate ?? DateTime.Now,
             Constant.ThailandTimezoneId
