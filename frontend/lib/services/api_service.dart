@@ -1,16 +1,25 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'providers.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// BaseService – fælles logik (headers, base-url, fejl-håndtering)
 abstract class ApiService {
-  final String _baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://localhost:5050';
+  //final String _baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://localhost:5050';
+  ApiService(this._ref);
+  final Ref _ref;
+
+  //base-url hentes fra provider - falder tilbage til en dotenv ved tests
+  String get _baseUrl =>
+      _ref.read(apiBaseUrlProvider) ??
+      (dotenv.env['API_BASE_URL'] ?? 'http://localhost:5050');
 
   Map<String, String> _defaultHeaders({bool isJson = true}) => {
     'Accept': 'application/json',
     if (isJson) 'Content-Type': 'application/json',
-    if (dotenv.env['JWT'] != null)
-      'Authorization': 'Bearer ${dotenv.env['JWT']}',
+    if (_ref.read(authStateProvider).jwt != null)
+      'Authorization': 'Bearer ${_ref.read(authStateProvider).jwt}',
   };
 
   Uri _uri(String path) => Uri.parse('$_baseUrl$path');

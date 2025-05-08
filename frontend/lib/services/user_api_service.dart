@@ -1,39 +1,32 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+
 import '../models/create_user_request.dart';
 import '../models/sign_in_user_request.dart';
 import '../models/user_response.dart';
 import '../models/sign_in_response.dart';
 import '../services/api_exception.dart';
+import 'api_service.dart';
 
-class UserApiService {
-  final String baseUrl;
-  UserApiService(this.baseUrl);
+class UserApiService extends ApiService {
+  UserApiService(Ref ref) : super(ref);
 
   // ---------- SIGN‑UP ----------
   Future<void> createUser(CreateUserRequest req) async {
-    final uri = Uri.parse('$baseUrl/api/User');
-    final res = await http.post(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'item': req.toJson()}),
-    );
+    final res = await post('/api/User', {'item': req.toJson()});
+
     print('SIGN‑IN status: ${res.statusCode}');
     print('SIGN‑IN body  : ${res.body}');
 
-    if (res.statusCode == 201) return; // ✔️
+    if (res.statusCode == 201) return;
     if (res.statusCode == 409) throw ApiException(409, 'User already exists');
     throw ApiException(res.statusCode, res.body);
   }
 
   // ---------- SIGN‑IN ----------
   Future<SignInResponse> signIn(SignInUserRequest req) async {
-    final uri = Uri.parse('$baseUrl/api/User/sign-in');
-    final res = await http.post(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'item': req.toJson()}),
-    );
+    final res = await post('/api/User/sign-in', {'item': req.toJson()});
 
     // --- DEBUG ---
     print('SIGN‑IN status : ${res.statusCode}');
@@ -80,11 +73,7 @@ class UserApiService {
 
   // ---------- GET USERS ----------
   Future<List<UserResponse>> getUsers() async {
-    final uri = Uri.parse('$baseUrl/api/User');
-    final res = await http.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
+    final res = await get('/api/User');
 
     if (res.statusCode == 200) {
       final List json = jsonDecode(res.body);

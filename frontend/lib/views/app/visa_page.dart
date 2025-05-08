@@ -35,10 +35,11 @@ class _VisaPageState extends ConsumerState<VisaPage> {
     final api = ref.read(visaApiServiceProvider);
     try {
       visaTypes = await api.getVisaTypes();
+      debugPrint('Visa types loaded: ${visaTypes.length}');
       if (mounted) setState(() {});
-    } catch (e) {
+    } catch (e, st) {
       // Håndter fejl her, f.eks. vis en fejlmeddelelse
-      debugPrint('Failed loading visa types $e');
+      debugPrint('Failed loading visa types: $e\n$st');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not load visa types')),
       );

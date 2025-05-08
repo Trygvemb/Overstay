@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../models/create_visa_request.dart';
 import '../models/update_visa_request.dart';
 import '../models/visa_respons.dart';
@@ -5,15 +9,17 @@ import '../models/visa_type_response.dart';
 import 'api_service.dart';
 
 class VisaApiService extends ApiService {
+  VisaApiService(Ref ref) : super(ref);
+
   /// GET /api/VisaType  – hent alle typer (til dropdown)
   Future<List<VisaTypeResponse>> getVisaTypes() async {
     final res = await get('/api/VisaType');
-    return parse(res, (j) {
-      final list = j as List<dynamic>;
-      return list
-          .map((e) => VisaTypeResponse.fromJson(e as Map<String, dynamic>))
-          .toList();
-    });
+    if (res.statusCode != 200) _throw(res);
+
+    final list = jsonDecode(res.body) as List<dynamic>;
+    return list
+        .map((e) => VisaTypeResponse.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// POST /api/Visa  – opret visa
