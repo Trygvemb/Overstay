@@ -4,8 +4,7 @@ namespace Overstay.Domain.Entities;
 
 /// <summary>
 /// Represents a visa entity within the domain.
-/// A Visa is associated with a user and a specific visa type, and contains details about
-/// the arrival date and expiration date of the visa.
+/// A Visa is associated with a user and a specific visa type
 /// </summary>
 public class Visa : Entity
 {

@@ -55,8 +55,7 @@ public static class ServiceCollectionExtension
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme =
-                    IdentityConstants.ExternalScheme; // CRITICAL: This is required for OAuth flows
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme; // CRITICAL: This is required for OAuth flows
             })
             .AddJwtBearer(options =>
             {
@@ -71,11 +70,11 @@ public static class ServiceCollectionExtension
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(
                             configuration["JwtSettings:SecretKey"]
-                            ?? throw new InvalidOperationException()
+                                ?? throw new InvalidOperationException()
                         )
                     ),
                 };
-        
+
                 options.Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
@@ -104,7 +103,7 @@ public static class ServiceCollectionExtension
                 options.ClientId = configuration["Authentication:Google:ClientId"]!;
                 options.ClientSecret = configuration["Authentication:Google:ClientSecret"]!;
                 options.CallbackPath = "/signin-google";
-                options.SaveTokens = true;  // Important for GetExternalLoginInfoAsync to work
+                options.SaveTokens = true; // Important for GetExternalLoginInfoAsync to work
                 options.Events.OnCreatingTicket = ctx =>
                 {
                     var identity = (ClaimsIdentity)ctx.Principal.Identity;
@@ -127,6 +126,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IVisaService, VisaService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         return services;
     }
