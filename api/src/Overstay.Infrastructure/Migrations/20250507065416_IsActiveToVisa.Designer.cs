@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Overstay.Infrastructure.Data.DbContexts;
 
@@ -11,9 +12,11 @@ using Overstay.Infrastructure.Data.DbContexts;
 namespace Overstay.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250507065416_IsActiveToVisa")]
+    partial class IsActiveToVisa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1764,21 +1767,9 @@ namespace Overstay.Infrastructure.Migrations
                         .HasColumnName("CreatedAt")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<int>("DaysBefore")
-                        .HasColumnType("int")
-                        .HasColumnName("DaysBefore");
-
                     b.Property<bool>("EmailNotification")
                         .HasColumnType("bit")
                         .HasColumnName("EmailNotification");
-
-                    b.Property<bool>("ExpiredNotification")
-                        .HasColumnType("bit")
-                        .HasColumnName("ExpiredNotification");
-
-                    b.Property<bool>("NintyDaysNotification")
-                        .HasColumnType("bit")
-                        .HasColumnName("NintyDaysNotification");
 
                     b.Property<bool>("PushNotification")
                         .HasColumnType("bit")

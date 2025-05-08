@@ -9,8 +9,10 @@ public class Notification : Entity
     public bool EmailNotification { get; set; }
     public bool SmsNotification { get; set; }
     public bool PushNotification { get; set; }
+    public bool NintyDaysNotification { get; set; }
+    public bool ExpiredNotification { get; set; }
+    public int DaysBefore { get; set; } = 7;
+
     public required Guid UserId { get; set; }
     public User User { get; init; } = null!;
-
-    protected Notification() { }
 }

@@ -1,4 +1,5 @@
 using Mapster;
+using Overstay.Application.Features.Notifications.Commands;
 using Overstay.Application.Features.Users.Commands;
 using Overstay.Application.Features.Visas.Commands;
 using Overstay.Application.Features.Visas.Requests;
@@ -29,8 +30,7 @@ public static class MappingConfigurations
         TypeAdapterConfig<UpdateVisaCommand, Visa>
             .NewConfig()
             .IgnoreNullValues(true)
-            .ConstructUsing(src =>
-                new Visa(src.Item.ArrivalDate, src.Item.ExpireDate))
+            .ConstructUsing(src => new Visa(src.Item.ArrivalDate, src.Item.ExpireDate))
             .Map(dest => dest.VisaTypeId, src => src.Item.VisaTypeId)
             .Map(dest => dest.Id, src => src.Id);
     }

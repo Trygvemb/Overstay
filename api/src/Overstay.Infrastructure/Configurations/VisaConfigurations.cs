@@ -21,5 +21,6 @@ public class VisaConfigurations : IEntityTypeConfiguration<Visa>
         builder.Property(v => v.ArrivalDate).HasColumnName("ArrivalDate");
         builder.Property(v => v.ExpireDate).HasColumnName("ExpireDate");
         builder.Property(v => v.VisaTypeId).HasColumnName("VisaTypeId").IsRequired();
+        builder.Property(v => v.IsActive).HasColumnName("IsActive");
     }
 }

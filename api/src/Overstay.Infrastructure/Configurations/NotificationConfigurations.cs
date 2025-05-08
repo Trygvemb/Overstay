@@ -22,5 +22,8 @@ public class NotificationConfigurations : IEntityTypeConfiguration<Notification>
         builder.Property(n => n.PushNotification).HasColumnName("PushNotification");
         builder.Property(n => n.SmsNotification).HasColumnName("SmsNotification");
         builder.Property(n => n.UserId).HasColumnName("UserId").IsRequired();
+        builder.Property(n => n.NintyDaysNotification).HasColumnName("NintyDaysNotification");
+        builder.Property(n => n.ExpiredNotification).HasColumnName("ExpiredNotification");
+        builder.Property(n => n.DaysBefore).HasColumnName("DaysBefore");
     }
 }
