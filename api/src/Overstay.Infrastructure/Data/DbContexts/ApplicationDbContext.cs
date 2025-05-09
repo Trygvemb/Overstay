@@ -17,6 +17,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<Visa> Visas { get; set; }
     public DbSet<VisaType> VisaTypes { get; set; }
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
