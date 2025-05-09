@@ -39,7 +39,8 @@ builder.Services.AddCors(options =>
                 "https://localhost:7139",
                 "http://localhost:5093",
                 "http://localhost:8080",  // Docker frontend URL
-                "http://localhost:5050"   // Docker API URL
+                "http://localhost:5050",
+                "http://localhost:60183"   // Docker API URL
             )
             .AllowAnyMethod()
             .AllowAnyHeader()

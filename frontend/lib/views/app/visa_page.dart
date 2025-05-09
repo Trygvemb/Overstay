@@ -138,7 +138,7 @@ class _VisaPageState extends ConsumerState<VisaPage> {
           ),
           const SizedBox(height: 16),
 
-          // "Arrival date" + text field
+          // "Arrival date" + text field - input
           const Text(
             'Arrival date',
             style: TextStyle(fontSize: 16, color: Colors.black),
@@ -163,7 +163,7 @@ class _VisaPageState extends ConsumerState<VisaPage> {
           ),
           const SizedBox(height: 16),
 
-          // "Expiry date" (read-only)
+          // "Expiry date" + text field - input
           const Text(
             'Expiry date',
             style: TextStyle(fontSize: 16, color: Colors.black),
@@ -172,7 +172,19 @@ class _VisaPageState extends ConsumerState<VisaPage> {
           TextField(
             controller: expiryDateController,
             readOnly: true,
-            decoration: _whiteInputDecoration,
+            decoration: _whiteInputDecoration.copyWith(hintText: 'yyyy-mm-dd'),
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+              );
+              if (picked != null) {
+                expiryDateController.text =
+                    picked.toIso8601String().split('T').first; // yyyy-mm-dd
+              }
+            },
           ),
           const SizedBox(height: 24),
 
@@ -217,13 +229,22 @@ class _VisaPageState extends ConsumerState<VisaPage> {
 
   // Metode til at gemme visa data
   Future<void> _saveVisa() async {
-    if (selectedVisaType == null || arrivalDateController.text.isEmpty) {
-      _show('Select visa type and arrival date');
+    if (selectedVisaType == null ||
+        arrivalDateController.text.isEmpty ||
+        expiryDateController.text.isEmpty) {
+      _show('Select visa type and arrival date and epiry date');
       return;
     }
     final arrival = DateTime.tryParse(arrivalDateController.text);
-    if (arrival == null) {
+    final expiry = DateTime.tryParse(expiryDateController.text);
+
+    if (arrival == null || expiry == null) {
       _show('Invalid date format (yyyy-mm-dd)');
+      return;
+    }
+
+    if (expiry.isBefore(arrival)) {
+      _show('Expiry date must be after arrival date');
       return;
     }
 
@@ -232,6 +253,7 @@ class _VisaPageState extends ConsumerState<VisaPage> {
       final response = await api.createVisa(
         CreateVisaRequest(
           arrivalDate: arrival,
+          expireDate: expiry,
           visaTypeId: selectedVisaType!.id,
         ),
       );
