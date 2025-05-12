@@ -24,7 +24,7 @@ class VisaApiService extends ApiService {
 
   /// POST /api/Visa  – opret visa
   Future<VisaResponse> createVisa(CreateVisaRequest req) async {
-    final res = await post('/api/Visa', req.toJson());
+    final res = await post('/api/Visa', {'item': req.toJson()});
     return parse(res, (j) => VisaResponse.fromJson(j));
   }
 
