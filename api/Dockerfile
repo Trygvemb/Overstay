@@ -19,6 +19,12 @@ RUN dotnet build "Overstay.API.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "Overstay.API.csproj" -c Release -o /app/publish
 
+FROM build AS migration
+WORKDIR "/src/src/Overstay.Infrastructure"
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+RUN dotnet ef database update
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
