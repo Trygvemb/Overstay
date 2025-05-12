@@ -248,6 +248,8 @@ class _VisaPageState extends ConsumerState<VisaPage> {
       return;
     }
 
+    ref.invalidate(currentVisaProvider);
+
     final api = ref.read(visaApiServiceProvider);
     try {
       final response = await api.createVisa(
@@ -258,11 +260,19 @@ class _VisaPageState extends ConsumerState<VisaPage> {
         ),
       );
 
-      currentVisaId = response.id;
-      expiryDateController.text =
-          response.expireDate.toIso8601String().split('T').first; // yyyy-mm-dd
-      _show('Visa saved!');
-      debugPrint('Visa saved with ID: ${response.id}');
+      // modtag id-strengen
+      final newId = await api.createVisa(
+        CreateVisaRequest(
+          arrivalDate: arrival,
+          expireDate: expiry,
+          visaTypeId: selectedVisaType!.id,
+        ),
+      );
+      ;
+      // brug id-strengen
+      currentVisaId = newId;
+      _show('Visa saved with ID: $newId');
+      debugPrint('Visa saved with ID: $newId');
     } on Exception catch (e) {
       debugPrint('Failed to save visa: $e');
       _show('Failed to save visa: $e');

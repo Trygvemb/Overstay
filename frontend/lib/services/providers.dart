@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:overstay_frontend/models/visa_respons.dart';
 import 'auth_state.dart';
 import 'user_api_service.dart';
 import 'visa_api_service.dart';
@@ -22,4 +23,10 @@ final authStateProvider = ChangeNotifierProvider<AuthState>(
 /// API‑service til visa
 final visaApiServiceProvider = Provider<VisaApiService>((ref) {
   return VisaApiService(ref);
+});
+
+/// Senest gemte visa som FutureProvider
+final currentVisaProvider = FutureProvider<VisaResponse?>((ref) async {
+  final api = ref.read(visaApiServiceProvider);
+  return api.getCurrentVisa();
 });
