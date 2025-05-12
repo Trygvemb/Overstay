@@ -1,10 +1,15 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/models/create_visa_request.dart';
+import 'package:overstay_frontend/models/visa_respons.dart';
 import 'package:overstay_frontend/models/visa_type_response.dart';
 import 'package:overstay_frontend/views/app/widget_tree.dart';
 import 'package:overstay_frontend/services/providers.dart';
 import 'package:overstay_frontend/services/visa_api_service.dart';
+import '../../models/update_visa_request.dart';
+
 
 class VisaPage extends ConsumerStatefulWidget {
   const VisaPage({super.key});
@@ -22,13 +27,39 @@ class _VisaPageState extends ConsumerState<VisaPage> {
   final TextEditingController expiryDateController = TextEditingController();
 
   String? currentVisaId;
+  VisaResponse? _currentVisa;
 
   @override
   void initState() {
     super.initState();
     // Initialiserer expiryDate feltet med en placeholder
     expiryDateController.text = "dd/mm/yyyy";
-    _loadVisaTypes();
+    _initPage();
+  }
+
+  Future<void> _initPage() async {
+    await _loadVisaTypes(); //henter dropdown data
+    await _loadCurrentVisa(); // udfylder felterne hvis der allerede eksisterer en data
+  }
+
+  Future<void> _loadCurrentVisa() async {
+    final visa = await ref.read(currentVisaProvider.future);
+    if (visa == null) return; // ingen gemt visa data
+
+    // find matchende visatype i listen
+    final vt = visaTypes.firstWhere(
+      (v) => v.id == visa.visaType.id,
+    );
+
+    setState(() {
+      _currentVisa = visa;
+      currentVisaId = visa.id;
+      selectedVisaType = vt;
+      arrivalDateController.text =
+          DateFormat('yyyy-MM-dd').format(visa.arrivalDate);
+      expiryDateController.text =
+          DateFormat('yyyy-MM-dd').format(visa.expireDate);
+    });
   }
 
   Future<void> _loadVisaTypes() async {
@@ -92,29 +123,6 @@ class _VisaPageState extends ConsumerState<VisaPage> {
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
-
-          // "Choose Country" + dropdown
-          /*const Text(
-            'Choose Country',
-            style: TextStyle(fontSize: 16, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            decoration: _whiteInputDecoration,
-            value: selectedCountry,
-            hint: const Text('Select a country'),
-            items:
-                countries.map((String country) {
-                  return DropdownMenuItem<String>(
-                    value: country,
-                    child: Text(country),
-                  );
-                }).toList(),
-            onChanged: (newValue) {
-              setState(() => selectedCountry = newValue);
-            },
-          ),
-          const SizedBox(height: 16),*/
 
           // "Check visatype" + dropdown
           const Text(
@@ -216,7 +224,7 @@ class _VisaPageState extends ConsumerState<VisaPage> {
                   ),
                 ),
                 child: const Text(
-                  'Delete',
+                  'Delete Visa',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -247,20 +255,12 @@ class _VisaPageState extends ConsumerState<VisaPage> {
       _show('Expiry date must be after arrival date');
       return;
     }
-
-    ref.invalidate(currentVisaProvider);
-
+ref.invalidate(currentVisaProvider);
+    
     final api = ref.read(visaApiServiceProvider);
     try {
-      final response = await api.createVisa(
-        CreateVisaRequest(
-          arrivalDate: arrival,
-          expireDate: expiry,
-          visaTypeId: selectedVisaType!.id,
-        ),
-      );
-
-      // modtag id-strengen
+      if (currentVisaId == null) {
+        //-------------opret POST----------------
       final newId = await api.createVisa(
         CreateVisaRequest(
           arrivalDate: arrival,
@@ -268,25 +268,46 @@ class _VisaPageState extends ConsumerState<VisaPage> {
           visaTypeId: selectedVisaType!.id,
         ),
       );
-      ;
-      // brug id-strengen
       currentVisaId = newId;
-      _show('Visa saved with ID: $newId');
+      _show('Visa saved');
       debugPrint('Visa saved with ID: $newId');
+
+      } else {
+        //----------------opdater PUT ----------------
+        await api.updateVisa(
+          currentVisaId!,
+          UpdateVisaRequest(
+            arrivalDate: arrival,
+            expireDate: expiry,
+            visaTypeId: selectedVisaType!.id,
+          ),
+        );
+        _show('Visa updated');
+        debugPrint('Visa updated: $currentVisaId');
+      }
+      // Få home-siden til at hente frisk opdateret data
+      ref.invalidate(currentVisaProvider);
+
     } on Exception catch (e) {
       debugPrint('Failed to save visa: $e');
-      _show('Failed to save visa: $e');
-    }
-  }
+      _show('Failed to save visa');
+      }
 
   // Metode til at slette data
-  void _deleteVisa() {
+  void _deleteVisa() async{
+    if (currentVisaId != null) {
+      try {
+        await ref.read(visaApiServiceProvider).deleteVisa(currentVisaId!);
+      } catch (_) {/*Ignore error*/}
+      }
     setState(() {
       selectedVisaType = null;
       arrivalDateController.clear();
       expiryDateController.clear();
       currentVisaId = null;
+      _currentVisa = null;
     });
+    ref.invalidate(currentVisaProvider);
     _show('Visa fields deleted!');
     debugPrint('Deleting visa data');
   }
