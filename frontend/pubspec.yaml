@@ -35,6 +35,7 @@ dependencies:
   flutter_dotenv: ^5.0.2  # miljøvariabler til base-URL + tokens
   flutter_secure_storage: ^5.0.2 # sikret lagring af tokens
   flutter_riverpod: ^2.0.4 # state management
+  intl: ^0.18.1 # internationalization
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

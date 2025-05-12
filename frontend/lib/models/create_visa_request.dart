@@ -1,7 +1,8 @@
+import 'package:intl/intl.dart';
+
 class CreateVisaRequest {
-  final DateTime?
-  arrivalDate; // optional – backend sætter nuværende tid hvis null
-  final DateTime? expireDate; // kan sendes null → backend beregner
+  final DateTime? arrivalDate;
+  final DateTime? expireDate;
   final String visaTypeId;
 
   CreateVisaRequest({
@@ -10,9 +11,14 @@ class CreateVisaRequest {
     required this.visaTypeId,
   });
 
+  //-------------helper til datoformatting----------------
+  static String? _formatDate(DateTime? date) =>
+      date == null ? null : DateFormat('yyyy-MM-dd').format(date);
+
   Map<String, dynamic> toJson() => {
-    'arrivalDate': arrivalDate?.toIso8601String(),
-    'expireDate': expireDate?.toIso8601String(),
+    // ens formatter til arrival og expire date
+    'arrivalDate': _formatDate(arrivalDate),
+    'expireDate': _formatDate(expireDate),
     'visaTypeId': visaTypeId,
   };
 }
