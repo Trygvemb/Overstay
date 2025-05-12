@@ -1,16 +1,16 @@
-namespace Overstay.Application.Responses;
+namespace Overstay.Application.Commons.Models;
 
-public class VisaEmailNotificationsResponse
+public class VisaEmailNotification
 {
     public string Email { get; set; } = null!;
     public string UserName { get; set; } = null!;
     public int DaysBefore { get; set; }
     public bool ExpiredNotification { get; set; }
     public bool NintyDaysNotification { get; set; }
-    public List<VisaNotificationResponse> Visas { get; set; } = [];
+    public List<VisaNameAndDates> Visas { get; set; } = [];
 }
 
-public class VisaNotificationResponse
+public class VisaNameAndDates
 {
     public string Name { get; set; } = null!;
     public DateTime ArrivalDate { get; set; }

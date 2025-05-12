@@ -3,7 +3,8 @@ using Overstay.Application.Commons.Results;
 using Overstay.Application.Features.Visas.Commands;
 using Overstay.Application.Features.Visas.Queries;
 using Overstay.Application.Features.Visas.Requests;
-using Overstay.Application.Responses;
+using Overstay.Application.Features.Visas.Responses;
+using Overstay.Application.Features.VisaTypes.Responses;
 using Overstay.Infrastructure.Data.Identities;
 
 namespace Overstay.API.Controllers;
@@ -24,10 +25,8 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
             return Unauthorized();
 
         var result = await Mediator.Send(new GetAllVisasQuery(userId.Value), cancellationToken);
-        
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : HandleFailedResult(result);
+
+        return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -44,9 +43,7 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
             return Unauthorized();
 
         var result = await Mediator.Send(new GetVisaQuery(id, userId.Value), cancellationToken);
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : HandleFailedResult(result);
+        return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 
     [HttpPost]
@@ -91,9 +88,7 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
     {
         var result = await Mediator.Send(new UpdateVisaCommand(id, request), cancellationToken);
 
-        return result.IsSuccess
-            ? NoContent()
-            : HandleFailedResult(result);
+        return result.IsSuccess ? NoContent() : HandleFailedResult(result);
     }
 
     [HttpDelete("{id:guid}")]
@@ -106,8 +101,6 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
     {
         var result = await Mediator.Send(new DeleteVisaCommand(id), cancellationToken);
 
-        return result.IsSuccess
-            ? NoContent()
-            : HandleFailedResult(result);
+        return result.IsSuccess ? NoContent() : HandleFailedResult(result);
     }
 }

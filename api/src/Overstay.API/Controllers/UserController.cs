@@ -5,8 +5,8 @@ using Overstay.Application.Commons.Results;
 using Overstay.Application.Features.Users.Commands;
 using Overstay.Application.Features.Users.Queries;
 using Overstay.Application.Features.Users.Requests;
+using Overstay.Application.Features.Users.Responses;
 using Overstay.Application.Features.VisaTypes.Commands;
-using Overstay.Application.Responses;
 using Overstay.Infrastructure.Data.Identities;
 
 namespace Overstay.API.Controllers;
@@ -47,9 +47,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
     {
         var result = await Mediator.Send(command, cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : HandleFailedResult(result);
+        return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 
     [HttpPost("sign-out")]
@@ -63,9 +61,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
     {
         var result = await Mediator.Send(command, cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result)
-            : HandleFailedResult(result);
+        return result.IsSuccess ? Ok(result) : HandleFailedResult(result);
     }
 
     [HttpPut("{id:Guid}")]
@@ -83,9 +79,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
     {
         var result = await Mediator.Send(new UpdateUserCommand(id, request), cancellationToken);
 
-        return result.IsSuccess
-            ? NoContent()
-            : HandleFailedResult(result);
+        return result.IsSuccess ? NoContent() : HandleFailedResult(result);
     }
 
     [HttpDelete("{id:guid}")]
@@ -99,9 +93,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
     {
         var result = await Mediator.Send(new DeleteUserCommand(id), cancellationToken);
 
-        return result.IsSuccess
-            ? NoContent()
-            : HandleFailedResult(result);
+        return result.IsSuccess ? NoContent() : HandleFailedResult(result);
     }
 
     [HttpGet]
@@ -115,9 +107,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
     {
         var result = await Mediator.Send(new GetAllUsersQuery(), cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : HandleFailedResult(result);
+        return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -131,9 +121,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
     {
         var result = await Mediator.Send(new GetUserByIdQuery(id), cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : HandleFailedResult(result);
+        return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 
     [HttpGet("by-email/{email}")]
@@ -147,9 +135,7 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
     {
         var result = await Mediator.Send(new GetUserByEmailQuery(email), cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : HandleFailedResult(result);
+        return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 
     [HttpGet("by-username/{username}")]
@@ -166,8 +152,6 @@ public class UserController(ISender mediator) : MediatorControllerBase(mediator)
     {
         var result = await Mediator.Send(new GetUserByUsernameQuery(username), cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : HandleFailedResult(result);
+        return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 }

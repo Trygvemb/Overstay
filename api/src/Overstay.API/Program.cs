@@ -30,7 +30,14 @@ builder.Services.AddOpenApi(
     }
 );
 
-builder.Services.AddInfrastructureLayer(builder.Configuration).AddApplicationLayer();
+builder.Services.AddApplicationLayer();
+
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddDbContext(builder.Configuration);
+builder.Services.AddFluentEmail(builder.Configuration);
+builder.Services.AddIdentity(builder.Configuration);
+builder.Services.AddAuthentication(builder.Configuration);
+builder.Services.AddAuthorizationPolicies();
 
 builder.Services.AddCors(options =>
 {

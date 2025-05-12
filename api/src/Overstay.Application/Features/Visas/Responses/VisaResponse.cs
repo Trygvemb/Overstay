@@ -1,4 +1,6 @@
-namespace Overstay.Application.Responses;
+using Overstay.Application.Features.VisaTypes.Responses;
+
+namespace Overstay.Application.Features.Visas.Responses;
 
 public class VisaResponse
 {

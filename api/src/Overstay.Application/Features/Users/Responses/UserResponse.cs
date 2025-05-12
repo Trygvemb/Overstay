@@ -1,4 +1,4 @@
-namespace Overstay.Application.Responses;
+namespace Overstay.Application.Features.Users.Responses;
 
 public class UserResponse
 {

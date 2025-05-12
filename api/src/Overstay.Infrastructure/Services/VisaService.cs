@@ -1,6 +1,6 @@
 using Overstay.Application.Commons.Errors;
+using Overstay.Application.Commons.Models;
 using Overstay.Application.Commons.Results;
-using Overstay.Application.Responses;
 using Overstay.Application.Services;
 using Overstay.Domain.Constants;
 using Overstay.Infrastructure.Data.DbContexts;
@@ -181,7 +181,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         }
     }
 
-    private async Task<Result<List<VisaEmailNotificationsResponse>>> GetVisaEmailNotificationsAsync(
+    private async Task<Result<List<VisaEmailNotification>>> GetVisaEmailNotificationsAsync(
         CancellationToken cancellationToken
     )
     {
@@ -214,7 +214,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
                         }
                 )
                 .GroupBy(x => new { x.Email, x.UserName })
-                .Select(group => new VisaEmailNotificationsResponse
+                .Select(group => new VisaEmailNotification
                 {
                     Email = group.Key.Email!,
                     UserName = group.Key.UserName!,
@@ -222,7 +222,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
                     ExpiredNotification = group.First().ExpiredNotification,
                     NintyDaysNotification = group.First().NintyDaysNotification,
                     Visas = group
-                        .Select(v => new VisaNotificationResponse
+                        .Select(v => new VisaNameAndDates
                         {
                             Name = group.First().Name!,
                             ArrivalDate = v.ArrivalDate,
@@ -237,7 +237,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred while retrieving visa email notifications");
-            return Result.Failure<List<VisaEmailNotificationsResponse>>(Error.ServerError);
+            return Result.Failure<List<VisaEmailNotification>>(Error.ServerError);
         }
     }
 
@@ -246,7 +246,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         string userName,
         bool expiredNotification,
         bool nintyDaysNotification,
-        VisaNotificationResponse visa,
+        VisaNameAndDates visa,
         CancellationToken cancellation
     )
     {

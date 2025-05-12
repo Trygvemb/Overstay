@@ -12,7 +12,7 @@ namespace Overstay.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtension
 {
-    public static IServiceCollection AddInfrastructureLayer(
+    public static IServiceCollection AddInfrastructureServices(
         this IServiceCollection services,
         IConfiguration configuration
     )

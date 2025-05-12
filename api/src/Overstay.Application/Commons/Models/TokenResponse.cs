@@ -1,4 +1,4 @@
-namespace Overstay.Application.Responses;
+namespace Overstay.Application.Commons.Models;
 
 public class TokenResponse
 {

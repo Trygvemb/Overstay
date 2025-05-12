@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Overstay.Application.Commons.Constants;
 using Overstay.Application.Commons.Errors;
+using Overstay.Application.Commons.Models;
 using Overstay.Application.Commons.Results;
 using Overstay.Application.Features.Users.Requests;
-using Overstay.Application.Responses;
+using Overstay.Application.Features.Users.Responses;
 using Overstay.Application.Services;
 using Overstay.Infrastructure.Data.DbContexts;
 using Overstay.Infrastructure.Data.Identities;
@@ -454,9 +455,7 @@ public class UserService(
         }
     }
 
-    public Task<Result<string>> ValidateExternalAuthProvider(
-        string provider, 
-        string returnUrl)
+    public Task<Result<string>> ValidateExternalAuthProvider(string provider, string returnUrl)
     {
         try
         {
@@ -464,58 +463,84 @@ public class UserService(
             {
                 if (!returnUrl.StartsWith($"/"))
                 {
-                    return Task.FromResult(Result.Failure<string>(
-                        new Error(ErrorTypeConstants.Unauthorized, "Return URL must start with /")));
+                    return Task.FromResult(
+                        Result.Failure<string>(
+                            new Error(
+                                ErrorTypeConstants.Unauthorized,
+                                "Return URL must start with /"
+                            )
+                        )
+                    );
                 }
-            
+
                 if (!Uri.TryCreate("http://dummy.com" + returnUrl, UriKind.Absolute, out _))
                 {
-                    return Task.FromResult(Result.Failure<string>(
-                        new Error(ErrorTypeConstants.Unauthorized, "Invalid return URL path")));
+                    return Task.FromResult(
+                        Result.Failure<string>(
+                            new Error(ErrorTypeConstants.Unauthorized, "Invalid return URL path")
+                        )
+                    );
                 }
             }
-            
+
             if (string.IsNullOrEmpty(provider))
             {
-                return Task.FromResult(Result.Failure<string>(
-                    new Error(ErrorTypeConstants.Unauthorized, "Provider name cannot be empty")));
+                return Task.FromResult(
+                    Result.Failure<string>(
+                        new Error(ErrorTypeConstants.Unauthorized, "Provider name cannot be empty")
+                    )
+                );
             }
-            
-            var supportedProviders = configuration.GetSection("Authentication")
+
+            var supportedProviders = configuration
+                .GetSection("Authentication")
                 .GetChildren()
                 .Select(x => x.Key)
                 .ToList();
 
-            var validatedProvider = supportedProviders
-                .FirstOrDefault(p => p.Equals(provider, StringComparison.OrdinalIgnoreCase));
-                
+            var validatedProvider = supportedProviders.FirstOrDefault(p =>
+                p.Equals(provider, StringComparison.OrdinalIgnoreCase)
+            );
+
             if (validatedProvider == null)
             {
-                return Task.FromResult(Result.Failure<string>(
-                    new Error(ErrorTypeConstants.Unauthorized,
-                        $"Provider '{provider}' is not supported. Supported providers are: {string.Join(", ", supportedProviders)}")));
+                return Task.FromResult(
+                    Result.Failure<string>(
+                        new Error(
+                            ErrorTypeConstants.Unauthorized,
+                            $"Provider '{provider}' is not supported. Supported providers are: {string.Join(", ", supportedProviders)}"
+                        )
+                    )
+                );
             }
 
             return Task.FromResult(Result.Success(validatedProvider));
         }
-        catch (Exception ex) {
-            logger.LogError(ex, "Error validating external authentication provider {Provider}", provider);
-            return Task.FromResult(Result.Failure<string>(Error.ServerError)); 
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Error validating external authentication provider {Provider}",
+                provider
+            );
+            return Task.FromResult(Result.Failure<string>(Error.ServerError));
         }
     }
 
-
-   public async Task<Result<ExternalAuthResponse>> ProcessExternalLoginCallbackAsync(
-    string returnUrl)
-   {
+    public async Task<Result<ExternalAuth>> ProcessExternalLoginCallbackAsync(string returnUrl)
+    {
         try
         {
             var info = await signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
                 logger.LogWarning("Error loading external login information");
-                return Result.Failure<ExternalAuthResponse>(new Error(ErrorTypeConstants.Unauthorized,
-                    "Error loading external login information"));
+                return Result.Failure<ExternalAuth>(
+                    new Error(
+                        ErrorTypeConstants.Unauthorized,
+                        "Error loading external login information"
+                    )
+                );
             }
 
             // Try to sign in with external login info
@@ -523,58 +548,67 @@ public class UserService(
                 info.LoginProvider,
                 info.ProviderKey,
                 isPersistent: false,
-                bypassTwoFactor: true);
-            
+                bypassTwoFactor: true
+            );
+
             if (result.Succeeded)
             {
                 var user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
                 if (user == null)
                 {
-                    return Result.Failure<ExternalAuthResponse>(new Error(ErrorTypeConstants.NotFound,
-                        "User not found after successful external login"));
+                    return Result.Failure<ExternalAuth>(
+                        new Error(
+                            ErrorTypeConstants.NotFound,
+                            "User not found after successful external login"
+                        )
+                    );
                 }
-                
+
                 var roles = await userManager.GetRolesAsync(user);
-                
+
                 var userWithRoles = new UserWithRolesResponse
                 {
                     Id = user.Id,
                     UserName = user.UserName!,
                     Email = user.Email!,
-                    Roles = roles.ToList()
+                    Roles = roles.ToList(),
                 };
-                
+
                 var tokenResponse = await tokenService.GenerateJwtToken(userWithRoles);
-                
-                return Result.Success(new ExternalAuthResponse
-                {
-                    RedirectUrl = returnUrl,
-                    Token = tokenResponse
-                });
+
+                return Result.Success(
+                    new ExternalAuth { RedirectUrl = returnUrl, Token = tokenResponse }
+                );
             }
 
             // User doesn't exist, create a new one
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            
+
             if (string.IsNullOrEmpty(email))
             {
                 logger.LogWarning("Cannot create user: Email not provided by external provider");
-                return Result.Failure<ExternalAuthResponse>(new Error(ErrorTypeConstants.Unauthorized,
-                    "Email not provided by external login provider"));
+                return Result.Failure<ExternalAuth>(
+                    new Error(
+                        ErrorTypeConstants.Unauthorized,
+                        "Email not provided by external login provider"
+                    )
+                );
             }
 
             var existingUser = await userManager.FindByEmailAsync(email);
-            
+
             if (existingUser == null)
             {
                 var name = info.Principal.FindFirstValue(ClaimTypes.Name) ?? email;
                 var country = info.Principal.FindFirstValue(ClaimTypes.Country);
                 //TODO: add logic for country
                 var countryId = Guid.Empty;
-                
+
                 if (!string.IsNullOrEmpty(country))
                 {
-                    var domainCountry = await context.Countries.FirstOrDefaultAsync(c => c.Name == country);
+                    var domainCountry = await context.Countries.FirstOrDefaultAsync(c =>
+                        c.Name == country
+                    );
                     countryId = domainCountry?.Id ?? Guid.Empty;
                 }
 
@@ -583,66 +617,72 @@ public class UserService(
                     UserName = name,
                     Email = email,
                     EmailConfirmed = true,
-                    DomainUser = new User(countryId)
+                    DomainUser = new User(countryId),
                 };
 
                 var createResult = await userManager.CreateAsync(newUser);
-                
+
                 if (!createResult.Succeeded)
                 {
-                    logger.LogError("Error creating user from external provider: {Errors}", 
-                        string.Join(", ", createResult.Errors.Select(e => e.Description)));
-                        
-                    return Result.Failure<ExternalAuthResponse>(new Error(ErrorTypeConstants.Unauthorized,
-                        "Failed to create user"));
+                    logger.LogError(
+                        "Error creating user from external provider: {Errors}",
+                        string.Join(", ", createResult.Errors.Select(e => e.Description))
+                    );
+
+                    return Result.Failure<ExternalAuth>(
+                        new Error(ErrorTypeConstants.Unauthorized, "Failed to create user")
+                    );
                 }
-                
+
                 await userManager.AddToRoleAsync(newUser, RoleTypeConstants.User);
-                
+
                 existingUser = newUser;
             }
 
             // Add external login to the user if not already added
             var userLogins = await userManager.GetLoginsAsync(existingUser);
-            if (!userLogins.Any(l => l.LoginProvider == info.LoginProvider && l.ProviderKey == info.ProviderKey))
+            if (
+                !userLogins.Any(l =>
+                    l.LoginProvider == info.LoginProvider && l.ProviderKey == info.ProviderKey
+                )
+            )
             {
                 var addLoginResult = await userManager.AddLoginAsync(existingUser, info);
-                
+
                 if (!addLoginResult.Succeeded)
                 {
-                    logger.LogError("Error linking external login to user: {Errors}", 
-                        string.Join(", ", addLoginResult.Errors.Select(e => e.Description)));
-                        
-                    return Result.Failure<ExternalAuthResponse>(new Error(ErrorTypeConstants.Unauthorized,
-                        "Failed to link external login"));
+                    logger.LogError(
+                        "Error linking external login to user: {Errors}",
+                        string.Join(", ", addLoginResult.Errors.Select(e => e.Description))
+                    );
+
+                    return Result.Failure<ExternalAuth>(
+                        new Error(ErrorTypeConstants.Unauthorized, "Failed to link external login")
+                    );
                 }
             }
-            
+
             await signInManager.SignInAsync(existingUser, isPersistent: false);
-            
+
             var userRoles = await userManager.GetRolesAsync(existingUser);
-            
+
             // Create UserWithRolesResponse for token generation
             var userResponse = new UserWithRolesResponse
             {
                 Id = existingUser.Id,
                 UserName = existingUser.UserName!,
                 Email = existingUser.Email!,
-                Roles = userRoles.ToList()
+                Roles = userRoles.ToList(),
             };
-            
+
             var token = await tokenService.GenerateJwtToken(userResponse);
-            
-            return Result.Success(new ExternalAuthResponse
-            {
-                RedirectUrl = returnUrl,
-                Token = token
-            });
+
+            return Result.Success(new ExternalAuth { RedirectUrl = returnUrl, Token = token });
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error processing external login callback");
-            return Result.Failure<ExternalAuthResponse>(Error.ServerError);
+            return Result.Failure<ExternalAuth>(Error.ServerError);
         }
     }
 }
