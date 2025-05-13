@@ -2,8 +2,10 @@ using System.Text.Json.Serialization;
 using Overstay.API.Commons;
 using Overstay.Application;
 using Overstay.Application.Commons.JsonConverters;
+using Overstay.Application.Extensions;
 using Overstay.Infrastructure;
 using Overstay.Infrastructure.Data;
+using Overstay.Infrastructure.Extensions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,9 +40,8 @@ builder.Services.AddCors(options =>
             .WithOrigins(
                 "https://localhost:7139",
                 "http://localhost:5093",
-                "http://localhost:8080",  // Docker frontend URL
-                "http://localhost:5050",
-                "http://localhost:60183"   // Docker API URL
+                "http://localhost:8080", // Docker frontend URL
+                "http://localhost:5050" // Docker API URL
             )
             .AllowAnyMethod()
             .AllowAnyHeader()
@@ -93,14 +94,12 @@ else
     app.UseHttpsRedirection();
 }
 
-
 app.UseRouting();
 app.UseCors();
 
 app.UseAuthentication();
-app.UseAuthorization(); 
+app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
-

@@ -1,55 +1,20 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Overstay.Application.Services;
-using Overstay.Infrastructure.Configurations;
-using Overstay.Infrastructure.Data.DbContexts;
-using Overstay.Infrastructure.Data.Identities;
-using Overstay.Infrastructure.Services;
 
-namespace Overstay.Infrastructure;
+namespace Overstay.Infrastructure.Extensions;
 
-public static class ServiceCollectionExtension
+public static class AuthenticationExtension
 {
-    public static IServiceCollection AddInfrastructureLayer(
+    public static void AddAuthentication(
         this IServiceCollection services,
         IConfiguration configuration
     )
     {
-        var dbOptions = DatabaseOptions.Load(configuration);
-
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(
-                dbOptions.ConnectionString,
-                mysqlOptions =>
-                {
-                    mysqlOptions.MigrationsAssembly("Overstay.Infrastructure");
-                    mysqlOptions.EnableRetryOnFailure();
-                    mysqlOptions.CommandTimeout(60);
-                }
-            )
-        );
-
-        services
-            .AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
-            {
-                options.Password.RequiredLength = 8;
-                options.Password.RequireDigit = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequireLowercase = true;
-                options.User.RequireUniqueEmail = true;
-
-                options.SignIn.RequireConfirmedAccount = false;
-            })
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
-
         services
             .AddAuthentication(options =>
             {
@@ -114,20 +79,5 @@ public static class ServiceCollectionExtension
                     return Task.CompletedTask;
                 };
             });
-
-        services
-            .AddAuthorizationBuilder()
-            .AddPolicy(
-                "SameUserOrAdmin",
-                policy => policy.Requirements.Add(new SameUserOrAdminRequirement())
-            );
-        services.AddScoped<IAuthorizationHandler, SameUserOrAdminHandler>();
-        services.AddScoped<IVisaTypeService, VisaTypeService>();
-        services.AddScoped<IVisaService, VisaService>();
-        services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<INotificationService, NotificationService>();
-
-        return services;
     }
 }

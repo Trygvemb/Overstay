@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore.Query;
 using Overstay.Application.Commons.Errors;
 using Overstay.Application.Commons.Results;
 using Overstay.Application.Responses;
@@ -141,58 +140,35 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
             return Result.Failure(responseResult.Error);
         }
 
-        var currenDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(
-            DateTime.UtcNow,
-            Constant.ThailandTimezoneId
-        );
-        var visaEmailNotifications = responseResult.Value;
-
         try
         {
-            foreach (var notification in visaEmailNotifications)
+            var currenDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(
+                DateTime.UtcNow,
+                Constant.ThailandTimezoneId
+            );
+
+            foreach (var notification in responseResult.Value)
             {
-                var visaName = notification.Name;
-                var email = notification.Email;
-                var userName = notification.UserName;
-                var visas = notification.Visas;
                 var daysBeforeTimeSpan = TimeSpan.FromDays(notification.DaysBefore);
-                var expiredNotification = notification.ExpiredNotification;
-                var nintyDaysNotification = notification.NintyDaysNotification;
 
-                foreach (var visa in visas)
+                foreach (
+                    var visa in notification.Visas.Where(visa =>
+                        notification.ExpiredNotification
+                            && currenDateTime == visa.ExpireDate - daysBeforeTimeSpan
+                        || notification.NintyDaysNotification
+                            && currenDateTime
+                                == visa.ArrivalDate - daysBeforeTimeSpan + TimeSpan.FromDays(90)
+                    )
+                )
                 {
-                    if (
-                        expiredNotification
-                        && currenDateTime == visa.ExpireDate - daysBeforeTimeSpan
-                    )
-                    {
-                        // Send email for expired notification
-                        await SendEmailAsync(
-                            email,
-                            userName,
-                            visaName,
-                            expiredNotification,
-                            nintyDaysNotification,
-                            cancellation
-                        );
-                    }
-
-                    if (
-                        nintyDaysNotification
-                        && currenDateTime
-                            == visa.ArrivalDate - daysBeforeTimeSpan + TimeSpan.FromDays(90)
-                    )
-                    {
-                        // Send email for 90 days notification
-                        await SendEmailAsync(
-                            email,
-                            userName,
-                            visaName,
-                            expiredNotification,
-                            nintyDaysNotification,
-                            cancellation
-                        );
-                    }
+                    await SendEmailAsync(
+                        notification.Email,
+                        notification.UserName,
+                        notification.ExpiredNotification,
+                        notification.NintyDaysNotification,
+                        visa,
+                        cancellation
+                    );
                 }
             }
 
@@ -240,7 +216,6 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
                 .GroupBy(x => new { x.Email, x.UserName })
                 .Select(group => new VisaEmailNotificationsResponse
                 {
-                    Name = group.First().Name!,
                     Email = group.Key.Email!,
                     UserName = group.Key.UserName!,
                     DaysBefore = group.First().DaysBefore,
@@ -249,6 +224,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
                     Visas = group
                         .Select(v => new VisaNotificationResponse
                         {
+                            Name = group.First().Name!,
                             ArrivalDate = v.ArrivalDate,
                             ExpireDate = v.ExpireDate,
                         })
@@ -268,9 +244,9 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
     private async Task SendEmailAsync(
         string email,
         string userName,
-        string visaName,
         bool expiredNotification,
         bool nintyDaysNotification,
+        VisaNotificationResponse visa,
         CancellationToken cancellation
     )
     {

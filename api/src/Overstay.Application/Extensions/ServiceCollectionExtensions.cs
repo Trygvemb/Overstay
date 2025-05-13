@@ -1,12 +1,11 @@
 using System.Reflection;
-using System.Reflection.Metadata;
 using FluentValidation;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Overstay.Application.Commons.Behaviors;
 using Overstay.Application.Commons.Configurations;
 
-namespace Overstay.Application;
+namespace Overstay.Application.Extensions;
 
 public static class ServiceCollectionExtensions
 {
