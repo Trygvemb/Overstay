@@ -1,12 +1,10 @@
 // lib/views/app/profile_page.dart
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/models/update_user_request.dart';
 import 'package:overstay_frontend/models/user_response.dart';
 import 'package:overstay_frontend/services/providers.dart';
 import 'package:overstay_frontend/services/api_exception.dart';
-import 'package:overstay_frontend/services/user_api_service.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -160,6 +158,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   // ───────── save handler ─────────
   Future<void> _saveProfile() async {
+    // hent id fra allerede indlæst brugerprofil
+    //vi stoler på at urrentUserPRovider altid leverer en bruger
+    final current = await ref.read(currentUserProvider.future);
+
     final body = UpdateUserRequest(
       userName: _userNameC.text.trim().isEmpty ? null : _userNameC.text.trim(),
       email: _emailC.text.trim().isEmpty ? null : _emailC.text.trim(),
@@ -169,8 +171,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     try {
       final api = ref.read(userApiServiceProvider);
-      final userId = ref.read(authStateProvider).userId!;
-      await api.updateUser(userId, body.toJson());
+      await api.updateUser(current.id, body.toJson());
 
       ref.invalidate(currentUserProvider); // hent friske data
       _show('Profile updated');
