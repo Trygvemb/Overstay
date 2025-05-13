@@ -71,6 +71,19 @@ class UserApiService extends ApiService {
     );
   }
 
+  // ───────── GET /api/User (current) ─────────
+  Future<UserResponse> getCurrentUser() async {
+    final res = await get('/api/User');
+    if (res.statusCode != 200) throw (res);
+    return UserResponse.fromJson(jsonDecode(res.body));
+  }
+
+  // ───────── PUT /api/User/{id} ─────────
+  Future<void> updateUser(String id, Map<String, dynamic> payload) async {
+    final res = await put('/api/User/$id', payload);
+    if (res.statusCode != 204) throw (res);
+  }
+
   // ---------- GET USERS ----------
   Future<List<UserResponse>> getUsers() async {
     final res = await get('/api/User');

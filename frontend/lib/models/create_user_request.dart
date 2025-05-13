@@ -2,7 +2,7 @@ class CreateUserRequest {
   final String userName;
   final String email;
   final String password;
-  final String? countryId; // kan være null
+  final String? countryId;
 
   CreateUserRequest({
     required this.userName,
