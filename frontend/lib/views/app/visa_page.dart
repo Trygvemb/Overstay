@@ -234,44 +234,41 @@ class _VisaPageState extends ConsumerState<VisaPage> {
     );
   }
 
-  // Metode til at gemme visa data
+  // ---------------- Gem visa (POST eller PUT) ----------------
   Future<void> _saveVisa() async {
     if (selectedVisaType == null ||
         arrivalDateController.text.isEmpty ||
         expiryDateController.text.isEmpty) {
-      _show('Select visa type and arrival date and epiry date');
+      _show('Select visa type, arrival and expiry date');
       return;
     }
+
     final arrival = DateTime.tryParse(arrivalDateController.text);
     final expiry = DateTime.tryParse(expiryDateController.text);
-
     if (arrival == null || expiry == null) {
-      _show('Invalid date format (yyyy-mm-dd)');
+      _show('Invalid date format (yyyy-MM-dd)');
       return;
     }
-
     if (expiry.isBefore(arrival)) {
-      _show('Expiry date must be after arrival date');
+      _show('Expiry must be after arrival');
       return;
     }
-    ref.invalidate(currentVisaProvider);
 
     final api = ref.read(visaApiServiceProvider);
+
     try {
       if (currentVisaId == null) {
-        //-------------opret POST----------------
-        final newId = await api.createVisa(
+        // --- POST ---
+        currentVisaId = await api.createVisa(
           CreateVisaRequest(
             arrivalDate: arrival,
             expireDate: expiry,
             visaTypeId: selectedVisaType!.id,
           ),
         );
-        currentVisaId = newId;
         _show('Visa saved');
-        debugPrint('Visa saved with ID: $newId');
       } else {
-        //----------------opdater PUT ----------------
+        // --- PUT ---
         await api.updateVisa(
           currentVisaId!,
           UpdateVisaRequest(
@@ -281,13 +278,13 @@ class _VisaPageState extends ConsumerState<VisaPage> {
           ),
         );
         _show('Visa updated');
-        debugPrint('Visa updated: $currentVisaId');
       }
-      // Få home-siden til at hente frisk opdateret data
+
+      // tving home-siden til at hente friske data
       ref.invalidate(currentVisaProvider);
-    } on Exception catch (e) {
-      debugPrint('Failed to save visa: $e');
+    } catch (e) {
       _show('Failed to save visa');
+      debugPrint('save error: $e');
     }
   }
 
@@ -310,8 +307,7 @@ class _VisaPageState extends ConsumerState<VisaPage> {
     });
 
     ref.invalidate(currentVisaProvider);
-    _show('Visa fields deleted!');
-    debugPrint('Deleting visa data');
+    _show('Visa deleted');
   }
 
   // "white box" stil
