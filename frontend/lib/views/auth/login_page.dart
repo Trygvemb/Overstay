@@ -250,6 +250,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           .setAuth(
             token: response.token,
             admin: response.claims.contains('Admin'),
+            userId: response.id,
             userName:
                 (response.userName != null && response.userName!.isNotEmpty)
                     ? response.userName!

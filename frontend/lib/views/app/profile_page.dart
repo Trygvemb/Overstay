@@ -54,9 +54,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ),
               child: userAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error:
-                    (_, __) =>
-                        const Center(child: Text('Could not load profile')),
+                error: (err, _) {
+                  if (err is ApiException && err.statusCode == 403) {
+                    return const Center(child: Text('Please sign in again'));
+                  }
+                  return const Center(child: Text('Could not load profile'));
+                },
                 data: (user) => _buildForm(context, user),
               ),
             ),

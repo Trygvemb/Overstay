@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import 'package:overstay_frontend/services/providers.dart';
+import 'auth_state.dart';
+import 'providers.dart';
 import '../models/create_user_request.dart';
 import '../models/sign_in_user_request.dart';
 import '../models/user_response.dart';
@@ -10,7 +12,8 @@ import '../services/api_exception.dart';
 import 'api_service.dart';
 
 class UserApiService extends ApiService {
-  UserApiService(Ref ref) : super(ref);
+  final Ref ref;
+  UserApiService(this.ref) : super(ref);
 
   // ---------- SIGN‑UP ----------
   Future<void> createUser(CreateUserRequest req) async {
@@ -32,6 +35,7 @@ class UserApiService extends ApiService {
     print('SIGN‑IN status : ${res.statusCode}');
     print('SIGN‑IN header : ${res.headers['authorization']}');
     print('SIGN‑IN body   : ${res.body}');
+    print('SIGN-IN userID : ${ref.read<AuthState>(authStateProvider).userId}');
 
     // --- FEJLHÅNDTERING ---
     if (res.statusCode != 200) {
@@ -61,6 +65,7 @@ class UserApiService extends ApiService {
     final userName = bodyJson['userName'] as String?; // kan mangle
     final email = bodyJson['email'] as String?; // kan mangle
     final id = bodyJson['id'] as String?; // kan mangle
+    print(bodyJson.keys);
 
     return SignInResponse(
       token: token,
@@ -71,10 +76,10 @@ class UserApiService extends ApiService {
     );
   }
 
-  // ───────── GET /api/User (current) ─────────
-  Future<UserResponse> getCurrentUser() async {
-    final res = await get('/api/User');
-    if (res.statusCode != 200) throw (res);
+  // ───────── GET /api/User({id})) ─────────
+  Future<UserResponse> getCurrentUser(String id) async {
+    final res = await get('/api/User/$id');
+    if (res.statusCode != 200) throw ApiException(res.statusCode, res.body);
     return UserResponse.fromJson(jsonDecode(res.body));
   }
 

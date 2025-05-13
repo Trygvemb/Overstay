@@ -36,5 +36,6 @@ final currentVisaProvider = FutureProvider<VisaResponse?>((ref) async {
 /// Aktuel brugerprofil
 final currentUserProvider = FutureProvider<UserResponse>((ref) async {
   final api = ref.read(userApiServiceProvider);
-  return api.getCurrentUser();
+  final userId = ref.read(authStateProvider).userId!;
+  return api.getCurrentUser(userId);
 });
