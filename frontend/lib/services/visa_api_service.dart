@@ -22,10 +22,26 @@ class VisaApiService extends ApiService {
         .toList();
   }
 
+  /// GET /api/Visa – henter brugerens (første) visa
+  Future<VisaResponse?> getCurrentVisa() async {
+    final res = await get('/api/Visa');
+    if (res.statusCode != 200) _throw(res);
+
+    final list = jsonDecode(res.body) as List<dynamic>;
+    if (list.isEmpty) return null;
+    return VisaResponse.fromJson(list.first as Map<String, dynamic>);
+  }
+
   /// POST /api/Visa  – opret visa
-  Future<VisaResponse> createVisa(CreateVisaRequest req) async {
-    final res = await post('/api/Visa', {'item': req.toJson()});
-    return parse(res, (j) => VisaResponse.fromJson(j));
+  Future<String> createVisa(CreateVisaRequest req) async {
+    final res = await post('/api/Visa', req.toJson());
+
+    // API svarer 201 + id som ren tekst: "id 3dfg33545s-sdf4545-..."
+    if (res.statusCode == 201) {
+      return res.body.replaceAll('"', '');
+    }
+    _throw(res);
+    throw Exception('Uventet fejl'); // for at tilfredsstille Dart
   }
 
   /// PUT /api/Visa/{id}  – opdater visa

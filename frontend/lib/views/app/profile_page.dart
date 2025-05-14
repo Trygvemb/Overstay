@@ -1,45 +1,71 @@
+// lib/views/app/profile_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:overstay_frontend/models/update_user_request.dart';
+import 'package:overstay_frontend/models/user_response.dart';
+import 'package:overstay_frontend/services/providers.dart';
+import 'package:overstay_frontend/services/api_exception.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
-
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
 }
 
-//controller til at håndtere tilstand og interaktioner i profilformularen
-class _ProfilePageState extends State<ProfilePage> {
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+  // ────── controllers ──────
+  final _userNameC = TextEditingController();
+  final _emailC = TextEditingController();
+  final _passwordC = TextEditingController();
+  String? _selectedCountryId;
+
+  // mock landeliste (brug samme GUIDs som i signup)
+  final _countries = const [
+    {'id': 'd6cf4…4106', 'name': 'Denmark'},
+    {'id': 'b242b…6be0', 'name': 'Sweden'},
+    {'id': 'a1b2c…o5p6', 'name': 'Norway'},
+    {'id': '7f8e9…1j2k', 'name': 'Finland'},
+  ];
+
+  @override
+  void dispose() {
+    _userNameC.dispose();
+    _emailC.dispose();
+    _passwordC.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final userAsync = ref.watch(currentUserProvider);
+
     return Scaffold(
       body: Row(
         children: [
-          // venstre side gradient
+          // venstre side (gradient + form)
           Expanded(
-            flex: 1,
             child: Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF99D98C),
-                    Color(0xFF76C893),
-                    Color(0xFF52B69A),
-                  ],
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF99D98C), Color(0xFF52B69A)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
               ),
-              child: _buildProfileForm(context),
+              child: userAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, _) {
+                  if (err is ApiException && err.statusCode == 403) {
+                    return const Center(child: Text('Please sign in again'));
+                  }
+                  return const Center(child: Text('Could not load profile'));
+                },
+                data: (user) => _buildForm(context, user),
+              ),
             ),
           ),
-          // højre side
+          // højre side (illustration)
           Expanded(
-            flex: 1,
             child: Center(child: Image.asset('assets/images/passport.png')),
           ),
         ],
@@ -47,121 +73,130 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Widget til at bygge profilformularen
-  // Denne widget indeholder tekstfelter til navn og email samt en gem-knap
-  Widget _buildProfileForm(BuildContext context) {
+  // ────────────────────────────────────────────────────────────────
+  Widget _buildForm(BuildContext ctx, UserResponse user) {
+    // 1) pre-utfyld kun første gang
+    if (_userNameC.text.isEmpty) {
+      _userNameC.text = user.userName;
+      _emailC.text = user.email;
+      _selectedCountryId = user.country; // kan være null
+    }
+
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'My Profile',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+      padding: const EdgeInsets.all(32),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'My profile',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          //First name
-          Text(
-            'First Name',
-            style: TextStyle(fontSize: 16, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          _buildTextField(firstNameController, 'First name'),
-          const SizedBox(height: 16),
+            _label('Username'),
+            _field(_userNameC, 'Username'),
+            const SizedBox(height: 16),
 
-          //Last name
-          const Text(
-            'Last name',
-            style: TextStyle(fontSize: 16, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          _buildTextField(lastNameController, 'Last name'),
-          const SizedBox(height: 16),
+            _label('Email'),
+            _field(_emailC, 'Email'),
+            const SizedBox(height: 16),
 
-          // Email
-          const Text(
-            'Email',
-            style: TextStyle(fontSize: 16, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          _buildTextField(emailController, 'Email'),
-          const SizedBox(height: 16),
+            _label('Country'),
+            _countryDropdown(),
+            const SizedBox(height: 16),
 
-          // Password
-          const Text(
-            'Password',
-            style: TextStyle(fontSize: 16, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          _buildTextField(passwordController, 'Password', isPassword: true),
-          const SizedBox(height: 24),
+            _label('New password'),
+            _field(_passwordC, 'Password', obscure: true),
+            const SizedBox(height: 24),
 
-          //vandret streg
-          Divider(thickness: 2, color: const Color(0xFF1A759F)),
-          const SizedBox(height: 16),
-
-          // Row save og slet button
-          Row(
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  //handle save action
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1A759F),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                ),
-                child: const Text(
-                  'save',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              const SizedBox(width: 20),
-
-              ElevatedButton(
-                onPressed: () {
-                  //handle delete action
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1A759F),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                ),
-                child: const Text(
-                  'Delete',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        ],
+            Row(
+              children: [
+                _actionBtn('Save', _saveProfile),
+                const SizedBox(width: 20),
+                _actionBtn('Reset', _resetForm),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildTextField(
-    TextEditingController controller,
-    String hintText, {
-    bool isPassword = false,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        hintText: hintText,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-      ),
+  // ───────── helpers ─────────
+  Widget _label(String txt) =>
+      Text(txt, style: const TextStyle(fontSize: 16, color: Colors.black));
+
+  Widget _field(TextEditingController c, String hint, {bool obscure = false}) =>
+      TextField(
+        controller: c,
+        obscureText: obscure,
+        decoration: InputDecoration(
+          hintText: hint,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+
+  Widget _countryDropdown() => DropdownButtonFormField<String>(
+    isExpanded: true,
+    value: _selectedCountryId,
+    items:
+        _countries
+            .map(
+              (c) => DropdownMenuItem(value: c['id'], child: Text(c['name']!)),
+            )
+            .toList(),
+    onChanged: (val) => setState(() => _selectedCountryId = val),
+    decoration: const InputDecoration(border: OutlineInputBorder()),
+  );
+
+  Widget _actionBtn(String txt, VoidCallback fn) => ElevatedButton(
+    onPressed: fn,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFF1A759F),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+    ),
+    child: Text(txt, style: const TextStyle(color: Colors.white)),
+  );
+
+  // ───────── save handler ─────────
+  Future<void> _saveProfile() async {
+    // hent id fra allerede indlæst brugerprofil
+    //vi stoler på at urrentUserPRovider altid leverer en bruger
+    final current = await ref.read(currentUserProvider.future);
+
+    final body = UpdateUserRequest(
+      userName: _userNameC.text.trim().isEmpty ? null : _userNameC.text.trim(),
+      email: _emailC.text.trim().isEmpty ? null : _emailC.text.trim(),
+      country: _selectedCountryId,
+      password: _passwordC.text.trim().isEmpty ? null : _passwordC.text.trim(),
     );
+
+    try {
+      final api = ref.read(userApiServiceProvider);
+      await api.updateUser(current.id, body.toJson());
+
+      ref.invalidate(currentUserProvider); // hent friske data
+      _show('Profile updated');
+
+      setState(() => _passwordC.clear()); // clear pwd-felt
+    } on ApiException catch (e) {
+      _show('Error ${e.statusCode}: ${e.message}');
+    } catch (_) {
+      _show('Update failed');
+    }
   }
+
+  void _resetForm() {
+    setState(() {
+      _userNameC.clear();
+      _emailC.clear();
+      _passwordC.clear();
+      _selectedCountryId = null;
+    });
+  }
+
+  // ───────── snackbar ─────────
+  void _show(String txt) =>
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(txt)));
 }

@@ -267,6 +267,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
           .setAuth(
             token: signInRes.token,
             admin: signInRes.claims.contains('Admin'),
+            userId: signInRes.id,
             userName:
                 (signInRes.userName != null && signInRes.userName!.isNotEmpty)
                     ? signInRes.userName!

@@ -18,8 +18,8 @@ abstract class ApiService {
   Map<String, String> _defaultHeaders({bool isJson = true}) => {
     'Accept': 'application/json',
     if (isJson) 'Content-Type': 'application/json',
-    if (_ref.read(authStateProvider).jwt != null)
-      'Authorization': 'Bearer ${_ref.read(authStateProvider).jwt}',
+    if (_ref.read(authStateProvider).token != null)
+      'Authorization': 'Bearer ${_ref.read(authStateProvider).token}',
   };
 
   Uri _uri(String path) => Uri.parse('$_baseUrl$path');

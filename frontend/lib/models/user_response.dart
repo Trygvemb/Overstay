@@ -3,12 +3,14 @@ class UserResponse {
   final String id; // bruger‑id (UUID)
   final String userName;
   final String email;
+  final String? country;
   final List<String> roles; // kan være tom
 
   UserResponse({
     required this.id,
     required this.userName,
     required this.email,
+    required this.country,
     required this.roles,
   });
 
@@ -17,6 +19,7 @@ class UserResponse {
       id: json['id'] as String,
       userName: json['userName'] as String? ?? '',
       email: json['email'] as String? ?? '',
+      country: json['country'] as String?,
       roles: List<String>.from(json['roles'] ?? <String>[]),
     );
   }

@@ -1,20 +1,22 @@
+import 'package:intl/intl.dart';
+
 class UpdateVisaRequest {
-  final DateTime? arrivalDate;
-  final DateTime? expireDate;
-  final String? visaTypeId;
-  final String? userId; // kun hvis du vil flytte et visa til anden bruger
+  final DateTime arrivalDate;
+  final DateTime expireDate;
+  final String visaTypeId;
 
   UpdateVisaRequest({
-    this.arrivalDate,
-    this.expireDate,
-    this.visaTypeId,
-    this.userId,
+    required this.arrivalDate,
+    required this.expireDate,
+    required this.visaTypeId,
   });
 
+  // -------------- ens formatter som i CreateVisaRequest --------------
+  static String _fmt(DateTime d) => DateFormat('yyyy-MM-dd').format(d);
+
   Map<String, dynamic> toJson() => {
-    'arrivalDate': arrivalDate?.toIso8601String(),
-    'expireDate': expireDate?.toIso8601String(),
+    'arrivalDate': _fmt(arrivalDate),
+    'expireDate': _fmt(expireDate),
     'visaTypeId': visaTypeId,
-    'userId': userId,
   };
 }
