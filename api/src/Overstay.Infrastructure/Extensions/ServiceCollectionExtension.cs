@@ -23,6 +23,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IEmailService, EmailService>();
 
         return services;
     }

@@ -4,5 +4,5 @@ namespace Overstay.Application.Services;
 
 public interface IEmailService
 {
-    Task SendEmail(EmailData emailData);
+    Task SendEmailAsync(EmailData emailData);
 }

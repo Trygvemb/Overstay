@@ -1,11 +1,9 @@
 using System.Text.Json.Serialization;
 using Overstay.API.Commons;
-using Overstay.Application;
 using Overstay.Application.Commons.JsonConverters;
 using Overstay.Application.Extensions;
-using Overstay.Infrastructure;
-using Overstay.Infrastructure.Data;
 using Overstay.Infrastructure.Extensions;
+using Overstay.Infrastructure.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +36,7 @@ builder.Services.AddFluentEmail(builder.Configuration);
 builder.Services.AddIdentity(builder.Configuration);
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddAuthorizationPolicies();
+builder.Services.AddHostedService<VisaReminderBackgroundService>();
 
 builder.Services.AddCors(options =>
 {

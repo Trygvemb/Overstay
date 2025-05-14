@@ -1,3 +1,5 @@
+using FluentEmail.Core;
+using FluentEmail.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +12,8 @@ public static class FluentEmailExtensions
         ConfigurationManager configuration
     )
     {
+        Email.DefaultRenderer = new RazorRenderer();
+
         var emailSettings = configuration.GetSection("EmailSettings");
 
         var defaultFromEmail = emailSettings["DefaultFromEmail"];

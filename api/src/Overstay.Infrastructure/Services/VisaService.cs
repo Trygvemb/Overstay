@@ -127,61 +127,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         }
     }
 
-    public async Task<Result> SendReminderAsync(CancellationToken cancellation)
-    {
-        var responseResult = await GetVisaEmailNotificationsAsync(cancellation);
-
-        if (responseResult.IsFailure)
-        {
-            logger.LogError(
-                "An error occurred while retrieving visa email notifications: {Error}",
-                responseResult.Error
-            );
-            return Result.Failure(responseResult.Error);
-        }
-
-        try
-        {
-            var currenDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(
-                DateTime.UtcNow,
-                Constant.ThailandTimezoneId
-            );
-
-            foreach (var notification in responseResult.Value)
-            {
-                var daysBeforeTimeSpan = TimeSpan.FromDays(notification.DaysBefore);
-
-                foreach (
-                    var visa in notification.Visas.Where(visa =>
-                        notification.ExpiredNotification
-                            && currenDateTime == visa.ExpireDate - daysBeforeTimeSpan
-                        || notification.NintyDaysNotification
-                            && currenDateTime
-                                == visa.ArrivalDate - daysBeforeTimeSpan + TimeSpan.FromDays(90)
-                    )
-                )
-                {
-                    await SendEmailAsync(
-                        notification.Email,
-                        notification.UserName,
-                        notification.ExpiredNotification,
-                        notification.NintyDaysNotification,
-                        visa,
-                        cancellation
-                    );
-                }
-            }
-
-            return Result.Success();
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "An error occurred while sending email notifications");
-            return Result.Failure(Error.ServerError);
-        }
-    }
-
-    private async Task<Result<List<VisaEmailNotification>>> GetVisaEmailNotificationsAsync(
+    public async Task<Result<List<UserNotificationsAndVisas>>> GetVisaEmailNotificationsAsync(
         CancellationToken cancellationToken
     )
     {
@@ -214,7 +160,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
                         }
                 )
                 .GroupBy(x => new { x.Email, x.UserName })
-                .Select(group => new VisaEmailNotification
+                .Select(group => new UserNotificationsAndVisas
                 {
                     Email = group.Key.Email!,
                     UserName = group.Key.UserName!,
@@ -237,39 +183,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred while retrieving visa email notifications");
-            return Result.Failure<List<VisaEmailNotification>>(Error.ServerError);
-        }
-    }
-
-    private async Task SendEmailAsync(
-        string email,
-        string userName,
-        bool expiredNotification,
-        bool nintyDaysNotification,
-        VisaNameAndDates visa,
-        CancellationToken cancellation
-    )
-    {
-        if (expiredNotification)
-        {
-            // Send email for expired notification
-            // await emailService.SendVisaExpiredNotificationAsync(
-            //     email,
-            //     userName,
-            //     visaName,
-            //     cancellation
-            // );
-        }
-
-        if (nintyDaysNotification)
-        {
-            // Send email for 90 days notification
-            // await emailService.SendVisaNintyDaysNotificationAsync(
-            //     email,
-            //     userName,
-            //     visaName,
-            //     cancellation
-            // );
+            return Result.Failure<List<UserNotificationsAndVisas>>(Error.ServerError);
         }
     }
 }
