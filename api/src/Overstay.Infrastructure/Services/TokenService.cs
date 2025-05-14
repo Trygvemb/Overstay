@@ -48,6 +48,7 @@ public class TokenService(IConfiguration configuration, ILogger<TokenService> lo
         {
             AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
             ExpiresAt = expires,
+            UserId = user.Id,
         };
 
         logger.LogInformation("Successfully generated JWT token for user {UserId}", user.Id);
