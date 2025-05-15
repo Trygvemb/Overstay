@@ -2,15 +2,15 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Overstay.Application.Commons.Models;
 using Overstay.Application.Features.Users.Commands;
-using Overstay.Application.Responses;
 using Overstay.Infrastructure.Data.Identities;
 
 namespace Overstay.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(ISender mediator, SignInManager<ApplicationUser> signInManager) 
+public class AuthController(ISender mediator, SignInManager<ApplicationUser> signInManager)
     : MediatorControllerBase(mediator)
 {
     [HttpGet("external-login")]
@@ -24,17 +24,20 @@ public class AuthController(ISender mediator, SignInManager<ApplicationUser> sig
         {
             return BadRequest(new { error = "Provider parameter is required" });
         }
-        
+
         // Validate provider
         var validationResult = await Mediator.Send(new ExternalLoginCommand(provider, returnUrl));
         if (validationResult.IsFailure)
         {
             return HandleFailedResult(validationResult);
         }
-        
+
         var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Auth", new { returnUrl });
-        var properties = signInManager.ConfigureExternalAuthenticationProperties(validationResult.Value, redirectUrl);
-        
+        var properties = signInManager.ConfigureExternalAuthenticationProperties(
+            validationResult.Value,
+            redirectUrl
+        );
+
         return Challenge(properties, validationResult.Value);
     }
 
@@ -47,7 +50,7 @@ public class AuthController(ISender mediator, SignInManager<ApplicationUser> sig
     public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
     {
         var result = await Mediator.Send(new ExternalLoginCallbackCommand(returnUrl));
-        
+
         return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 }

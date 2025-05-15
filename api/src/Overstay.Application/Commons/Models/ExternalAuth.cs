@@ -1,6 +1,6 @@
-namespace Overstay.Application.Responses;
+namespace Overstay.Application.Commons.Models;
 
-public record ExternalAuthResponse
+public record ExternalAuth
 {
     public string? RedirectUrl { get; init; }
     public TokenResponse? Token { get; init; }

@@ -4,7 +4,7 @@ using Overstay.Application.Commons.Constants;
 using Overstay.Application.Features.VisaTypes.Commands;
 using Overstay.Application.Features.VisaTypes.Queries;
 using Overstay.Application.Features.VisaTypes.Requests;
-using Overstay.Application.Responses;
+using Overstay.Application.Features.VisaTypes.Responses;
 
 namespace Overstay.API.Controllers;
 
@@ -18,10 +18,8 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(new GetVisaTypesQuery(), cancellationToken);
-        
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : HandleFailedResult(result);
+
+        return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -33,10 +31,8 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(new GetVisaTypeQuery(id), cancellationToken);
-        
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : HandleFailedResult(result);
+
+        return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 
     [HttpPost]
@@ -51,7 +47,7 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
     )
     {
         var result = await Mediator.Send(command, cancellationToken);
-        
+
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetById), new { id = result.Value }, result.Value)
             : HandleFailedResult(result);
@@ -72,9 +68,7 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
     {
         var result = await Mediator.Send(new UpdateVisaTypeCommand(id, request), cancellationToken);
 
-        return result.IsSuccess
-            ? NoContent()
-            : HandleFailedResult(result);
+        return result.IsSuccess ? NoContent() : HandleFailedResult(result);
     }
 
     [HttpDelete("{id:guid}")]
@@ -86,9 +80,7 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         var result = await Mediator.Send(new DeleteVisaTypeCommand(id), cancellationToken);
-        
-        return result.IsSuccess
-            ? NoContent()
-            : HandleFailedResult(result);
+
+        return result.IsSuccess ? NoContent() : HandleFailedResult(result);
     }
 }

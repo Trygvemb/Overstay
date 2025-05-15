@@ -1,5 +1,5 @@
 using Overstay.Application.Commons.Results;
-using Overstay.Application.Responses;
+using Overstay.Application.Features.Visas.Responses;
 using Overstay.Application.Services;
 
 namespace Overstay.Application.Features.Visas.Queries;

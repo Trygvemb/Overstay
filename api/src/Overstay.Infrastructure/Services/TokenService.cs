@@ -3,7 +3,8 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Overstay.Application.Responses;
+using Overstay.Application.Commons.Models;
+using Overstay.Application.Features.Users.Responses;
 using Overstay.Application.Services;
 
 namespace Overstay.Infrastructure.Services;

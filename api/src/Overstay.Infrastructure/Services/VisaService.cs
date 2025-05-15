@@ -1,6 +1,8 @@
 using Overstay.Application.Commons.Errors;
+using Overstay.Application.Commons.Models;
 using Overstay.Application.Commons.Results;
 using Overstay.Application.Services;
+using Overstay.Domain.Constants;
 using Overstay.Infrastructure.Data.DbContexts;
 
 namespace Overstay.Infrastructure.Services;
@@ -122,6 +124,66 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         {
             logger.LogError(ex, "An error occurred while deleting visa with ID {VisaId}", id);
             return Result.Failure(Error.ServerError);
+        }
+    }
+
+    public async Task<Result<List<UserNotificationsAndVisas>>> GetVisaEmailNotificationsAsync(
+        CancellationToken cancellationToken
+    )
+    {
+        try
+        {
+            var visas = await context
+                .Visas.Where(v =>
+                    v.IsActive
+                    && v.User.Notification != null
+                    && v.User.Notification.EmailNotification == true
+                )
+                .Include(v => v.VisaType)
+                .Include(v => v.User)
+                .ThenInclude(u => u.Notification)
+                .Join(
+                    context.ApplicationUsers,
+                    visa => visa.UserId,
+                    appUser => appUser.Id,
+                    (visa, appUser) =>
+                        new
+                        {
+                            appUser.Email,
+                            appUser.UserName,
+                            visa.ArrivalDate,
+                            visa.ExpireDate,
+                            visa.VisaType.Name,
+                            visa.User.Notification!.DaysBefore,
+                            visa.User.Notification.ExpiredNotification,
+                            visa.User.Notification.NintyDaysNotification,
+                        }
+                )
+                .GroupBy(x => new { x.Email, x.UserName })
+                .Select(group => new UserNotificationsAndVisas
+                {
+                    Email = group.Key.Email!,
+                    UserName = group.Key.UserName!,
+                    DaysBefore = group.First().DaysBefore,
+                    ExpiredNotification = group.First().ExpiredNotification,
+                    NintyDaysNotification = group.First().NintyDaysNotification,
+                    Visas = group
+                        .Select(v => new VisaNameAndDates
+                        {
+                            Name = group.First().Name!,
+                            ArrivalDate = v.ArrivalDate,
+                            ExpireDate = v.ExpireDate,
+                        })
+                        .ToList(),
+                })
+                .ToListAsync(cancellationToken);
+
+            return Result.Success(visas);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while retrieving visa email notifications");
+            return Result.Failure<List<UserNotificationsAndVisas>>(Error.ServerError);
         }
     }
 }

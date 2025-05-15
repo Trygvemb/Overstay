@@ -1,6 +1,7 @@
+using Overstay.Application.Commons.Models;
 using Overstay.Application.Commons.Results;
 using Overstay.Application.Features.Users.Requests;
-using Overstay.Application.Responses;
+using Overstay.Application.Features.Users.Responses;
 
 namespace Overstay.Application.Services;
 
@@ -33,13 +34,8 @@ public interface IUserService
     public Task<Result<UserWithRolesResponse>> AddRoleAsync(Guid userId, string roleName);
     public Task<Result> RemoveRoleAsync(Guid userId, string roleName);
     public Task<Result<List<string>>> GetUserRolesAsync(Guid userId);
-    
+
     // OAuth
-    Task<Result<string>> ValidateExternalAuthProvider(
-        string provider, 
-        string returnUrl);
-    Task<Result<ExternalAuthResponse>> ProcessExternalLoginCallbackAsync(
-        string returnUrl);
-
-
+    Task<Result<string>> ValidateExternalAuthProvider(string provider, string returnUrl);
+    Task<Result<ExternalAuth>> ProcessExternalLoginCallbackAsync(string returnUrl);
 }

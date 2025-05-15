@@ -1,4 +1,5 @@
-using Overstay.Application.Responses;
+using Overstay.Application.Commons.Models;
+using Overstay.Application.Features.Users.Responses;
 
 namespace Overstay.Application.Services;
 
