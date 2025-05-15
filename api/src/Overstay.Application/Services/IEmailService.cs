@@ -4,15 +4,5 @@ namespace Overstay.Application.Services;
 
 public interface IEmailService
 {
-    Task SendEmailAsync(
-        EmailData emailData,
-        string? templateName = null,
-        VisaNameAndDates? model = null
-    );
-
-    Task SendUsingTemplateFromFile(
-        EmailData emailMetadata,
-        VisaNameAndDates user,
-        string templateFile
-    );
+    Task SendEmailAsync(EmailData emailData, string? templateName = null, object? model = null);
 }

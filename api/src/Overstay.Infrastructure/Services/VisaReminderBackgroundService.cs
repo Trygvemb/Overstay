@@ -34,7 +34,6 @@ public class VisaReminderBackgroundService(
                 logger.LogError(ex, "An unexpected error occurred in the visa reminder job");
             }
 
-            //await Task.Delay(TimeSpan.FromSeconds(180), cancellationToken); // for testing
             await Task.Delay(TimeSpan.FromDays(1), cancellationToken);
         }
     }
@@ -133,14 +132,6 @@ public class VisaReminderBackgroundService(
         {
             RecipientEmail = notification.Email,
             Subject = "Visa Reminder",
-            Body = JsonSerializer.Serialize(
-                new
-                {
-                    VisaName = visa.Name,
-                    ExpireDate = visa.ExpireDate.ToString("yyyy-MM-dd"),
-                    ArrivalDate = visa.ArrivalDate.ToString("yyyy-MM-dd"),
-                }
-            ),
         };
 
         try
@@ -167,9 +158,6 @@ public class VisaReminderBackgroundService(
 
         var templatePath =
             $"{Directory.GetCurrentDirectory()}/../Overstay.Infrastructure/Data/Templates/{templateName}";
-
-        // var basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data/Templates");
-        // var templatePath = Path.Combine(basePath, templateName);
 
         if (!File.Exists(templatePath))
         {
