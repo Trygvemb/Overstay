@@ -22,6 +22,15 @@ public static class FluentEmailExtensions
         var userName = emailSettings["UserName"];
         var password = emailSettings["Password"];
 
-        services.AddFluentEmail(defaultFromEmail).AddSmtpSender(host, port, userName, password);
+        if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+        {
+            services.AddFluentEmail(defaultFromEmail).AddSmtpSender(host, port).AddRazorRenderer();
+            return;
+        }
+
+        services
+            .AddFluentEmail(defaultFromEmail)
+            .AddSmtpSender(host, port, userName, password)
+            .AddRazorRenderer();
     }
 }

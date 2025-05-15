@@ -36,6 +36,7 @@ builder.Services.AddFluentEmail(builder.Configuration);
 builder.Services.AddIdentity(builder.Configuration);
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddAuthorizationPolicies();
+
 builder.Services.AddHostedService<VisaReminderBackgroundService>();
 
 builder.Services.AddCors(options =>

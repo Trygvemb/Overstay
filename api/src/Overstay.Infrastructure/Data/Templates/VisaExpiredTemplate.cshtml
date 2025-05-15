@@ -1,18 +1,19 @@
 @model Overstay.Application.Commons.Models.VisaNameAndDates
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="utf-8" />
     <title>Visa Expiry Warning</title>
 </head>
 <body>
-    <p>The following visas are expiring soon:</p>
-    <ul>
-        Visa Name: @model.Name<br />
-        Arrival Date: @model.ArrivalDate.ToString("MMMM dd, yyyy")<br />
-        Expiry Date: @model.ExpireDate.ToString("MMMM dd, yyyy")
-    </ul>
-    <p>Please take the necessary actions to renew them before they expire.</p>
-    <p>Best regards,<br />The Overstay Team</p>
+<p>The following visa is expiring soon:</p>
+<ul>
+    <li><strong>Visa Name:</strong> @Model.Name</li>
+    <li><strong>Arrival Date:</strong> @Model.ArrivalDate.ToString("MMMM dd, yyyy")</li>
+    <li><strong>Expiry Date:</strong> @Model.ExpireDate.ToString("MMMM dd, yyyy")</li>
+</ul>
+<p>Please take the necessary actions to renew it before it expires.</p>
+<p>Best regards,<br />The Overstay Team</p>
 </body>
 </html>

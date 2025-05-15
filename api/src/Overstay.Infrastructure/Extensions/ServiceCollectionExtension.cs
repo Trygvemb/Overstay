@@ -24,6 +24,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddSingleton<ITimezoneProvider, TimezoneProvider>();
 
         return services;
     }

@@ -24,4 +24,7 @@
     <ProjectReference Include="..\..\src\Overstay.Domain\Overstay.Domain.csproj" />
     <ProjectReference Include="..\..\src\Overstay.Infrastructure\Overstay.Infrastructure.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\Services\" />
+  </ItemGroup>
 </Project>

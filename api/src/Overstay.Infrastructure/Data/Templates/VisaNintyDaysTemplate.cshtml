@@ -1,17 +1,20 @@
 @model Overstay.Application.Commons.Models.VisaNameAndDates
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="utf-8" />
     <title>90 Days Report Warning</title>
 </head>
 <body>
-    <p>Your 90 days report is coming up for the following visa</p>
-    <ul>
-        Visa Name: @model.Name<br />
-        Arrival Date: @model.ArrivalDate.ToString("MMMM dd, yyyy")<br />
-        Expiry Date: @model.ExpireDate.ToString("MMMM dd, yyyy")
-        90 days Report Date: @model.ArrivalDate.AddDays(90).ToString("MMMM dd, yyyy")
-    </ul>
-    <p>Please make sure to do the 90 days report before the date.</p>
-    <p>Best regards,<br />The Overstay Team</p>
+<p>Your 90 days report is coming up for the following visa:</p>
+<ul>
+    <li><strong>Visa Name:</strong> @Model.Name</li>
+    <li><strong>Arrival Date:</strong> @Model.ArrivalDate.ToString("MMMM dd, yyyy")</li>
+    <li><strong>Expiry Date:</strong> @Model.ExpireDate.ToString("MMMM dd, yyyy")</li>
+    <li><strong>90 Days Report Date:</strong> @Model.ArrivalDate.AddDays(90).ToString("MMMM dd, yyyy")</li>
+</ul>
+<p>Please make sure to do the 90 days report before the date.</p>
+<p>Best regards,<br />The Overstay Team</p>
+</body>
+</html>
