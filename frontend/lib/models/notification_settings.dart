@@ -1,4 +1,4 @@
-// tanken er at denne skal håndtere brugerens ønskede notifikationsvalg
+// models, tanken er at denne skal håndtere brugerens ønskede notifikationsvalg
 //daysBefore, allowEmail, allow90days,
 
 class NotificationSettings {
