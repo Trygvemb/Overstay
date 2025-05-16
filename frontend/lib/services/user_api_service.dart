@@ -64,7 +64,7 @@ class UserApiService extends ApiService {
     // --- 3. Uddrag evt. ekstra felter (kan være null) ---
     final userName = bodyJson['userName'] as String?; // kan mangle
     final email = bodyJson['email'] as String?; // kan mangle
-    final id = bodyJson['id'] as String?; // kan mangle
+    final id = bodyJson['userId'] ?? bodyJson['id'] as String?; // kan mangle
     print(bodyJson.keys);
 
     return SignInResponse(
