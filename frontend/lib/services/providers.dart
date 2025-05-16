@@ -6,6 +6,8 @@ import 'visa_api_service.dart';
 import 'package:overstay_frontend/models/user_response.dart';
 import 'package:overstay_frontend/models/update_user_request.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:overstay_frontend/models/notification_settings.dart';
+import 'package:overstay_frontend/services/notifications_api_service.dart';
 
 /// Holder base‑URL (sættes som override i main.dart)
 final apiBaseUrlProvider = Provider<String>((_) {
@@ -38,4 +40,14 @@ final currentUserProvider = FutureProvider<UserResponse>((ref) async {
   final api = ref.read(userApiServiceProvider);
   final userId = ref.read(authStateProvider).userId!;
   return api.getCurrentUser(userId);
+});
+
+// service
+final notificationApiProvider = Provider<NotificationApiService>(
+  (ref) => NotificationApiService(ref),
+);
+
+// current settings (auto-loaded)
+final currentNotificationProvider = FutureProvider<NotificationSettings>((ref) {
+  return ref.read(notificationApiProvider).getNotification();
 });
