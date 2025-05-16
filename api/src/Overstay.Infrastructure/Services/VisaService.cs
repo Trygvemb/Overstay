@@ -1,3 +1,4 @@
+using Overstay.Application.Commons.Constants;
 using Overstay.Application.Commons.Errors;
 using Overstay.Application.Commons.Models;
 using Overstay.Application.Commons.Results;
@@ -31,29 +32,30 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         }
     }
 
-    public async Task<Result<Visa>> GetByIdAsync(
-        Guid id,
+    public async Task<Result<Visa>> GetActiveVisaAsync(
         Guid userId,
         CancellationToken cancellationToken
     )
     {
         try
         {
-            logger.LogInformation("Retrieving visa with ID {VisaId}", id);
+            logger.LogInformation("Retrieving active visa");
             var visa = await context
                 .Visas.Include(v => v.VisaType)
-                .FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
+                .FirstOrDefaultAsync(v => v.IsActive, cancellationToken);
 
             if (visa != null && visa.UserId != userId)
                 return Result.Failure<Visa>(UserErrors.AccessDenied);
 
             return visa is null
-                ? Result.Failure<Visa>(VisaErrors.NotFound(id))
+                ? Result.Failure<Visa>(
+                    new Error(ErrorTypeConstants.NotFound, "couldn't find active visa")
+                )
                 : Result.Success(visa);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while retrieving visa with ID {VisaId}", id);
+            logger.LogError(ex, "An error occurred while retrieving visa");
             return Result.Failure<Visa>(Error.ServerError);
         }
     }
@@ -62,6 +64,15 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
     {
         try
         {
+            var visas = await GetAllAsync(visa.UserId, cancellationToken);
+            if (visas is { IsSuccess: true, Value.Count: > 0 })
+            {
+                foreach (var oldVisa in visas.Value.Where(oldVisa => oldVisa.IsActive))
+                {
+                    oldVisa.SetIsActive(false);
+                }
+            }
+
             logger.LogInformation("Creating new visa");
             await context.Visas.AddAsync(visa, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);

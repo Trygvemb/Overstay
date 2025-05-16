@@ -11,7 +11,7 @@ namespace Overstay.API.Controllers;
 
 public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
 {
-    [HttpGet]
+    [HttpGet("all")]
     [ProducesResponseType(typeof(List<VisaResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -29,20 +29,20 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
         return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet]
     [ProducesResponseType(typeof(VisaResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetActiveVisa(CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
 
         if (userId == null)
             return Unauthorized();
 
-        var result = await Mediator.Send(new GetVisaQuery(id, userId.Value), cancellationToken);
+        var result = await Mediator.Send(new GetVisaQuery(userId.Value), cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
     }
 
@@ -70,7 +70,7 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
         var visaId = result.GetValue<Guid>();
 
         return result.IsSuccess
-            ? CreatedAtAction(nameof(GetById), new { id = visaId }, visaId)
+            ? CreatedAtAction(nameof(GetActiveVisa), new { id = visaId }, visaId)
             : HandleFailedResult(result);
     }
 
