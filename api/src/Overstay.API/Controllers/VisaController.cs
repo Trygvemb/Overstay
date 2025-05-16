@@ -12,7 +12,7 @@ namespace Overstay.API.Controllers;
 public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
 {
     [HttpGet]
-    [ProducesResponseType(typeof(List<VisaTypeResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<VisaResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
