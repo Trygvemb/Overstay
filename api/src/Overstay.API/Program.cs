@@ -4,6 +4,7 @@ using Overstay.Application.Commons.Helpers;
 using Overstay.Application.Extensions;
 using Overstay.Infrastructure.Extensions;
 using Overstay.Infrastructure.Services;
+using Overstay.Infrastructure.Services.BackgroundServices;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);

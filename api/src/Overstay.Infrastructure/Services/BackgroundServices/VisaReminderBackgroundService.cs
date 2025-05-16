@@ -4,7 +4,7 @@ using Overstay.Application.Commons.Helpers;
 using Overstay.Application.Commons.Models;
 using Overstay.Application.Services;
 
-namespace Overstay.Infrastructure.Services;
+namespace Overstay.Infrastructure.Services.BackgroundServices;
 
 public class VisaReminderBackgroundService(
     IServiceProvider serviceProvider,
