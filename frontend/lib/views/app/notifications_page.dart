@@ -108,7 +108,15 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
       ),
       const SizedBox(height: 24),
 
-      // 1) "Notify me x days before expiration" + Tekstfelt
+      _row(
+        label: 'Email notification',
+        child: Checkbox(
+          value: _email,
+          onChanged: (bool) => setState(() => _email = bool ?? false),
+        ),
+      ),
+
+      //"Notify me x days before expiration" + Tekstfelt
       _row(
         label: 'Notify me x days before expiration',
         child: TextField(
