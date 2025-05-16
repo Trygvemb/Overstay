@@ -26,7 +26,7 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
             .Distinct()
             .ToArray();
 
-        if (errors.Any())
+        if (errors.Length != 0)
         {
             return CreateValidationResult<TResponse>(errors);
         }

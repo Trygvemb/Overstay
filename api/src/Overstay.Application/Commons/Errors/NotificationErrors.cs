@@ -2,7 +2,7 @@ using Overstay.Application.Commons.Constants;
 
 namespace Overstay.Application.Commons.Errors;
 
-public sealed class NotificationErrors
+public sealed record NotificationErrors
 {
     public static Error NotificationsAlreadyExists =>
         new Error(ErrorTypeConstants.Conflict, "User can only have one notification settings.");
