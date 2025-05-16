@@ -24,7 +24,7 @@ public class VisaTypeController(ISender mediator) : MediatorControllerBase(media
 
     [HttpGet("{id:guid}")]
     [Authorize]
-    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VisaTypeResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
