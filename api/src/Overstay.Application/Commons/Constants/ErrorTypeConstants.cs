@@ -11,9 +11,3 @@ public static class ErrorTypeConstants
     public const string InternalServerError = "Internal Server Error";
     public const string Conflict = "Conflict Error";
 }
-
-public static class RoleTypeConstants
-{
-    public const string Admin = "Admin";
-    public const string User = "User";
-}

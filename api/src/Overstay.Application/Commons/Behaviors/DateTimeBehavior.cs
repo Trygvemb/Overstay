@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Overstay.Application.Commons.Behaviors;
 
-public class DateToDateTimeConverter : JsonConverter<DateTime>
+public class DateTimeBehavior : JsonConverter<DateTime>
 {
     private readonly string[] _formats =
     [
@@ -27,7 +27,7 @@ public class DateToDateTimeConverter : JsonConverter<DateTime>
                 dateString,
                 _formats,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.AdjustToUniversal,
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
                 out var date
             )
         )

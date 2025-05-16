@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Overstay.Application.Commons.Errors;
 using Overstay.Application.Commons.Results;
 
-namespace Overstay.Application.Commons.JsonConverters;
+namespace Overstay.Application.Commons.Helpers;
 
 // Base converter class for non-generic Result
 public class ResultJsonConverter : JsonConverter<Result>

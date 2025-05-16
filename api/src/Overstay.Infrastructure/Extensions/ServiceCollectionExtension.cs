@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Overstay.Application.Commons.Helpers;
 using Overstay.Application.Services;
 using Overstay.Infrastructure.Configurations;
 using Overstay.Infrastructure.Data.DbContexts;
@@ -24,7 +25,6 @@ public static class ServiceCollectionExtension
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IEmailService, EmailService>();
-        services.AddSingleton<ITimezoneProvider, TimezoneProvider>();
 
         return services;
     }

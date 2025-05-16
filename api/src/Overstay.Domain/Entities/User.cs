@@ -13,5 +13,8 @@ public class User : Entity
 
     protected User() { }
 
-    public User(Guid countryId) { }
+    public User(Guid countryId)
+    {
+        CountryId = countryId;
+    }
 }
