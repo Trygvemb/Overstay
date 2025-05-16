@@ -15,7 +15,7 @@ public class Visa : Entity
     public Guid VisaTypeId { get; set; }
     public Guid UserId { get; set; }
 
-    public VisaType VisaType { get; } = null!;
+    public VisaType VisaType { get; set; } = null!;
     public User User { get; set; } = null!;
 
     protected Visa()

@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Overstay.Application.Commons.Constants;
 using Overstay.Application.Commons.Errors;
-using Overstay.Application.Commons.JsonConverters;
+using Overstay.Application.Commons.Helpers;
 
 namespace Overstay.Application.Commons.Results;
 

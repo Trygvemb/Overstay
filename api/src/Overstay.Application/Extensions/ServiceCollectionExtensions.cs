@@ -4,6 +4,7 @@ using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Overstay.Application.Commons.Behaviors;
 using Overstay.Application.Commons.Configurations;
+using Overstay.Application.Commons.Helpers;
 
 namespace Overstay.Application.Extensions;
 
@@ -26,6 +27,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton(TypeAdapterConfig.GlobalSettings);
         services.AddScoped<IMapper, Mapper>();
+        services.AddSingleton<ITimezoneProvider, TimezoneProvider>();
 
         return services;
     }

@@ -1,4 +1,4 @@
-namespace Overstay.Application.Services;
+namespace Overstay.Application.Commons.Helpers;
 
 public interface ITimezoneProvider
 {

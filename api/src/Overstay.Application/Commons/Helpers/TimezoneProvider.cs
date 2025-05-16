@@ -1,9 +1,6 @@
-using Overstay.Application.Services;
 using Overstay.Domain.Constants;
 
-namespace Overstay.Infrastructure.Services;
-
-using System;
+namespace Overstay.Application.Commons.Helpers;
 
 public class TimezoneProvider : ITimezoneProvider
 {
