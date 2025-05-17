@@ -35,7 +35,7 @@ class UserApiService extends ApiService {
     print('SIGN‑IN status : ${res.statusCode}');
     print('SIGN‑IN header : ${res.headers['authorization']}');
     print('SIGN‑IN body   : ${res.body}');
-    print('SIGN-IN userID : ${ref.read<AuthState>(authStateProvider).userId}');
+    print('SIGN-IN userId : ${ref.read<AuthState>(authStateProvider).userId}');
 
     // --- FEJLHÅNDTERING ---
     if (res.statusCode != 200) {

@@ -8,6 +8,7 @@ import 'package:overstay_frontend/models/update_user_request.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:overstay_frontend/models/notification_settings.dart';
 import 'package:overstay_frontend/services/notifications_api_service.dart';
+import 'package:overstay_frontend/services/api_exception.dart';
 
 /// Holder base‑URL (sættes som override i main.dart)
 final apiBaseUrlProvider = Provider<String>((_) {
@@ -42,12 +43,19 @@ final currentUserProvider = FutureProvider<UserResponse>((ref) async {
   return api.getCurrentUser(userId);
 });
 
-// service
+// --------------------- Notification API ---------------------
+
+// service-provider
 final notificationApiProvider = Provider<NotificationApiService>(
   (ref) => NotificationApiService(ref),
 );
 
-// current settings (auto-loaded)
-final currentNotificationProvider = FutureProvider<NotificationSettings>((ref) {
-  return ref.read(notificationApiProvider).getNotification();
+// auto-load brugerens aktuelle settings (kan være null første gang)
+final currentNotificationProvider = FutureProvider<NotificationSettings?>((
+  ref,
+) async {
+  final api = ref.read(notificationApiProvider);
+  // getSettings() kaster selv ApiException hvis noget går galt,
+  //  men returnerer null, hvis back-end svarer 404 (ingen record endnu)
+  return api.getSettings();
 });

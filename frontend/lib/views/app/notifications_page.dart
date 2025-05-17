@@ -22,13 +22,13 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
   bool _email = false;
   bool _nintyDays = false;
   bool _expire = false;
+  bool _initialisedFromServer = false;
 
   // --------------------- UI ---------------------
   @override
   Widget build(BuildContext context) {
     // Hent notification settings fra provider
     final asyncSettings = ref.watch(currentNotificationProvider);
-
     return asyncSettings.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => _errorWidget(e),
@@ -47,9 +47,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
   );
 
   // ------- VIS INDHOLD ---------
-  Widget _buildLoadedUI(NotificationSettings settings) {
+  Widget _buildLoadedUI(NotificationSettings? settings) {
     // Opdater controller og booleans med de aktuelle værdier
-    if (!_initialisedFromServer) {
+    if (!_initialisedFromServer && settings != null) {
+      //kun første gang
       _daysController.text = settings.daysBefore.toString();
       _email = settings.emailNotification;
       _nintyDays = settings.nintyDaysNotification;
@@ -74,37 +75,28 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                 end: Alignment.bottomCenter,
               ),
             ),
-            child: _buildNotificationForm(),
+            child: SingleChildScrollView(child: _buildNotificationForm()),
           ),
         ),
-
         // Højre side (billede)
         Expanded(
           child: Center(
-            child: Image.asset('assets/images/plane.png', width: 250),
+            child: Image.asset('assets/images/plane.png', width: 220),
           ),
         ),
       ],
     );
   }
 
-  // flag så vi kun pre-loader fra server én gang
-  bool _initialisedFromServer = false;
-
   // --------------------- selve FORM-widget ---------------------
 
   Widget _buildNotificationForm() => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
-    mainAxisAlignment: MainAxisAlignment.center,
     children: [
       // Overskrift
       const Text(
         'Notification settings',
-        style: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
+        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 24),
 
@@ -112,7 +104,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         label: 'Email notification',
         child: Checkbox(
           value: _email,
-          onChanged: (bool) => setState(() => _email = bool ?? false),
+          onChanged: (v) => setState(() => _email = v ?? false),
         ),
       ),
 
@@ -130,7 +122,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         label: '90 days reporting reminder',
         child: Checkbox(
           value: _nintyDays,
-          onChanged: (bool) => setState(() => _nintyDays = bool ?? false),
+          onChanged: (v) => setState(() => _nintyDays = v ?? false),
         ),
       ),
 
@@ -138,7 +130,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         label: 'Visa expiry reminder',
         child: Checkbox(
           value: _expire,
-          onChanged: (bool) => setState(() => _expire = bool ?? false),
+          onChanged: (v) => setState(() => _expire = v ?? false),
         ),
       ),
 
@@ -152,9 +144,13 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     padding: const EdgeInsets.only(bottom: 16),
     child: Row(
       children: [
-        Expanded(flex: 3, child: Text(label)),
+        Flexible(
+          fit: FlexFit.tight,
+          flex: 3,
+          child: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis),
+        ),
         const SizedBox(width: 8),
-        Expanded(flex: 2, child: child),
+        Flexible(flex: 2, child: child),
       ],
     ),
   );
@@ -184,7 +180,13 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     );
 
     try {
-      await api.updateNotification(settings);
+      final existing = ref.read(currentNotificationProvider).value;
+      if (existing == null) {
+        // POST
+        await api.create(settings); // opretter ny første gang
+      } else {
+        await api.update(settings); // PUT
+      }
       ref.invalidate(currentNotificationProvider);
       _show('Saved');
     } on ApiException catch (e) {
