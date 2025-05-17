@@ -66,7 +66,7 @@ class LandingPage extends StatelessWidget {
                 ),
               ],
             ),
-            // Højre: Sign-up knap
+            // Højre: Login knap
             ElevatedButton(
               onPressed: () {
                 // Naviger til login siden
@@ -115,7 +115,7 @@ class LandingPage extends StatelessWidget {
                       // Samme navigering
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const SignupPage()),
+                        MaterialPageRoute(builder: (_) => const LoginPage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -125,10 +125,7 @@ class LandingPage extends StatelessWidget {
                         vertical: 12,
                       ),
                     ),
-                    child: const Text(
-                      'Sign-up',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    child: const Text('Login', style: TextStyle(fontSize: 16)),
                   ),
                 ],
               ),
