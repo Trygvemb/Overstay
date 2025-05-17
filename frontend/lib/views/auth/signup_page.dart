@@ -67,26 +67,28 @@ class _SignupPageState extends ConsumerState<SignupPage> {
             child: Container(
               color: Colors.white,
               padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Overstay helps you keep\ntrack of your Visa',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Overstay helps you keep\ntrack of your Visa',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: Image.asset(
-                      'assets/images/visamap.png',
-                      height: 200,
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Image.asset(
+                        'assets/images/visamap.png',
+                        height: 200,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:html' as html;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/models/sign_in_user_request.dart';
@@ -165,6 +167,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
               const SizedBox(height: 20),
 
+              // Google login button
+              Center(
+                child: InkWell(
+                  onTap: () {
+                    html.window.location.href =
+                        'http://localhost:5050/api/Auth/external-login?provider=Google';
+                  },
+                  child: SvgPicture.asset(
+                    'assets/images/signin_w_google.svg',
+                    height: 48, // ved ikke om den skal være lidt mindre?
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+
               //Link to SignupPage
               Center(
                 child: TextButton(
@@ -176,7 +193,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     );
                   },
                   child: const Text(
-                    'Don\'t have an account? Sign up',
+                    'Don\'t have an account? Create one here',
                     style: TextStyle(color: Colors.black),
                   ),
                 ),

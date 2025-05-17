@@ -89,7 +89,7 @@ class LandingPage extends StatelessWidget {
       ),
 
       // 2) Body -> Row: Venstre = tekst + knap, Højre = billede
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(32.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
