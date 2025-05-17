@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:overstay_frontend/views/auth/signup_page.dart';
+import 'package:overstay_frontend/views/auth/login_page.dart';
 import 'package:overstay_frontend/views/public/about_page.dart';
 import 'package:overstay_frontend/views/public/why_page.dart';
 import 'package:overstay_frontend/views/app/widget_tree.dart';
@@ -66,13 +66,13 @@ class LandingPage extends StatelessWidget {
                 ),
               ],
             ),
-            // Højre: Sign-up knap
+            // Højre: Login knap
             ElevatedButton(
               onPressed: () {
                 // Naviger til login siden
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const SignupPage()),
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -82,17 +82,14 @@ class LandingPage extends StatelessWidget {
                   vertical: 8,
                 ),
               ),
-              child: const Text(
-                'Sign-up',
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text('Login', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
       ),
 
       // 2) Body -> Row: Venstre = tekst + knap, Højre = billede
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(32.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,7 +115,7 @@ class LandingPage extends StatelessWidget {
                       // Samme navigering
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const SignupPage()),
+                        MaterialPageRoute(builder: (_) => const LoginPage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -128,10 +125,7 @@ class LandingPage extends StatelessWidget {
                         vertical: 12,
                       ),
                     ),
-                    child: const Text(
-                      'Sign-up',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    child: const Text('Login', style: TextStyle(fontSize: 16)),
                   ),
                 ],
               ),

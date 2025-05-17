@@ -37,7 +37,7 @@ dependencies:
   flutter_riverpod: ^2.0.4 # state management
   intl: ^0.18.1 # internationalization
   collection: ^1.18.0 # collection utilities
-
+  flutter_svg: ^2.0.10 # SVG rendering
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
@@ -55,7 +55,6 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -70,6 +69,8 @@ flutter:
     - assets/images/visamap.png
     - assets/images/passport.png
     - assets/images/travelers.png
+    - assets/images/signin_w_google.svg
+    - assets/images/signin_google.png
 
     
     
