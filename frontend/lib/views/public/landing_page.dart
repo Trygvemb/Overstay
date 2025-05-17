@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:overstay_frontend/views/auth/signup_page.dart';
+import 'package:overstay_frontend/views/auth/login_page.dart';
 import 'package:overstay_frontend/views/public/about_page.dart';
 import 'package:overstay_frontend/views/public/why_page.dart';
 import 'package:overstay_frontend/views/app/widget_tree.dart';
@@ -72,7 +72,7 @@ class LandingPage extends StatelessWidget {
                 // Naviger til login siden
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const SignupPage()),
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -82,10 +82,7 @@ class LandingPage extends StatelessWidget {
                   vertical: 8,
                 ),
               ),
-              child: const Text(
-                'Sign-up',
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text('Login', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
