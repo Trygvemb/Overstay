@@ -20,7 +20,7 @@ class VisaApiService extends ApiService {
         .toList();
   }
 
-  /// GET /api/Visa – henter brugerens *aktuelle* visa **NY Ændring**
+  /// GET /api/Visa – henter brugerens *aktuelle* active visa **NY Ændring**
   Future<VisaResponse?> getCurrentVisa() async {
     final res = await get('/api/Visa');
     if (res.statusCode == 404) return null; // intet aktivt visa
@@ -28,12 +28,12 @@ class VisaApiService extends ApiService {
 
     final data = jsonDecode(res.body);
     if (data == null) return null;
-  
+
     return VisaResponse.fromJson(data as Map<String, dynamic>);
   }
 
   // GET /api/Visa/all - henter ALLE visa (aktive og inactive) for brugern **NY Ændring**
-  Future<List>VisaResponse>> getAllVisas() async {
+  Future<List<VisaResponse>> getAllVisas() async {
     final res = await get('/api/Visa/all');
     if (res.statusCode != 200) _throw(res);
 
@@ -52,7 +52,9 @@ class VisaApiService extends ApiService {
       return res.body.replaceAll('"', '');
     }
     _throw(res);
-    throw Exception('Unexpected error in creating visa'); // for at tilfredsstille Dart
+    throw Exception(
+      'Unexpected error in creating visa',
+    ); // for at tilfredsstille Dart
   }
 
   /// PUT /api/Visa/{id}  – opdaterer eksisterende visa
