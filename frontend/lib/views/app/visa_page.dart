@@ -5,10 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/models/create_visa_request.dart';
 import 'package:overstay_frontend/models/visa_respons.dart';
 import 'package:overstay_frontend/models/visa_type_response.dart';
-import 'package:overstay_frontend/views/app/widget_tree.dart';
+import 'package:overstay_frontend/models/update_visa_request.dart';
 import 'package:overstay_frontend/services/providers.dart';
-import 'package:overstay_frontend/services/visa_api_service.dart';
-import '../../models/update_visa_request.dart';
 
 class VisaPage extends ConsumerStatefulWidget {
   const VisaPage({super.key});
@@ -26,41 +24,24 @@ class _VisaPageState extends ConsumerState<VisaPage> {
   final TextEditingController expiryDateController = TextEditingController();
 
   String? currentVisaId;
-  VisaResponse? _currentVisa;
 
+  // NY ÆNDRING
+  List<VisaResponse> previousVisas = []; // Liste til tidligere inaktive visa
+
+  // Hent og vis data når siden loader
   @override
   void initState() {
     super.initState();
-    // Initialiserer expiryDate feltet med en placeholder
-    expiryDateController.text = "dd/mm/yyyy";
     _initPage();
   }
 
   Future<void> _initPage() async {
-    await _loadVisaTypes(); //henter dropdown data
+    await _loadVisaTypes(); //henter dropdown data for visa types
     await _loadCurrentVisa(); // udfylder felterne hvis der allerede eksisterer en data
+    await _loadAllVisas(); // henter alle visaer
   }
 
-  Future<void> _loadCurrentVisa() async {
-    final visa = await ref.read(currentVisaProvider.future);
-    if (visa == null) return; // ingen gemt visa data
-
-    // find matchende visatype i listen
-    final vt = visaTypes.firstWhereOrNull((v) => v.id == visa.visaType.id);
-
-    setState(() {
-      _currentVisa = visa;
-      currentVisaId = visa.id;
-      selectedVisaType = vt;
-      arrivalDateController.text = DateFormat(
-        'yyyy-MM-dd',
-      ).format(visa.arrivalDate);
-      expiryDateController.text = DateFormat(
-        'yyyy-MM-dd',
-      ).format(visa.expireDate);
-    });
-  }
-
+  // Hent visa typer fra API (Dropdown)
   Future<void> _loadVisaTypes() async {
     final api = ref.read(visaApiServiceProvider);
     try {
@@ -76,13 +57,83 @@ class _VisaPageState extends ConsumerState<VisaPage> {
     }
   }
 
+  // Hent brugerens aktuelle visa fra API
+  Future<void> _loadCurrentVisa() async {
+    final visa = await ref.read(currentVisaProvider.future);
+    if (visa == null) {
+      _resetVisaForm();
+      return;
+    }
+    // find matchende visatype i listen
+    final vt = visaTypes.firstWhereOrNull((v) => v.id == visa.visaType.id);
+    setState(() {
+      currentVisaId = visa.id;
+      selectedVisaType = vt;
+      arrivalDateController.text = DateFormat(
+        'yyyy-MM-dd',
+      ).format(visa.arrivalDate);
+      expiryDateController.text = DateFormat(
+        'yyyy-MM-dd',
+      ).format(visa.expireDate);
+    });
+  }
+
+  // NY ÆNDRING HENT ALLE visa inklusiv de inaktive Visa
+  Future<void> _loadAllVisas() async {
+    final api = ref.read(visaApiServiceProvider);
+    try {
+      final allVisas = await api.getAllVisas();
+      // Filtrer inaktive visa ud
+      previousVisas = allVisas.where((v) => v.id != currentVisaId).toList();
+      debugPrint('All visas loaded: ${previousVisas.length}');
+      if (mounted) setState(() {});
+    } catch (e) {
+      debugPrint('Failed loading all visas: $e');
+    }
+  }
+
+  // NY ÆNDRING - Opret nyt tomt visa (form reset)
+  void _createNewVisa() {
+    setState(() {
+      selectedVisaType = null;
+      arrivalDateController.clear();
+      expiryDateController.clear();
+      currentVisaId = null;
+    });
+  }
+
+  // NY ÆNDRING ---- Klik på et tidligere inaktivt visa for at se detaljerne ---
+  void _selectPreviousVisa(VisaResponse visa) {
+    final vt = visaTypes.firstWhereOrNull((v) => v.id == visa.visaType.id);
+    setState(() {
+      currentVisaId = visa.id;
+      selectedVisaType = vt;
+      arrivalDateController.text = DateFormat(
+        'yyyy-MM-dd',
+      ).format(visa.arrivalDate);
+      expiryDateController.text = DateFormat(
+        'yyyy-MM-dd',
+      ).format(visa.expireDate);
+    });
+  }
+
+  void _resetVisaForm() {
+    setState(() {
+      selectedVisaType = null;
+      arrivalDateController.clear();
+      expiryDateController.clear();
+      currentVisaId = null;
+    });
+  }
+
+  //------------------ UI BUILD ----------------
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         // Venstre side (gradient + form)
         Expanded(
-          flex: 1,
+          flex: 2,
           child: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -98,11 +149,63 @@ class _VisaPageState extends ConsumerState<VisaPage> {
             child: _buildVisaForm(context),
           ),
         ),
-        // Højre side (billede)
+
+        // Højre side (billede) + tidligere inaktive visa
         Expanded(
-          flex: 1,
-          child: Center(
-            child: Image.asset('assets/images/passport.png', width: 250),
+          flex: 2,
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/passport.png', width: 200),
+                const SizedBox(height: 40),
+                // NYT --------------- nice to have: tidligere inaktive visa
+                if (previousVisas.isNotEmpty)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Previous Visas',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: previousVisas.length,
+                              itemBuilder: (context, index) {
+                                final v = previousVisas[index];
+                                return Card(
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 4,
+                                  ),
+                                  child: ListTile(
+                                    title: Text(v.visaType.name ?? 'Visa'),
+                                    subtitle: Text(
+                                      'Arrival: ${DateFormat('yyyy-MM-dd').format(v.arrivalDate)}\n'
+                                      'Expiry: ${DateFormat('yyyy-MM-dd').format(v.expireDate)}',
+                                    ),
+                                    trailing: const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 16,
+                                    ),
+                                    onTap: () => _selectPreviousVisa(v),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ],
@@ -111,7 +214,7 @@ class _VisaPageState extends ConsumerState<VisaPage> {
 
   Widget _buildVisaForm(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(32.0),
+      padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 48.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,7 +234,12 @@ class _VisaPageState extends ConsumerState<VisaPage> {
           const SizedBox(height: 8),
           DropdownButtonFormField<VisaTypeResponse>(
             decoration: _whiteInputDecoration,
-            value: selectedVisaType,
+            value:
+                selectedVisaType == null
+                    ? null
+                    : visaTypes.firstWhereOrNull(
+                      (v) => v.id == selectedVisaType!.id,
+                    ),
             hint: const Text('Select a visa type'),
             items:
                 visaTypes.map((visaType) {
@@ -195,7 +303,7 @@ class _VisaPageState extends ConsumerState<VisaPage> {
           ),
           const SizedBox(height: 24),
 
-          // Knapper (Save, Delete)
+          // Knapper (Save, Delete + ny create visa)
           Row(
             children: [
               ElevatedButton(
@@ -212,7 +320,7 @@ class _VisaPageState extends ConsumerState<VisaPage> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: 16),
               ElevatedButton(
                 onPressed: _deleteVisa,
                 style: ElevatedButton.styleFrom(
@@ -227,6 +335,22 @@ class _VisaPageState extends ConsumerState<VisaPage> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
+              // Ny ændring ---- KNAP til at opreyye nyt visa (reset form)
+              const SizedBox(width: 16),
+              ElevatedButton(
+                onPressed: _createNewVisa,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2F9E44),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                ),
+                child: const Text(
+                  'Create New Visa',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
             ],
           ),
         ],
@@ -234,7 +358,7 @@ class _VisaPageState extends ConsumerState<VisaPage> {
     );
   }
 
-  // ---------------- Gem visa (POST eller PUT) ----------------
+  // ---------------- API kald - Gem visa (POST eller PUT) ----------------
   Future<void> _saveVisa() async {
     if (selectedVisaType == null ||
         arrivalDateController.text.isEmpty ||
@@ -266,7 +390,7 @@ class _VisaPageState extends ConsumerState<VisaPage> {
             visaTypeId: selectedVisaType!.id,
           ),
         );
-        _show('Visa saved');
+        _show('Visa created');
       } else {
         // --- PUT ---
         await api.updateVisa(
@@ -279,8 +403,8 @@ class _VisaPageState extends ConsumerState<VisaPage> {
         );
         _show('Visa updated');
       }
-
-      // tving home-siden til at hente friske data
+      // hent opdateret data - reload
+      await _initPage();
       ref.invalidate(currentVisaProvider);
     } catch (e) {
       _show('Failed to save visa');
@@ -293,21 +417,14 @@ class _VisaPageState extends ConsumerState<VisaPage> {
     if (currentVisaId != null) {
       try {
         await ref.read(visaApiServiceProvider).deleteVisa(currentVisaId!);
+        _show('Visa deleted');
       } catch (_) {
-        /* ignore */
+        _show('Failed to delete visa');
       }
     }
-
-    setState(() {
-      selectedVisaType = null;
-      arrivalDateController.clear();
-      expiryDateController.clear();
-      currentVisaId = null;
-      _currentVisa = null;
-    });
-
+    _resetVisaForm();
+    await _initPage();
     ref.invalidate(currentVisaProvider);
-    _show('Visa deleted');
   }
 
   // "white box" stil
