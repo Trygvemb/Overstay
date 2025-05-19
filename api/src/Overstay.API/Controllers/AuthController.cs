@@ -50,7 +50,15 @@ public class AuthController(ISender mediator, SignInManager<ApplicationUser> sig
     public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
     {
         var result = await Mediator.Send(new ExternalLoginCallbackCommand(returnUrl));
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+        };
 
-        return result.IsSuccess ? Ok(result.Value) : HandleFailedResult(result);
+        Response.Cookies.Append("AuthToken", result.Value.Token!.AccessToken, cookieOptions);
+
+        return result.IsSuccess ? Redirect(result.Value.RedirectUrl!) : HandleFailedResult(result);
     }
 }
