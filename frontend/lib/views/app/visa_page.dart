@@ -89,6 +89,8 @@ class _VisaPageState extends ConsumerState<VisaPage> {
       if (mounted) setState(() {});
     } catch (e) {
       debugPrint('Failed loading all visas: $e');
+      previousVisas = [];
+      if (mounted) setState(() {});
     }
   }
 

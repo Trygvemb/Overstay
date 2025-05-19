@@ -35,7 +35,10 @@ class VisaApiService extends ApiService {
   // GET /api/Visa/all - henter ALLE visa (aktive og inactive) for brugern **NY Ændring**
   Future<List<VisaResponse>> getAllVisas() async {
     final res = await get('/api/Visa/all');
-    if (res.statusCode != 200) _throw(res);
+    if (res.statusCode != 200) {
+      print('Fejl ved hentning af alle visas: ${res.statusCode} - ${res.body}');
+      _throw(res);
+    }
 
     final list = jsonDecode(res.body) as List<dynamic>;
     return list
