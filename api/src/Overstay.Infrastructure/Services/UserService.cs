@@ -599,25 +599,12 @@ public class UserService(
 
             if (existingUser == null)
             {
-                var name = info.Principal.FindFirstValue(ClaimTypes.Name) ?? email;
-                var country = info.Principal.FindFirstValue(ClaimTypes.Country);
-                //TODO: add logic for country
-                var countryId = Guid.Empty;
-
-                if (!string.IsNullOrEmpty(country))
-                {
-                    var domainCountry = await context.Countries.FirstOrDefaultAsync(c =>
-                        c.Name == country
-                    );
-                    countryId = domainCountry?.Id ?? Guid.Empty;
-                }
-
                 var newUser = new ApplicationUser
                 {
-                    UserName = name,
+                    UserName = email,
                     Email = email,
                     EmailConfirmed = true,
-                    DomainUser = new User(countryId),
+                    DomainUser = new User(null),
                 };
 
                 var createResult = await userManager.CreateAsync(newUser);
