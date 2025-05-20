@@ -1,4 +1,3 @@
-// lib/views/widget_tree.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/data/notifiers.dart';
