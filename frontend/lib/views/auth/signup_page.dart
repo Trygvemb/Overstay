@@ -207,7 +207,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Create account button
+                    // Create account button //
                     Center(
                       child: ElevatedButton(
                         onPressed: _createAccount,
