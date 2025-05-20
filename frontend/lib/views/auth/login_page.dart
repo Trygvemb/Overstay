@@ -234,24 +234,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 )
                 : null,
       ),
+      onSubmitted: (_) => _login(context),
     );
   }
-
-  // --------------Login button----------------
-  Widget _loginButton(BuildContext context) =>
-      _loading
-          ? const CircularProgressIndicator()
-          : ElevatedButton(
-            onPressed: () => _login(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1A759F),
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-            ),
-            child: const Text(
-              'Login',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          );
 
   // --------------Login logic----------------
   Future<void> _login(BuildContext context) async {

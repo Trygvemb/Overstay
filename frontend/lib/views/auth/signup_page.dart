@@ -31,6 +31,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   //api (hentes via provider)
   late final UserApiService _api;
 
+  // eye-toggle til password
+  bool _obscurePassoword = true;
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +62,19 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // AppBar med leading-tilbage knap til SignupPage
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const LoginPage()),
+            );
+          },
+        ),
+      ),
       body: Row(
         children: [
           // Venstre sektion
@@ -143,17 +159,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Password input field
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
                     // Country dropdown
                     DropdownButtonFormField<String>(
                       value: selectedCountryId,
@@ -173,6 +178,34 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
+
+                    // Password input field
+                    TextField(
+                      controller: passwordController,
+                      obscureText:
+                          _obscurePassoword, // toggle password visibility
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        border: OutlineInputBorder(),
+                        // suffixIcon til at vise/skjule password
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassoword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassoword = !_obscurePassoword;
+                            });
+                          },
+                        ),
+                      ),
+                      onSubmitted:
+                          (_) =>
+                              _createAccount(), //så oprettes konto ved ENTERR
+                    ),
+                    const SizedBox(height: 20),
 
                     // Create account button
                     Center(
