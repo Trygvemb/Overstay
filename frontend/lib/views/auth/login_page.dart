@@ -18,7 +18,7 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  // controller til at håndtere tekstfelter
+  // ------- controller til at håndtere tekstfelter ----- //
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   late final UserApiService _api;
