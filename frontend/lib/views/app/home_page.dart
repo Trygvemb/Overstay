@@ -79,7 +79,7 @@ class HomePage extends ConsumerWidget {
                             ? '_'
                             : DateFormat('yyyy-MM-dd').format(visa.expireDate);
                     return Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: const Text(

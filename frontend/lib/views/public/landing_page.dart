@@ -148,8 +148,36 @@ class LandingPage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Venstre: 'Contact us'
-            const Text('Contact us', style: TextStyle(color: Colors.white)),
+            // Klikbar Contact us
+            GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder:
+                      (_) => AlertDialog(
+                        title: const Text('Contact us'),
+                        content: const Text(
+                          'Do you have questions or feedback?\n\nContact us at:\n\nsupport@mail.com',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Close'),
+                          ),
+                        ],
+                      ),
+                );
+              },
+              child: const Text(
+                'Contact us',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
             // Højre: 'VISA-TRACKER'
             const Text('VISA-TRACKER', style: TextStyle(color: Colors.white)),
           ],
