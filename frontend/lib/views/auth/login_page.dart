@@ -26,6 +26,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       const FlutterSecureStorage(); // krypteret i både IOS og Android
 
   bool _loading = false;
+  bool _obscurePassoword = true; // til at skjule password i tekstfeltet
 
   @override
   void initState() {
@@ -212,12 +213,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }) {
     return TextField(
       controller: controller,
-      obscureText: isPassword,
+      obscureText: isPassword ? _obscurePassoword : false,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
         hintText: hintText,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        // suffixIcon til at vise/skjule password
+        suffixIcon:
+            isPassword
+                ? IconButton(
+                  icon: Icon(
+                    _obscurePassoword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassoword = !_obscurePassoword;
+                    });
+                  },
+                )
+                : null,
       ),
     );
   }
