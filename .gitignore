@@ -63,6 +63,7 @@ docker-compose.override.yml
 *.log
 *.pyc
 *.swp
+*.dill
 .DS_Store
 .atom/
 .build/

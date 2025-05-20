@@ -41,11 +41,9 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         {
             logger.LogInformation("Retrieving active visa");
             var visa = await context
-                .Visas.Include(v => v.VisaType)
+                .Visas.Where(v => v.UserId == userId)
+                .Include(v => v.VisaType)
                 .FirstOrDefaultAsync(v => v.IsActive, cancellationToken);
-
-            if (visa != null && visa.UserId != userId)
-                return Result.Failure<Visa>(UserErrors.AccessDenied);
 
             return visa is null
                 ? Result.Failure<Visa>(
