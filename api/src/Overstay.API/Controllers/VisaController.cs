@@ -12,7 +12,7 @@ namespace Overstay.API.Controllers;
 public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
 {
     [HttpGet("all")]
-    [ProducesResponseType(typeof(List<VisaResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -30,7 +30,7 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(VisaResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -47,7 +47,7 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(VisaResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

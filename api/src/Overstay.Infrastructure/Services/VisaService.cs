@@ -32,7 +32,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         }
     }
 
-    public async Task<Result<Visa>> GetActiveVisaAsync(
+    public async Task<Result<Visa?>> GetActiveVisaAsync(
         Guid userId,
         CancellationToken cancellationToken
     )
@@ -45,11 +45,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
                 .Include(v => v.VisaType)
                 .FirstOrDefaultAsync(v => v.IsActive, cancellationToken);
 
-            return visa is null
-                ? Result.Failure<Visa>(
-                    new Error(ErrorTypeConstants.NotFound, "couldn't find active visa")
-                )
-                : Result.Success(visa);
+            return Result.Success(visa);
         }
         catch (Exception ex)
         {
