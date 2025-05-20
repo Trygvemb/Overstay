@@ -15,94 +15,126 @@ class HomePage extends ConsumerWidget {
     final userName = auth.userName?.trim();
     final mail = auth.email?.trim();
     final greet = userName?.isNotEmpty == true ? userName! : (mail ?? 'User');
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          //venstre side "tekst" + bokse
+          //venstre side grafisk velkomst + visa status samt udløbsdato
           Expanded(
             flex: 1,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                //*** Dynamisk velkomstbesked ***
-                Text(
-                  'Welcome, $greet',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-
-                /*//Visa Status
-                const Text('Visa status:', style: TextStyle(fontSize: 18)),
-                const SizedBox(height: 8),
-                // grå boks til visa status
-                Container(
-                  width: 120,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(4),
+            child: Center(
+              child: Container(
+                // for grafisk udseend med afrundede kanter
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFFB2DFDB),
+                      Color(0xFF80CBC4),
+                      Color(0xFF1A759F),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  child: Center(
-                    child: Text('Tourist', style: TextStyle(fontSize: 16)),
-                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 12,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 20),*/
-
-                //-------------------Visa status-------------------
-                visaAsync.when(
-                  data:
-                      (visa) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Visa status:',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          const SizedBox(height: 8),
-                          _infoBox(visa?.visaType.name ?? 'No visa'),
-                        ],
-                      ),
-                  loading:
-                      () => const CircularProgressIndicator(strokeWidth: 2),
-                  error: (_, _) => const Text('Could not load visa status'),
-                ),
-                const SizedBox(height: 20),
-
-                // Visa udløbsdato
-                visaAsync.when(
-                  data: (visa) {
-                    final dateStr =
-                        visa == null
-                            ? '_'
-                            : DateFormat('yyyy-MM-dd').format(visa.expireDate);
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
                       children: [
-                        Expanded(
-                          child: const Text(
-                            'Visa expiration date:',
-                            style: TextStyle(fontSize: 18),
+                        //*** Dynamisk velkomstbesked ***
+                        Text(
+                          'Welcome, $greet',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1A759F),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        _infoBox(dateStr),
                       ],
-                    );
-                  },
-                  loading: () => const SizedBox.shrink(),
-                  error: (_, __) => const SizedBox.shrink(),
-                ),
-                const SizedBox(height: 20),
+                    ),
+                    const SizedBox(height: 28),
 
-                // 4) Needed documentation (uden boks)
-                const Text(
-                  'Needed documentation',
-                  style: TextStyle(fontSize: 18),
+                    //-------------------Visa status-------------------
+                    visaAsync.when(
+                      data:
+                          (visa) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Visa status:',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              _chipBox(
+                                visa?.visaType.name ?? 'No visa',
+                                icon: Icons.verified,
+                              ),
+                            ],
+                          ),
+                      loading:
+                          () => const CircularProgressIndicator(strokeWidth: 2),
+                      error: (_, _) => const Text('Could not load visa status'),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Visa udløbsdato
+                    visaAsync.when(
+                      data: (visa) {
+                        final dateStr =
+                            visa == null
+                                ? '_'
+                                : DateFormat(
+                                  'yyyy-MM-dd',
+                                ).format(visa.expireDate);
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Visa expiration date:',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            _chipBox(dateStr, icon: Icons.calendar_month),
+                          ],
+                        );
+                      },
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, __) => const SizedBox.shrink(),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // 4) Needed documentation (uden boks)
+                    const Text(
+                      'Needed documentation',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    // --- Liste med dokumenter -- Kan ÆNDRES ---
+                    const Text(
+                      '-Passport copy\n- Visa application\n- Recent photo\n- Travel itinerary',
+                      style: TextStyle(color: Colors.white70, fontSize: 15),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
 
@@ -122,12 +154,23 @@ class HomePage extends ConsumerWidget {
   }
 }
 
-Widget _infoBox(String txt) => Container(
-  width: 120,
-  height: 24,
+// CHIPBOX ---nyt trial lets see
+// NYT: Grafisk "chip" med ikon og tekst – bruges til status og dato
+Widget _chipBox(String txt, {IconData? icon}) => Container(
+  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
   decoration: BoxDecoration(
-    color: Colors.grey[300],
-    borderRadius: BorderRadius.circular(4),
+    color: Colors.white.withOpacity(0.95),
+    borderRadius: BorderRadius.circular(20),
+    border: Border.all(color: Color(0xFF1A759F), width: 1),
   ),
-  child: Center(child: Text(txt, style: const TextStyle(fontSize: 16))),
+  child: Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      if (icon != null) ...[
+        Icon(icon, size: 18, color: Color(0xFF1A759F)),
+        const SizedBox(width: 6),
+      ],
+      Text(txt, style: const TextStyle(fontSize: 16, color: Color(0xFF1A759F))),
+    ],
+  ),
 );
