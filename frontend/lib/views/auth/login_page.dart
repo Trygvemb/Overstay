@@ -18,7 +18,7 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  // controller til at håndtere tekstfelter
+  // ------- controller til at håndtere tekstfelter ----- //
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   late final UserApiService _api;
@@ -26,6 +26,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       const FlutterSecureStorage(); // krypteret i både IOS og Android
 
   bool _loading = false;
+  bool _obscurePassoword = true; // til at skjule password i tekstfeltet
 
   @override
   void initState() {
@@ -212,31 +213,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }) {
     return TextField(
       controller: controller,
-      obscureText: isPassword,
+      obscureText: isPassword ? _obscurePassoword : false,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
         hintText: hintText,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        // suffixIcon til at vise/skjule password
+        suffixIcon:
+            isPassword
+                ? IconButton(
+                  icon: Icon(
+                    _obscurePassoword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassoword = !_obscurePassoword;
+                    });
+                  },
+                )
+                : null,
       ),
+      onSubmitted: (_) => _login(context),
     );
   }
-
-  // --------------Login button----------------
-  Widget _loginButton(BuildContext context) =>
-      _loading
-          ? const CircularProgressIndicator()
-          : ElevatedButton(
-            onPressed: () => _login(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1A759F),
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-            ),
-            child: const Text(
-              'Login',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          );
 
   // --------------Login logic----------------
   Future<void> _login(BuildContext context) async {

@@ -108,16 +108,6 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         ),
       ),
 
-      //"Notify me x days before expiration" + Tekstfelt
-      _row(
-        label: 'Notify me x days before expiration',
-        child: TextField(
-          controller: _daysController,
-          keyboardType: TextInputType.number,
-          decoration: _inputDecoration('Days'),
-        ),
-      ),
-
       _row(
         label: '90 days reporting reminder',
         child: Checkbox(
@@ -134,7 +124,17 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         ),
       ),
 
-      const SizedBox(height: 24),
+      //"Notify me x days before expiration" + Tekstfelt
+      _row(
+        label: 'Notify me x days before expiration',
+        child: TextField(
+          controller: _daysController,
+          keyboardType: TextInputType.number,
+          decoration: _inputDecoration('Days'),
+        ),
+      ),
+
+      const SizedBox(height: 20),
       _buttonBar(),
     ],
   );
