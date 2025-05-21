@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/models/sign_in_user_request.dart';
+import 'package:overstay_frontend/services/auth_api_service.dart';
 import 'package:overstay_frontend/services/user_api_service.dart';
 import 'package:overstay_frontend/views/auth/signup_page.dart';
 import 'package:overstay_frontend/views/app/widget_tree.dart';
@@ -22,6 +23,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   late final UserApiService _api;
+  late final AuthApiService _authApi;
   final _storage =
       const FlutterSecureStorage(); // krypteret i både IOS og Android
 
@@ -33,6 +35,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.initState();
     // henter instansen én gang via Riverpod
     _api = ref.read(userApiServiceProvider);
+    _authApi = ref.read(authApiServiceProvider);
   }
 
   @override
@@ -171,10 +174,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               // Google login button
               Center(
                 child: InkWell(
-                  onTap: () {
-                    html.window.location.href =
-                        'http://localhost:5050/api/Auth/external-login?provider=Google';
-                  },
+                  onTap: () {_googleLogin(context);},
                   child: SvgPicture.asset(
                     'assets/images/signin_w_google.svg',
                     height: 48, // ved ikke om den skal være lidt mindre?
@@ -236,6 +236,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       ),
       onSubmitted: (_) => _login(context),
     );
+  }
+
+  // --------------Google Login logic----------------
+  Future<void> _googleLogin(BuildContext context) async {
+    
+    setState(() => _loading = true);
+
+    await _authApi.externalLogIn('google', 'http://localhost:5050/');
   }
 
   // --------------Login logic----------------
