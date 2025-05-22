@@ -1,4 +1,3 @@
-// lib/models/sign_in_response.dart
 class SignInResponse {
   final String token; // JWT
   final List<String> claims; // fx ['Admin', 'User']
