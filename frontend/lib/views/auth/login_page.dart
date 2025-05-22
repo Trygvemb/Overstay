@@ -54,9 +54,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           icon: const Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.pushReplacementNamed(
               context,
-              MaterialPageRoute(builder: (_) => const SignupPage()),
+              '/signup',
             );
           },
         ),
@@ -188,9 +188,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 child: TextButton(
                   onPressed: () {
                     // Naviger til signup siden
-                    Navigator.pushReplacement(
+                    Navigator.pushReplacementNamed(
                       context,
-                      MaterialPageRoute(builder: (_) => const SignupPage()),
+                      '/signup',
                     );
                   },
                   child: const Text(
@@ -243,7 +243,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     
     setState(() => _loading = true);
 
-    await _authApi.externalLogIn('google', 'http://localhost:5050/');
+    final redirectUrl = '${html.window.location.origin}/loading';
+
+    await _authApi.externalLogIn('google', redirectUrl);
   }
 
   // --------------Login logic----------------
@@ -292,9 +294,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
       // Naviger til WidgetTree
       if (!mounted) return;
-      Navigator.pushReplacement(
+      Navigator.pushReplacementNamed(
         context,
-        MaterialPageRoute(builder: (_) => const WidgetTree()),
+        '/home',
       );
       return; // <- stop her hvis success
     } on ApiException catch (e) {
@@ -310,9 +312,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (typedIdentifier == 'test@mail.com' && password == '1234') {
       await _storage.write(key: 'jwt', value: 'dummy-token');
       if (mounted) {
-        Navigator.pushReplacement(
+        Navigator.pushReplacementNamed(
           context,
-          MaterialPageRoute(builder: (_) => const WidgetTree()),
+          '/home',
         );
       }
     } else {

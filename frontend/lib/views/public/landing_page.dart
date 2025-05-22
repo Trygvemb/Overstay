@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:overstay_frontend/views/auth/login_page.dart';
-import 'package:overstay_frontend/views/public/about_page.dart';
-import 'package:overstay_frontend/views/public/why_page.dart';
-import 'package:overstay_frontend/views/app/widget_tree.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -30,9 +27,9 @@ class LandingPage extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(builder: (_) => const LandingPage()),
+                      '/',
                     );
                   },
                   child: const Text(
@@ -42,9 +39,9 @@ class LandingPage extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(builder: (_) => const AboutPage()),
+                      '/about',
                     );
                   },
                   child: const Text(
@@ -54,9 +51,9 @@ class LandingPage extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(builder: (_) => const WhyPage()),
+                      '/why',
                     );
                   },
                   child: const Text(
@@ -70,9 +67,8 @@ class LandingPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Naviger til login siden
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                Navigator.pushNamed(
+                  context,'/login',
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -113,9 +109,9 @@ class LandingPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       // Samme navigering
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(builder: (_) => const LoginPage()),
+                        '/login',
                       );
                     },
                     style: ElevatedButton.styleFrom(

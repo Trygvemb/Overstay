@@ -68,10 +68,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
           icon: const Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const LoginPage()),
-            );
+            Navigator.pushReplacementNamed(context, '/login');
           },
         ),
       ),
@@ -230,12 +227,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     Center(
                       child: TextButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const LoginPage(),
-                            ),
-                          );
+                          Navigator.pushReplacementNamed(context, '/login');
                         },
                         child: const Text(
                           'Already have an account? Login',

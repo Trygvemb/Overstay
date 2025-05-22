@@ -1,5 +1,4 @@
 import 'dart:html' as html;
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/services/api_service.dart';
 import 'package:overstay_frontend/services/providers.dart';
