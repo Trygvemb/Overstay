@@ -459,30 +459,6 @@ public class UserService(
     {
         try
         {
-            if (returnUrl != "/")
-            {
-                if (!returnUrl.StartsWith($"/"))
-                {
-                    return Task.FromResult(
-                        Result.Failure<string>(
-                            new Error(
-                                ErrorTypeConstants.Unauthorized,
-                                "Return URL must start with /"
-                            )
-                        )
-                    );
-                }
-
-                if (!Uri.TryCreate("http://dummy.com" + returnUrl, UriKind.Absolute, out _))
-                {
-                    return Task.FromResult(
-                        Result.Failure<string>(
-                            new Error(ErrorTypeConstants.Unauthorized, "Invalid return URL path")
-                        )
-                    );
-                }
-            }
-
             if (string.IsNullOrEmpty(provider))
             {
                 return Task.FromResult(

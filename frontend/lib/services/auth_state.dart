@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class AuthState extends ChangeNotifier {
+  bool _isAuthenticated = false; // true hvis brugeren er logget ind
   String? _token; // JWT token
   bool _admin = false;
   String? _userId;
@@ -8,6 +9,7 @@ class AuthState extends ChangeNotifier {
   String? _email;
 
   //-----------------Getters-------------------
+  bool get isAuthenticated => _isAuthenticated;
   String? get token => _token;
   bool get isAdmin => _admin;
   String? get userId => _userId;
@@ -23,6 +25,7 @@ class AuthState extends ChangeNotifier {
     required String? userName,
     required String? email,
   }) {
+    _isAuthenticated = true;
     _token = token;
     _admin = admin;
     _userId = userId;
@@ -32,6 +35,7 @@ class AuthState extends ChangeNotifier {
   }
 
   void clear() {
+    _isAuthenticated = false;
     _token = null;
     _admin = false;
     _userName = null;

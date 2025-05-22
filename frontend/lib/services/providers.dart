@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/models/visa_respons.dart';
+import 'package:overstay_frontend/services/auth_api_service.dart';
 import 'auth_state.dart';
 import 'user_api_service.dart';
 import 'visa_api_service.dart';
@@ -18,6 +19,11 @@ final apiBaseUrlProvider = Provider<String>((_) {
 /// API‑service – får base‑url fra provider‑træet
 final userApiServiceProvider = Provider<UserApiService>((ref) {
   return UserApiService(ref);
+});
+
+/// API‑service – får base‑url fra provider‑træet
+final authApiServiceProvider = Provider<AuthApiService>((ref) {
+  return AuthApiService(ref);
 });
 
 /// Global auth‑state (ChangeNotifier)

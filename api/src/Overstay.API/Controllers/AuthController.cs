@@ -52,9 +52,10 @@ public class AuthController(ISender mediator, SignInManager<ApplicationUser> sig
         var result = await Mediator.Send(new ExternalLoginCallbackCommand(returnUrl));
         var cookieOptions = new CookieOptions
         {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
+            HttpOnly = false, // Allow JS to read the cookie
+            Secure = false, // Set to true only in production with HTTPS
+            SameSite = SameSiteMode.Lax, // Lax is more compatible for OAuth
+            Path = "/", // Make cookie available to all routes
         };
 
         Response.Cookies.Append("AuthToken", result.Value.Token!.AccessToken, cookieOptions);

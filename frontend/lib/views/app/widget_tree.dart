@@ -15,7 +15,35 @@ class WidgetTree extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAdmin = ref.watch(authStateProvider).isAdmin;
+    final authState = ref.watch(authStateProvider);
+    final isAdmin = authState.isAdmin;
+
+      // Auth guard: redirect if not authenticated
+    if (!authState.isAuthenticated) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacementNamed(context, '/login');
+      });
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final routeToIndex = {
+      '/home': 0,
+      '/visa': 1,
+      '/profile': 2,
+      '/notifications': 3,
+      '/immigration': 4,
+      if (isAdmin) '/admin': 5,
+    };
+
+    final currentRoute = ModalRoute.of(context)?.settings.name;
+    final initialIndex = routeToIndex[currentRoute] ?? 0;
+
+    // Only update if needed, and defer to after build
+    if (selectedPageNotifier.value != initialIndex) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        selectedPageNotifier.value = initialIndex;
+      });
+    }
 
     //---------------------pages---------------------//
     // Her definerer vi de forskellige sider i appen
@@ -77,13 +105,27 @@ class WidgetTree extends ConsumerWidget {
               ),
             ],
           ),
-          body: pages[selectedPage], // Viser den valgte side
-          // Bundnavigation
+          body: IndexedStack(
+            index: selectedPage,
+            children: pages,
+          ), // Bundnavigation
           bottomNavigationBar: NavigationBar(
             backgroundColor: const Color(0xFF1A759F),
             selectedIndex: selectedPage,
             onDestinationSelected: (index) {
-              selectedPageNotifier.value = index;
+              final routes = [
+                '/home',
+                '/visa',
+                '/profile',
+                '/notifications',
+                '/immigration',
+                if (isAdmin) '/admin',
+              ];
+              if (ModalRoute.of(context)?.settings.name != routes[index]) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.of(context).pushReplacementNamed(routes[index]);
+                });
+              }
             },
             destinations: navItems,
           ),
