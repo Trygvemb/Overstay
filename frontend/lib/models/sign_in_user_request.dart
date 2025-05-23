@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 class SignInUserRequest {
   final String userName;

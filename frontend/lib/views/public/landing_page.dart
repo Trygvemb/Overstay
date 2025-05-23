@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:overstay_frontend/views/auth/login_page.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});

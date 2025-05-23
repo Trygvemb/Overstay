@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:overstay_frontend/views/app/home_page.dart';
-import 'package:overstay_frontend/views/app/immigrationoffice_page.dart';
-import 'package:overstay_frontend/views/app/notifications_page.dart';
-import 'package:overstay_frontend/views/app/profile_page.dart';
-import 'package:overstay_frontend/views/app/visa_page.dart';
 import 'package:overstay_frontend/views/app/widget_tree.dart';
 import 'package:overstay_frontend/views/auth/loading_page.dart';
 import 'package:overstay_frontend/views/auth/login_page.dart';
