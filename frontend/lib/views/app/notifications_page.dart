@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/services/providers.dart';
-import 'package:overstay_frontend/services/notifications_api_service.dart';
 import 'package:overstay_frontend/services/api_exception.dart';
 import 'package:overstay_frontend/models/notification_settings.dart';
 

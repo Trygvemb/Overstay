@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/create_visa_request.dart';
 import '../models/update_visa_request.dart';
 import '../models/visa_respons.dart';
@@ -7,7 +6,7 @@ import '../models/visa_type_response.dart';
 import 'api_service.dart';
 
 class VisaApiService extends ApiService {
-  VisaApiService(Ref ref) : super(ref);
+  VisaApiService(super.ref);
 
   /// GET /api/VisaType  – hent alle typer (til dropdown)
   Future<List<VisaTypeResponse>> getVisaTypes() async {

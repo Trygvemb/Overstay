@@ -3,12 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:overstay_frontend/services/user_api_service.dart';
 import 'package:overstay_frontend/models/create_user_request.dart';
-import 'package:overstay_frontend/models/create_user_response.dart';
 import 'package:overstay_frontend/models/sign_in_user_request.dart';
 import 'package:overstay_frontend/services/api_exception.dart';
 import 'package:overstay_frontend/services/providers.dart';
-import 'package:overstay_frontend/views/app/home_page.dart';
-import 'package:overstay_frontend/views/auth/login_page.dart';
 import 'package:overstay_frontend/views/app/widget_tree.dart';
 import 'dart:developer';
 
@@ -257,7 +254,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       email,
       password,
       selectedCountryId,
-    ].any((e) => e == null || (e as String).isEmpty)) {
+    ].any((e) => e == null || (e).isEmpty)) {
       // Hvis et af felterne er tomt
       // Vis en fejlmeddelelse
       ScaffoldMessenger.of(context).showSnackBar(
