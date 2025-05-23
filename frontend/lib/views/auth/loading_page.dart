@@ -1,4 +1,4 @@
-import 'dart:html' as html;
+import 'package:web/web.dart' as web;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -22,7 +22,7 @@ class _LoadingPageState extends ConsumerState<LoadingPage> {
   }
 
   Future<void> _checkJwtCookieAndLogin() async {
-    final cookies = html.document.cookie ?? '';
+    final cookies = web.window.document.cookie;
     final jwtCookie = cookies
         .split(';')
         .map((c) => c.trim())
