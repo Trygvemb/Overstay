@@ -67,10 +67,12 @@ public class VisaController(ISender mediator) : MediatorControllerBase(mediator)
             cancellationToken
         );
 
-        var visaId = result.GetValue<Guid>();
-
         return result.IsSuccess
-            ? CreatedAtAction(nameof(GetActiveVisa), new { id = visaId }, visaId)
+            ? CreatedAtAction(
+                nameof(GetActiveVisa),
+                new { id = result.GetValue<Guid>() },
+                result.GetValue<Guid>()
+            )
             : HandleFailedResult(result);
     }
 

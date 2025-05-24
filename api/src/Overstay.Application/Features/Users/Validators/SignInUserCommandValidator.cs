@@ -8,9 +8,9 @@ public class SignInUserCommandValidator : AbstractValidator<SigInUserCommand>
     public SignInUserCommandValidator()
     {
         RuleFor(x => x.Item.Password)
-            .NotEmpty();
+            .NotNull();
         
         RuleFor(x => x.Item.UserName)
-            .NotEmpty();
+            .NotNull();
     }
 }
