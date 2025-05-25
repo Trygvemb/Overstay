@@ -1,3 +1,4 @@
+using Mapster;
 using Overstay.Application.Commons.Constants;
 using Overstay.Application.Commons.Errors;
 using Overstay.Application.Commons.Models;
@@ -85,12 +86,14 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         try
         {
             logger.LogInformation("Updating visa type with ID {VisaId}", visa.Id);
-            var existingType = await context.Visas.FindAsync([visa.Id], cancellationToken);
+            var existingVisa = await context.Visas.FindAsync([visa.Id], cancellationToken);
 
-            if (existingType is null)
+            if (existingVisa is null)
                 return Result.Failure(VisaErrors.NotFound(visa.Id));
 
-            context.Entry(existingType).CurrentValues.SetValues(visa);
+            existingVisa.Adapt(visa);
+
+            context.Visas.Update(existingVisa);
             await context.SaveChangesAsync(cancellationToken);
 
             return Result.Success();

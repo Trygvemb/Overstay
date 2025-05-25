@@ -1,3 +1,4 @@
+using Mapster;
 using Overstay.Application.Commons.Errors;
 using Overstay.Application.Commons.Results;
 using Overstay.Application.Services;
@@ -56,12 +57,7 @@ public class NotificationService(ApplicationDbContext context, ILogger<Notificat
 
             var existingNotification = existingNotificationResult.Value;
 
-            existingNotification.EmailNotification = notification.EmailNotification;
-            existingNotification.SmsNotification = notification.SmsNotification;
-            existingNotification.PushNotification = notification.PushNotification;
-            existingNotification.NintyDaysNotification = notification.NintyDaysNotification;
-            existingNotification.ExpiredNotification = notification.ExpiredNotification;
-            existingNotification.DaysBefore = notification.DaysBefore;
+            existingNotification.Adapt(notification);
 
             context.Notifications.Update(existingNotification);
             await context.SaveChangesAsync(cancellationToken);

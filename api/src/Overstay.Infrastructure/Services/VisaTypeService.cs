@@ -1,6 +1,4 @@
-using MapsterMapper;
-using Microsoft.Extensions.Logging;
-using Overstay.Application.Commons.Constants;
+using Mapster;
 using Overstay.Application.Commons.Errors;
 using Overstay.Application.Commons.Results;
 using Overstay.Application.Services;
@@ -8,11 +6,8 @@ using Overstay.Infrastructure.Data.DbContexts;
 
 namespace Overstay.Infrastructure.Services;
 
-public class VisaTypeService(
-    ApplicationDbContext context,
-    ILogger<VisaTypeService> logger,
-    IMapper mapper
-) : IVisaTypeService
+public class VisaTypeService(ApplicationDbContext context, ILogger<VisaTypeService> logger)
+    : IVisaTypeService
 {
     public async Task<Result<List<VisaType>>> GetAllAsync(CancellationToken cancellationToken)
     {
@@ -82,7 +77,7 @@ public class VisaTypeService(
                 return Result.Failure(VisaTypeErrors.NotFound(visaType.Id));
             }
 
-            mapper.Map(visaType, existingVisaType);
+            existingVisaType.Adapt(visaType);
 
             context.VisaTypes.Update(existingVisaType);
             await context.SaveChangesAsync(cancellationToken);
