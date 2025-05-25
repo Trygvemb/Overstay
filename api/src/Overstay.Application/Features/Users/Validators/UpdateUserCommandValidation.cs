@@ -7,10 +7,10 @@ public class UpdateUserCommandValidation : AbstractValidator<UpdateUserCommand>
 {
     public UpdateUserCommandValidation()
     {
-        RuleFor(user => user.Id).NotEmpty();
+        RuleFor(user => user.Id).NotNull();
 
         RuleFor(user => user.Item.Password)
-            .NotEmpty()
+            .NotNull()
             .When(user => !string.IsNullOrEmpty(user.Item.Password))
             .MinimumLength(8)
             .Matches("[A-Z]")

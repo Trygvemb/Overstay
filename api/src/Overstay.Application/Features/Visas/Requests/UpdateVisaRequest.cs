@@ -5,10 +5,10 @@ namespace Overstay.Application.Features.Visas.Requests;
 
 public class UpdateVisaRequest
 {
-    [JsonConverter(typeof(DateTimeBehavior))]
-    public DateTime ArrivalDate { get; set; }
+    [JsonConverter(typeof(NullableDateTimeBehavior))]
+    public DateTime? ArrivalDate { get; set; }
 
-    [JsonConverter(typeof(DateTimeBehavior))]
-    public DateTime ExpireDate { get; set; }
-    public Guid VisaTypeId { get; set; }
+    [JsonConverter(typeof(NullableDateTimeBehavior))]
+    public DateTime? ExpireDate { get; set; }
+    public Guid? VisaTypeId { get; set; }
 }

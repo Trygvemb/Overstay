@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using MapsterMapper;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Overstay.Application.Commons.Constants;
@@ -20,7 +20,6 @@ public class UserService(
     SignInManager<ApplicationUser> signInManager,
     ITokenService tokenService,
     ILogger<UserService> logger,
-    IMapper mapper,
     IConfiguration configuration
 ) : IUserService
 {
@@ -28,7 +27,7 @@ public class UserService(
     {
         try
         {
-            var user = await userManager.FindByNameAsync(request.UserName);
+            var user = await userManager.FindByNameAsync(request.UserName!);
             if (user is null)
             {
                 logger.LogWarning("User with username {Username} not found", request.UserName);
@@ -37,7 +36,7 @@ public class UserService(
 
             var signInResult = await signInManager.PasswordSignInAsync(
                 user,
-                request.Password,
+                request.Password!,
                 isPersistent: false,
                 lockoutOnFailure: true
             );
@@ -255,7 +254,7 @@ public class UserService(
                 return Result.Failure<UserResponse>(UserErrors.NotFound(id.ToString()));
             }
 
-            mapper.Map(request, applicationUser);
+            applicationUser.Adapt(request);
 
             var updateResult = await userManager.UpdateAsync(applicationUser);
             if (!updateResult.Succeeded)
