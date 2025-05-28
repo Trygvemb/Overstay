@@ -30,9 +30,9 @@ RECTANGLE "Ekstern E-mail Service\n(SMTP/API)" as EmailService
 Bruger --> Frontend : Interagerer med Brugerflade
 Frontend -[#0000FF]-> API : REST API Kald (HTTPS)
 
+OAuthUdbyder <--> Infrastruktur : Brugerautentificeringsflow (OAuth2.0)
 Infrastruktur --> Database : Datapersistens (EF Core)
 Baggrundstjeneste --> EmailService : Sender E-mail Notifikationer
 
-API <--> OAuthUdbyder : Brugerautentificeringsflow (OAuth2.0)
 
 @enduml
