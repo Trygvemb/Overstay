@@ -46,13 +46,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar med leading-tilbage knap til SignupPage
+      // AppBar med leading-tilbage knap til LandingPage
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/signup');
+            Navigator.pushReplacementNamed(context, '/');
           },
         ),
       ),
