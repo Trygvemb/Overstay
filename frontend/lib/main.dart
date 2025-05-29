@@ -42,6 +42,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       initialRoute: '/', // <-- Add this line
       routes: {
+        //deep linking for at define routes
         '/': (context) => const LandingPage(),
         '/loading': (context) => const LoadingPage(),
         '/signup': (context) => const SignupPage(),

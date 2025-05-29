@@ -92,10 +92,11 @@ class UserApiService extends ApiService {
     final res = await get('/api/User');
 
     if (res.statusCode == 200) {
-      final List json = jsonDecode(res.body);
-      return json.map((e) => UserResponse.fromJson(e)).toList();
+      final List<dynamic> jsonList = jsonDecode(res.body);
+      return jsonList.map((json) => UserResponse.fromJson(json)).toList();
     }
     if (res.statusCode == 401) throw ApiException(401, 'Unauthorized');
+    if (res.statusCode == 403) throw ApiException(403, 'Forbidden');
     throw ApiException(res.statusCode, res.body);
   }
 }

@@ -62,3 +62,9 @@ final currentNotificationProvider = FutureProvider<NotificationSettings?>((
   //  men returnerer null, hvis back-end svarer 404 (ingen record endnu)
   return api.getSettings();
 });
+
+// Provider som henter alle brugere fra API til admin‑siden
+final usersProvider = FutureProvider<List<UserResponse>>((ref) async {
+  final api = ref.read(userApiServiceProvider);
+  return api.getUsers();
+});
