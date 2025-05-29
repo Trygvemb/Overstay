@@ -6,8 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/models/sign_in_user_request.dart';
 import 'package:overstay_frontend/services/auth_api_service.dart';
 import 'package:overstay_frontend/services/user_api_service.dart';
-import 'package:overstay_frontend/views/auth/signup_page.dart';
-import 'package:overstay_frontend/views/app/widget_tree.dart';
 import 'package:overstay_frontend/services/api_exception.dart';
 import 'package:overstay_frontend/services/providers.dart';
 
@@ -293,8 +291,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       return; // <- stop her hvis success
     } on ApiException catch (e) {
       // ***** Fejl fra back-end *****
-      if (e.statusCode != 401)
+      if (e.statusCode != 401) {
         _show('Login failed (${e.statusCode}): ${e.message}');
+      }
       // falder ned til dummy-login
     } finally {
       if (mounted) setState(() => _loading = false);

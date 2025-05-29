@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../models/visa_respons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overstay_frontend/services/providers.dart';
 

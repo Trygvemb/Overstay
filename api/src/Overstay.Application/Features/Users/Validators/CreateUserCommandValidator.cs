@@ -7,12 +7,12 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
     public CreateUserCommandValidator()
     {
-        RuleFor(user => user.Item.Email).NotEmpty().EmailAddress();
-        RuleFor(user => user.Item.UserName).NotEmpty();
-        RuleFor(user => user.Item.CountryId).NotEmpty();
+        RuleFor(user => user.Item.Email).NotNull().EmailAddress();
+        RuleFor(user => user.Item.UserName).NotNull();
+        RuleFor(user => user.Item.CountryId).NotNull();
 
         RuleFor(user => user.Item.Password)
-            .NotEmpty()
+            .NotNull()
             .MinimumLength(8)
             .Matches("[A-Z]")
             .WithMessage("Password must contain at least one uppercase letter.")

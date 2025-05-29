@@ -23,6 +23,8 @@ public static class ServiceCollectionExtensions
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
 
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
         MappingConfigurations.Configure();
 
         services.AddSingleton(TypeAdapterConfig.GlobalSettings);

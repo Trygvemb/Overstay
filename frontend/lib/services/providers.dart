@@ -5,11 +5,8 @@ import 'auth_state.dart';
 import 'user_api_service.dart';
 import 'visa_api_service.dart';
 import 'package:overstay_frontend/models/user_response.dart';
-import 'package:overstay_frontend/models/update_user_request.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:overstay_frontend/models/notification_settings.dart';
 import 'package:overstay_frontend/services/notifications_api_service.dart';
-import 'package:overstay_frontend/services/api_exception.dart';
 
 /// Holder base‑URL (sættes som override i main.dart)
 final apiBaseUrlProvider = Provider<String>((_) {

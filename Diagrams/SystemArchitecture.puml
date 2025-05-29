@@ -1,0 +1,38 @@
+@startuml OverstayArkitektur
+!theme plain
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+actor "Bruger" as Bruger
+
+RECTANGLE "Frontend\n(Flutter Web/Mobil)" as Frontend
+
+package "Backend (.NET)" {
+  RECTANGLE "Præsentationslag\n(ASP.NET Core Web API)" as API
+  RECTANGLE "Applikationslag\n(Use Cases, Grænseflader)" as Applikation
+  RECTANGLE "Domænelag\n(Entiteter, Forretningsregler)" as Domæne
+  RECTANGLE "Infrastrukturlag\n(Implementeringer, Baggrundstjenester)" as Infrastruktur
+
+  API --> Applikation : Kalder Use Cases
+  Applikation --> Domæne : Interagerer med Domænemodel
+  Infrastruktur .up.> Applikation : Implementerer Grænseflader
+  Infrastruktur .up.> Domæne : Anvender Domæneentiteter
+
+  ' Eksplicit visning af baggrundstjeneste inden for Infrastruktur
+  RECTANGLE "Notifikations Baggrundstjeneste" as Baggrundstjeneste
+  Infrastruktur -- Baggrundstjeneste
+}
+
+RECTANGLE "Cloud Database" as Database
+RECTANGLE "Ekstern OAuth Udbyder\n(Google)" as OAuthUdbyder
+RECTANGLE "Ekstern E-mail Service\n(SMTP/API)" as EmailService
+
+Bruger --> Frontend : Interagerer med Brugerflade
+Frontend -[#0000FF]-> API : REST API Kald (HTTPS)
+
+OAuthUdbyder <--> Infrastruktur : Brugerautentificeringsflow (OAuth2.0)
+Infrastruktur --> Database : Datapersistens (EF Core)
+Baggrundstjeneste --> EmailService : Sender E-mail Notifikationer
+
+
+@enduml

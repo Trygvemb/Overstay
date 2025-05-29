@@ -1,11 +1,10 @@
 import 'dart:convert';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'api_service.dart';
 import '../models/notification_settings.dart';
 import 'api_exception.dart';
 
 class NotificationApiService extends ApiService {
-  NotificationApiService(Ref ref) : super(ref);
+  NotificationApiService(super.ref);
 
   // --------------------- GET NOTIFICATION SETTINGS ---------------------
   /// Henter notification settings fra serveren

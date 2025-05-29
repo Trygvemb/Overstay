@@ -1,9 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:overstay_frontend/services/providers.dart';
 import 'auth_state.dart';
-import 'providers.dart';
 import '../models/create_user_request.dart';
 import '../models/sign_in_user_request.dart';
 import '../models/user_response.dart';
