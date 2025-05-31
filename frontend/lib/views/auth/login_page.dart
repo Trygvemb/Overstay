@@ -46,16 +46,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar med leading-tilbage knap til SignupPage
+      // AppBar med leading-tilbage knap til LandingPage
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: () {
-            Navigator.pushReplacementNamed(
-              context,
-              '/signup',
-            );
+            Navigator.pushReplacementNamed(context, '/');
           },
         ),
       ),
@@ -172,7 +169,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               // Google login button
               Center(
                 child: InkWell(
-                  onTap: () {_googleLogin(context);},
+                  onTap: () {
+                    _googleLogin(context);
+                  },
                   child: SvgPicture.asset(
                     'assets/images/signin_w_google.svg',
                     height: 48, // ved ikke om den skal være lidt mindre?
@@ -186,10 +185,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 child: TextButton(
                   onPressed: () {
                     // Naviger til signup siden
-                    Navigator.pushReplacementNamed(
-                      context,
-                      '/signup',
-                    );
+                    Navigator.pushReplacementNamed(context, '/signup');
                   },
                   child: const Text(
                     'Don\'t have an account? Create one here',
@@ -238,7 +234,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   // --------------Google Login logic----------------
   Future<void> _googleLogin(BuildContext context) async {
-    
     setState(() => _loading = true);
 
     final redirectUrl = '${html.window.location.origin}/loading';
@@ -292,10 +287,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
       // Naviger til WidgetTree
       if (!mounted) return;
-      Navigator.pushReplacementNamed(
-        context,
-        '/home',
-      );
+      Navigator.pushReplacementNamed(context, '/home');
       return; // <- stop her hvis success
     } on ApiException catch (e) {
       // ***** Fejl fra back-end *****
@@ -311,10 +303,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (typedIdentifier == 'test@mail.com' && password == '1234') {
       await _storage.write(key: 'jwt', value: 'dummy-token');
       if (mounted) {
-        Navigator.pushReplacementNamed(
-          context,
-          '/home',
-        );
+        Navigator.pushReplacementNamed(context, '/home');
       }
     } else {
       _show('Wrong e-mail or password');

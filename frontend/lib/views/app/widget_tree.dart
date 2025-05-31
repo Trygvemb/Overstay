@@ -18,7 +18,7 @@ class WidgetTree extends ConsumerWidget {
     final authState = ref.watch(authStateProvider);
     final isAdmin = authState.isAdmin;
 
-      // Auth guard: redirect if not authenticated
+    // Auth guard: redirect if not authenticated
     if (!authState.isAuthenticated) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushReplacementNamed(context, '/login');

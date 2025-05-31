@@ -14,24 +14,28 @@ class ManageUsersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final users = ref.watch(usersProvider);
+    final usersAsync = ref.watch(usersProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Admin – Brugere')),
-      body: users.when(
+      body: usersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Fejl: $e')),
         data:
-            (list) => ListView.separated(
+            (users) => ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemCount: list.length,
+              itemCount: users.length,
               separatorBuilder: (_, __) => const Divider(),
               itemBuilder: (_, i) {
-                final u = list[i];
+                final u = users[i];
                 return ListTile(
                   leading: const Icon(Icons.person_outline),
                   title: Text(u.userName),
                   subtitle: Text(u.email),
+                  trailing: Text(u.roles.join(', ')), // Vis roller
+                  onTap: () {
+                    // tilføj senere: fx vis detaljer eller rediger bruger
+                  },
                 );
               },
             ),
