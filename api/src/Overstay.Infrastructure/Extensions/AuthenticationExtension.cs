@@ -74,8 +74,8 @@ public static class AuthenticationExtension
                     var identity = (ClaimsIdentity)ctx.Principal.Identity;
                     var email = ctx.User.GetProperty("email").GetString();
                     var name = ctx.User.GetProperty("name").GetString();
-                    identity!.AddClaim(new Claim(ClaimTypes.Email, email!));
-                    identity.AddClaim(new Claim(ClaimTypes.Name, name!));
+                    identity.AddClaim(new Claim(ClaimTypes.Email, email));
+                    identity.AddClaim(new Claim(ClaimTypes.Name, name));
                     return Task.CompletedTask;
                 };
             });

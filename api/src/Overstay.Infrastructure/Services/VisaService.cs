@@ -51,7 +51,7 @@ public class VisaService(ApplicationDbContext context, ILogger<VisaService> logg
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred while retrieving visa");
-            return Result.Failure<Visa?>(Error.ServerError);
+            return Result.Failure<Visa>(Error.ServerError);
         }
     }
 
