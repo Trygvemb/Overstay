@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Overstay.API.Commons;
 using Overstay.Application.Commons.Helpers;
 using Overstay.Application.Extensions;
+using Overstay.Infrastructure.Data.Seeds;
 using Overstay.Infrastructure.Extensions;
 using Overstay.Infrastructure.Services;
 using Overstay.Infrastructure.Services.BackgroundServices;
@@ -30,8 +31,8 @@ builder.Services.AddOpenApi(
 );
 
 builder.Services.AddApplicationLayer();
-
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddFluentEmail(builder.Configuration);
 builder.Services.AddIdentity(builder.Configuration);
@@ -94,8 +95,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 
-    // Initialize a database with seed data
-    //await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
+    // Makes sure the database is initialized in development with admin user
+    await DatabaseInitializer.InitializeDatabaseAsync(app.Services);
 }
 else
 {

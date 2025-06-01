@@ -185,7 +185,7 @@ public class UserService(
         CancellationToken cancellationToken
     )
     {
-        var existingUser = await userManager.FindByEmailAsync(request.Email);
+        var existingUser = await userManager.FindByEmailAsync(request.Email!);
         if (existingUser is not null)
         {
             return Result.Failure<Guid>(UserErrors.UserAlreadyExists);
@@ -211,7 +211,7 @@ public class UserService(
 
                 var identityResult = await userManager.CreateAsync(
                     applicationUser,
-                    request.Password
+                    request.Password!
                 );
                 if (!identityResult.Succeeded)
                 {
