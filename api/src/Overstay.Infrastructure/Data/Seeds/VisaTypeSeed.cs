@@ -1,23 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Overstay.Domain.Entities;
-using Overstay.Infrastructure.Data.DbContexts;
-
 namespace Overstay.Infrastructure.Data.Seeds;
 
 public static class VisaTypeSeed
 {
+    // Extract constant prefixes for better readability
     private const string VisaTypeIdPrefix = "10000000-0000-0000-0000-0000000000";
 
-    public static async Task SeedVisaTypes(ApplicationDbContext context)
+    /// <summary>
+    /// Seeds the initial set of visa types into the database.
+    /// </summary>
+    /// <param name="modelBuilder">The ModelBuilder used to configure the entity framework model and seed data.</param>
+    /// <param name="visaTypes">The DbSet of visa types to check if seeding is needed.</param>
+    public static void SeedVisaTypes(ModelBuilder modelBuilder, DbSet<VisaType> visaTypes)
     {
-        if (!await context.VisaTypes.AnyAsync())
-        {
-            await context.VisaTypes.AddRangeAsync(GetPredefinedVisaTypes());
-            await context.SaveChangesAsync();
-        }
+        modelBuilder.Entity<VisaType>().HasData(GetPredefinedVisaTypes());
     }
 
     /// <summary>

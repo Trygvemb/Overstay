@@ -35,8 +35,5 @@ public static class AdminSeed
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
         }
-
-        await userManager.RemovePasswordAsync(admin);
-        await userManager.AddPasswordAsync(admin, "Admin123!");
     }
 }

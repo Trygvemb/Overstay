@@ -44,5 +44,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         // Apply configurations
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         DefaultConfigurations.ConfigureEntityDefaults(modelBuilder);
+
+        // Seed initial data
+        CountrySeed.SeedCountries(modelBuilder, Countries);
+        VisaTypeSeed.SeedVisaTypes(modelBuilder, VisaTypes);
     }
 }

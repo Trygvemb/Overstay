@@ -29,8 +29,6 @@ public static class DatabaseInitializer
 
             // These methods will check if data exists and seed if necessary
             await RolesSeed.EnsureRolesExistAsync(roleManager);
-            await VisaTypeSeed.SeedVisaTypes(context);
-            await CountrySeed.SeedCountries(context);
             await AdminSeed.EnsureAdminExistAsync(userManager, context);
 
             logger.LogInformation("Database initialization completed successfully");
