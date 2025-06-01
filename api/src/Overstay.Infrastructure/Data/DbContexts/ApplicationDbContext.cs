@@ -32,7 +32,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configure Identity tables to use a specific schema (optional)
+        // Configure Identity tables to use a specific schema
         modelBuilder.Entity<ApplicationUser>().ToTable("Users", "identity");
         modelBuilder.Entity<IdentityRole<Guid>>().ToTable("Roles", "identity");
         modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles", "identity");
@@ -45,11 +45,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         DefaultConfigurations.ConfigureEntityDefaults(modelBuilder);
 
-        // Seed data without checking database contents
+        // Seed initial data
         CountrySeed.SeedCountries(modelBuilder, Countries);
         VisaTypeSeed.SeedVisaTypes(modelBuilder, VisaTypes);
-        IdentitySeed.SeedRoles(modelBuilder);
-        IdentitySeed.SeedUsers(modelBuilder);
-        IdentitySeed.SeedUserRoles(modelBuilder);
     }
 }

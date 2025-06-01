@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Overstay.Domain.Entities;
-
 namespace Overstay.Infrastructure.Data.Seeds;
 
 public static class VisaTypeSeed
