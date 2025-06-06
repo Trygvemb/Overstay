@@ -1,0 +1,56 @@
+@startuml
+
+actor Bruger
+participant Frontend as "Frontend App"
+box "Backend (.NET)" #LightYellow
+    participant AuthController as "Auth Controller"
+    participant Mediator as "MediatR"
+    participant ExternalLoginCommandHandler as "ExternalLoginCommandHandler"
+    participant UserService as "User Service"
+    participant TokenService as "Token Service"
+    participant SignInManager as "ASP.NET Core\nSignInManager"
+end box
+box "Google Identity Platform" #LightBlue
+    participant GoogleLogin as "Google Login Page"
+    participant GoogleOAuth as "Google OAuth API"
+end box
+
+group OAuth 2.0 Flow Initialisering
+    Bruger -> Frontend: Vælger "Log ind med Google"
+    Frontend -> AuthController: GET /api/auth/external-login
+    activate AuthController
+    AuthController -> Mediator: Send ExternalLoginCommand
+    Mediator -> ExternalLoginCommandHandler: Handle()
+    ExternalLoginCommandHandler -> UserService: ValidateExternalAuthProvider(provider, returnUrl)
+    UserService --> ExternalLoginCommandHandler: Validering succesfuld
+    ExternalLoginCommandHandler --> Mediator: Result
+    Mediator --> AuthController: Result
+    AuthController -> GoogleLogin: Viderestiller til Google Login-side
+    deactivate AuthController
+end
+
+group Googles Autentificering og Callback
+    GoogleLogin -> Bruger: Viser login-side
+    Bruger -> GoogleLogin: Vælger konto og giver tilladelse
+    GoogleLogin -> GoogleOAuth: Sender autentifikationsdata
+    GoogleOAuth -> AuthController: Omdirigerer med autoriseringskode til /api/auth/external-login-callback
+    activate AuthController
+    AuthController -> Mediator: Send ExternalLoginCallbackCommand
+    Mediator -> UserService: ProcessExternalLoginCallbackAsync(returnUrl)
+    UserService -> SignInManager: GetExternalLoginInfoAsync()
+    SignInManager --> UserService: Eksterne login-oplysninger
+    UserService -> SignInManager: ExternalLoginSignInAsync(...)
+    SignInManager --> UserService: Result
+    alt Bruger findes ikke
+        UserService -> UserService: Opretter ny bruger
+        UserService -> UserService: AddToRoleAsync
+    end
+    UserService -> TokenService: GenerateJwtToken
+    TokenService --> UserService: JWT
+    UserService --> Mediator: ExternalAuth (JWT, RedirectUrl)
+    Mediator --> AuthController: Result
+    AuthController -> Frontend: Returnerer JWT i HTTP-cookie
+    deactivate AuthController
+end
+
+@enduml

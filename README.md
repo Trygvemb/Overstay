@@ -1,12 +1,12 @@
 # OVERSTAY Project
 
 ## Overview
-OVERSTAY is a full-stack application designed to manage visa-related operations. It is built using modern technologies, including .NET 9.0 for the backend and Flutter for the frontend. The project is containerized using Docker and orchestrated with Docker Compose.
+OVERSTAY is a full-stack application designed to manage visa-related operations. It is built using .NET 9.0 for the backend and Flutter for the frontend. The project is containerized using Docker and orchestrated with Docker Compose.
 
 ## Features
 - Backend API for visa management (CRUD operations)
 - Frontend built with Flutter for a responsive user interface
-- Microsoft SQL Server database with Full-Text Search capabilities
+- Microsoft SQL Server database
 - Dockerized services for easy deployment and development
 - OpenAPI documentation for the backend API
 
@@ -15,29 +15,13 @@ OVERSTAY is a full-stack application designed to manage visa-related operations.
 ## Prerequisites
 Ensure the following tools are installed on your system:
 
-For running in Docker:
 - Docker
-- Bash (for running the `start-dev.sh` script)
-
-For running in local development:
 - .NET 9.0 SDK
 - Flutter SDK
 - Keys and secrets for the database and external services.
 
----
-
-## Project Structure
-- `api/`: Backend API built with .NET 9.0
-- `frontend/`: Frontend application built with Flutter
-- `docker-compose.yaml`: Configuration for containerized services
-- `start-dev.sh`: Script to start the development environment
-- `README.md`: Documentation for the project
-
-For more in dept information about the backend and frontend, please refer to the respective directories. Each directory contains its own README file with specific instructions and details.
-
----
-
 ## Setup Instructions
+
 
 ### 1. Clone the Repository
 ```bash
@@ -51,11 +35,9 @@ Run the following command to start all services:
 docker-compose up --build
 ```
 ```bash
-./start-dev.sh
+cd frontend
+flutter run -d chrome --web-port 8080
 ```
-This script will:
-- Start the backend, frontend, and database services using Docker Compose
-- Open the backend API and frontend in your default browser
 
 ### 3. Access the Application
 - **Backend API**: [http://localhost:5050](http://localhost:5050)
@@ -96,13 +78,13 @@ To run the frontend locally:
 2. Run the following commands:
    ```bash
    flutter pub get
-   flutter run -d chrome
+   flutter run -d chrome --web-port 8080
    ```
 
 ---
 
 ## Database
-The project uses Microsoft SQL Server with Full-Text Search capabilities. The database is configured via Docker Compose.
+The project uses Microsoft SQL Server The database is configured via Docker Compose.
 
 ### Key Configuration
 - **Image**: `vibs2006/sql_server_fts:latest`
@@ -123,7 +105,7 @@ docker-compose up -d mssql
 The project is fully containerized. The `docker-compose.yaml` file defines the following services:
 - **mssql**: SQL Server database
 - **backend**: .NET API
-- **frontend**: Flutter web app
+- **frontend**: Flutter web app Flutter should be run in flutter tools for latest changes
 
 ### Build and Start Services
 ```bash
@@ -154,6 +136,3 @@ docker-compose down
 ## Contributors
 - **Trygve**: Overstay Development Team
 - **Lyanne**: Overstay Development Team
-- **Timeline**: April 1 - May 31
-
-For any issues or contributions, please open a pull request or issue in the repository.

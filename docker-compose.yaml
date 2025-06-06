@@ -1,5 +1,4 @@
 services:
-  # Database service (re-using from the existing docker-compose.yml)
   mssql:
     image: vibs2006/sql_server_fts:latest
     container_name: mssql_server
@@ -38,27 +37,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-
-  # Frontend Flutter service
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: overstay_frontend
-    ports:
-      - "8080:80"
-    depends_on:
-      - backend
-    networks:
-      - overstay-network
-    environment:
-          - API_URL=http://backend:80/api # This ensures the frontend can access backend using Docker's internal networking
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
 
 networks:
   overstay-network:
