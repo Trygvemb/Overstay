@@ -49,6 +49,7 @@ public class AuthController(ISender mediator, SignInManager<ApplicationUser> sig
     public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
     {
         var result = await Mediator.Send(new ExternalLoginCallbackCommand(returnUrl));
+
         var cookieOptions = new CookieOptions
         {
             HttpOnly = false, // Allow JS to read the cookie

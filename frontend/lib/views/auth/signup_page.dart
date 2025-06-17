@@ -41,10 +41,10 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   // mock data til lande
   final List<Map<String, String>> countries = [
     // ←  GUID + navn
-    {'id': 'd6cf4d61-5f80-48aa-9cb6-ec7604024106', 'name': 'Denmark'},
-    {'id': 'b242b2a4-2d23-49bf-8198-802865cf6be0', 'name': 'Sweden'},
-    {'id': 'a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6', 'name': 'Norway'},
-    {'id': '7f8e9d0c-b1a2-3b4c-5d6e-7f8g9h0i1j2k', 'name': 'Finland'},
+    {'id': '00000000-0000-0000-0000-000000000045', 'name': 'Denmark'},
+    {'id': '00000000-0000-0000-0000-000000000166', 'name': 'Sweden'},
+    {'id': '00000000-0000-0000-0000-000000000128', 'name': 'Norway'},
+    {'id': '00000000-0000-0000-0000-000000000058', 'name': 'Finland'},
     // ...
   ];
 
